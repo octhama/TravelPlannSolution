@@ -1,0 +1,22 @@
+{
+  "runtimeOptions": {
+    "tfm": "net8.0",
+    "frameworks": [
+      {
+        "name": "Microsoft.NETCore.App",
+        "version": "8.0.0"
+      },
+      {
+        "name": "Microsoft.Android",
+        "version": ""
+      }
+    ],
+    "configProperties": {
+      "System.Reflection.NullabilityInfoContext.IsSupported": true,
+      "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": false,
+      "Switch.System.Reflection.ForceInterpretedInvoke": "",
+      "Microsoft.Extensions.DependencyInjection.DisableDynamicEngine": "",
+      "System.Diagnostics.Metrics.Meter.IsSupported": ""
+    }
+  }
+}

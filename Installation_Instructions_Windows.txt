@@ -1,0 +1,86 @@
+INSTRUCTIONS POUR UTILISATEUR WINDOWS - AVANT EXÉCUTION
+=======================================================
+
+1. INSTALLATION DES PRÉREQUIS
+-----------------------------
+1.1. Installer Visual Studio 2022 (version 17.4 ou supérieure) avec :
+     - Workload ".NET Desktop Development"
+     - Workload ".NET Multi-platform App UI (MAUI)"
+     
+1.2. Installer :
+     - SQL Server 2019+ (Express ou Developer Edition)
+     - SQL Server Management Studio (SSMS) 18+
+     - .NET 8 SDK
+
+2. CONFIGURATION DE LA BASE DE DONNÉES
+--------------------------------------
+2.1. Avec SSMS :
+     - Se connecter à l'instance SQL Server locale
+     - Exécuter le script de restauration (DbTravelPlannMsSqlHaslerTehou.sql)
+     - OU créer une base vide :
+       CREATE DATABASE TravelPlanner;
+       GO
+
+2.2. Configurer les accès (si auth SQL) :
+     CREATE LOGIN [TravelUser] WITH PASSWORD = 'S3cur3P@ss!';
+     USE TravelPlanner;
+     CREATE USER [TravelUser] FOR LOGIN [TravelUser];
+     EXEC sp_addrolemember 'db_owner', 'TravelUser';
+     GO
+
+3. ADAPTATION DU PROJET (MAC → WINDOWS)
+---------------------------------------
+3.1. Modifier appsettings.json :
+     {
+       "ConnectionStrings": {
+         "DefaultConnection": "Server=.\\SQLEXPRESS;Database=TravelPlanner;Trusted_Connection=True;TrustServerCertificate=True;"
+       }
+     }
+     * Remplacer ".\\SQLEXPRESS" par "localhost" si instance par défaut
+
+3.2. Vérifier MauiProgram.cs :
+     builder.Services.AddDbContext<TravelPlannDbContext>(options =>
+         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+4. RÉGÉNÉRATION DU MODÈLE EF CORE
+---------------------------------
+4.1. Dans Visual Studio :
+     - Ouvrir Package Manager Console
+       (Tools > NuGet Package Manager > Package Manager Console)
+     - Exécuter :
+       cd DAL
+       Scaffold-DbContext "Server=.\\SQLEXPRESS;Database=TravelPlanner;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir DB -Context TravelPlannDbContext -Force -Project DAL
+
+5. VÉRIFICATIONS FINALES
+------------------------
+5.1. Dans SSMS :
+     - Vérifier que les tables existent : SELECT * FROM Voyages
+
+5.2. Dans l'explorateur de solutions :
+     - Vérifier que DAL/DB contient :
+       - TravelPlannDbContext.cs
+       - Les classes d'entités (Voyage.cs, Activite.cs...)
+
+6. DÉPANNAGE
+------------
+6.1. Problèmes courants :
+     - Erreur de connexion : vérifier que le service SQL Server est démarré
+     - Certificats SSL : ajouter TrustServerCertificate=True
+     - Fichiers manquants : relancer le scaffolding avec -Force
+
+6.2. Commandes utiles :
+     - Test connexion : Test-NetConnection -ComputerName localhost -Port 1433
+     - Réactiver la base : ALTER DATABASE TravelPlanner SET ONLINE;
+
+BONNES PRATIQUES
+----------------
+- Ne jamais commiter les mots de passe
+- Utiliser User Secrets pour les données sensibles
+- Documenter les spécificités Windows/Mac dans README.md
+- Supprimer les fichiers .DS_Store venant du Mac
+
+PRÊT POUR L'EXÉCUTION
+----------------------
+- Cliquer sur Start dans Visual Studio (F5)
+- Vérifier l'affichage des voyages existants
+- Tester la création d'un nouveau voyage

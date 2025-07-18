@@ -1,0 +1,21 @@
+﻿# Commande pour générer les entités et le DbContext à partir de la base de données TravelPlanner Docker Desktop MacOs
+dotnet ef dbcontext scaffold "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer --output-dir DB --context TravelPlannDbContext --force
+
+??? Scaffold-DbContext "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir DAL/DB -Context TravelPlannDbContext -Force
+
+Attention :
+
+- Avant le scaffold se positionner dans DAL
+    - Creer un repertoire DB avec mkdir DB
+    - Supprimer le contenu de la fonction TravelPlannDbContext dans EFModelExtensions
+    - Exécutez la commande # dotnet ef dbcontext scaffold "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer --output-dir DB --context TravelPlannDbContext --force
+    - Revenir dans EFModelExtensions/TravelPlannDbContext et faire Ctrl + Z pour restaurer le fichier
+
+Note important : 
+
+Ce projet a été conçu avec un  Microsoft Server SQL Express hébergement localement sur Docker MacOs. En fonction de votre écosytème veiller à ajuster certain paramètre comme :
+
+- Modifier le fichier appsettings.json pour qu'il correspond à votre architecture de base données. Réécrire la connectionString.
+- Revoir le builder dans MauiProgram.cs pour réécrire la connectionString convenablement
+
+

@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TravelPlannMauiApp.MainPage"
+             Title="TravelPlann">
+
+    <Grid RowDefinitions="*,60">
+        <!-- Contenu principal avec widgets -->
+        <ScrollView Grid.Row="0" Padding="15">
+            <VerticalStackLayout Spacing="20">
+                <!-- Widget Bienvenue -->
+                <Frame CornerRadius="12" 
+                       Padding="15"
+                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                       HasShadow="True">
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                        <Label Text="👤"
+                               FontSize="24"
+                               HeightRequest="40"
+                               WidthRequest="40"/>
+                        
+                        <Label Text="Bienvenue, Octhama!"
+                               Grid.Column="1"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        
+                        <Label Text="Voyageur passionné"
+                               Grid.Column="1"
+                               Grid.Row="1"
+                               FontSize="12"
+                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+
+                        <Label Text="⚙️"
+                               Grid.RowSpan="2"
+                               Grid.Column="2"
+                               FontSize="24"
+                               HorizontalOptions="End"/>
+                        <Label Text="Paramètres"
+                               Grid.Row="1"
+                               Grid.Column="2"
+                               FontSize="12"
+                               TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                               HorizontalOptions="End"/>
+                    </Grid>
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSettingsTapped"/>
+                    </Frame.GestureRecognizers>
+                </Frame>
+
+                <!-- Widget Prochain Voyage -->
+                <Frame CornerRadius="12" 
+                       Padding="15"
+                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                       HasShadow="True">
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                        <Label Text="🗓️"
+                               Grid.RowSpan="2"
+                               FontSize="24"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               Margin="0,0,10,0"/>
+                        
+                        <Label Text="PROCHAIN VOYAGE"
+                               Grid.Column="1"
+                               FontSize="12"
+                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        
+                        <Label Text="Paris, France"
+                               Grid.Column="1"
+                               Grid.Row="1"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    </Grid>
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnNextTripTapped"/>
+                    </Frame.GestureRecognizers>
+                </Frame>
+
+                <!-- Widget Météo -->
+                <Frame CornerRadius="12"
+                       Padding="15"
+                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                       HasShadow="True">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Label Text="☀️"
+                               FontSize="24"
+                               HeightRequest="40"
+                               WidthRequest="40"/>
+                        
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="10,0">
+                            <Label Text="MÉTÉO ACTUELLE"
+                                  FontSize="12"
+                                  TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                            <Label Text="Paris, France"
+                                  FontSize="14"
+                                  TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
+                            <Label Text="24°C"
+                                  FontSize="24"
+                                  FontAttributes="Bold"
+                                  TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                            <Label Text="Ensoleillé"
+                                  FontSize="12"
+                                  HorizontalOptions="End"
+                                  TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+
+                <!-- Widget Statistiques -->
+                <Grid ColumnDefinitions="*,*,*" 
+                      ColumnSpacing="10">
+                    <!-- Voyages -->
+                    <Frame CornerRadius="12"
+                           Padding="15"
+                           BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                            <Label Text="12"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                            <Label Text="Voyages"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    
+                    <!-- Destinations -->
+                    <Frame CornerRadius="12"
+                           Grid.Column="1"
+                           Padding="15"
+                           BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                            <Label Text="5"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                            <Label Text="Pays"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    
+                    <!-- Dépenses -->
+                    <Frame CornerRadius="12"
+                           Grid.Column="2"
+                           Padding="15"
+                           BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                            <Label Text="€1,240"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                            <Label Text="Dépenses"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Widget Rappel -->
+                <Frame CornerRadius="12"
+                       Padding="15"
+                       BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#3700B3}">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="⚠️"
+                               FontSize="24"/>
+                        
+                        <Label Text="Passeport expire dans 3 mois"
+                               FontSize="14"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Barre d'onglets -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,*,*"
+              BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#1E1E1E}">
+            
+            <!-- Onglet Carte -->
+            <Grid x:Name="MapTab" 
+                  Grid.Column="0"
+                  VerticalOptions="Fill">
+                <VerticalStackLayout Spacing="4"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                    <Label 
+                           FontSize="24"/>
+                    <Label x:Name="MapLabel"
+                           Text="Carte"
+                           FontSize="16"/>
+                </VerticalStackLayout>
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped"/>
+                </Grid.GestureRecognizers>
+            </Grid>
+
+            <!-- Onglet Accueil -->
+            <Grid x:Name="HomeTab" 
+                  Grid.Column="1"
+                  VerticalOptions="Fill">
+                <VerticalStackLayout Spacing="4"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                    <Label 
+                           FontSize="24"/>
+                    <Label x:Name="HomeLabel"
+                           Text="Accueil"
+                           FontSize="16"/>
+                </VerticalStackLayout>
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped"/>
+                </Grid.GestureRecognizers>
+            </Grid>
+
+            <!-- Onglet Voyages -->
+            <Grid x:Name="TripsTab" 
+                  Grid.Column="2"
+                  VerticalOptions="Fill">
+                <VerticalStackLayout Spacing="4"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                    <Label 
+                           FontSize="24"/>
+                    <Label x:Name="TripsLabel"
+                           Text="Voyages"
+                           FontSize="16"/>
+                </VerticalStackLayout>
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped"/>
+                </Grid.GestureRecognizers>
+            </Grid>
+
+            <!-- Barre indicateur -->
+            <BoxView x:Name="IndicatorBar"
+                     HeightRequest="3"
+                     WidthRequest="60"
+                     HorizontalOptions="Start"
+                     VerticalOptions="End"
+                     Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,1 @@
+-v --force --timestamp=none --sign - --entitlements /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/Entitlements.xcent /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.app
