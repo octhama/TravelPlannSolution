@@ -10,38 +10,6 @@ namespace BU.Services
 {
     public class VoyageService : IVoyageService
     {
-        public class VoyageService : IVoyageService
-{
-        private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://votre-api.com/api";
-
-        public VoyageService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-        // Implémentation des nouvelles méthodes
-        public async Task<Utilisateur> GetUtilisateurParEmail(string email)
-    {
-        var response = await _httpClient.GetAsync($"{BaseUrl}/utilisateurs?email={email}");
-        if (!response.IsSuccessStatusCode) return null;
-        
-        return await response.Content.ReadFromJsonAsync<Utilisateur>();
-    }
-
-        public async Task<bool> AjouterUtilisateur(Utilisateur utilisateur)
-    {
-        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/utilisateurs", utilisateur);
-        return response.IsSuccessStatusCode;
-    }
-
-        public async Task<List<Voyage>> GetVoyagesParUtilisateur(int utilisateurId)
-    {
-        var response = await _httpClient.GetAsync($"{BaseUrl}/voyages?utilisateurId={utilisateurId}");
-        if (!response.IsSuccessStatusCode) return new List<Voyage>();
-        
-        return await response.Content.ReadFromJsonAsync<List<Voyage>>();
-    }
         private readonly TravelPlannDbContext _context;
         private List<Voyage> _cachedVoyages;
         private DateTime _lastCacheTime;
