@@ -47,7 +47,12 @@ namespace TravelPlannMauiApp.ViewModels
                 Voyages.Clear();
                 // S'assurer que les relations (Activités et Hébergements) sont chargées
                 var voyages = await _voyageService.GetVoyagesAsync();
-                foreach (var v in voyages)
+                
+                // Trier les voyages par date de création décroissante (du plus récent au plus ancien)
+                // Si pas de date de création, trier par VoyageId décroissant (supposé être auto-incrémenté)
+                var voyagesTries = voyages.OrderByDescending(v => v.VoyageId).ToList();
+                
+                foreach (var v in voyagesTries)
                 {
                     Voyages.Add(v);
                 }
@@ -182,11 +187,14 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 // S'assurer que les relations sont chargées
                 var voyages = await _voyageService.GetVoyagesAsync();
+                
+                // Trier les voyages par VoyageId décroissant (du plus récent au plus ancien)
+                var voyagesTries = voyages.OrderByDescending(v => v.VoyageId).ToList();
 
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     Voyages.Clear();
-                    foreach (var v in voyages)
+                    foreach (var v in voyagesTries)
                     {
                         Voyages.Add(v);
                     }

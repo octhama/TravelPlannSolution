@@ -10,6 +10,7 @@
 
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBool"/>
+        <converters:DecimalToEuroConverter x:Key="DecimalToEuro"/>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -188,7 +189,7 @@
                                    TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                    
                             <Entry Text="{Binding NouvelHebergementCout}"
-                                   Placeholder="Coût par nuit"
+                                   Placeholder="Coût par nuit (€)"
                                    Keyboard="Numeric"
                                    TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                     
@@ -228,7 +229,7 @@
                                    FontAttributes="Italic"
                                    VerticalOptions="Center"/>
                             <Label Grid.Column="2" 
-                                   Text="{Binding Cout, StringFormat='{0:C}'}"
+                                   Text="{Binding Cout, Converter={StaticResource DecimalToEuro}}"
                                    TextColor="Green"
                                    VerticalOptions="Center"/>
                             <Button Grid.Column="3" 
@@ -290,7 +291,7 @@
                                            Text="{Binding TypeHebergement}"
                                            FontSize="12" TextColor="Gray"/>
                                     <Label Grid.Column="2" 
-                                           Text="{Binding Cout, StringFormat='{0:C}'}"
+                                           Text="{Binding Cout, Converter={StaticResource DecimalToEuro}}"
                                            FontSize="14" TextColor="Green"/>
                                 </Grid>
                             </DataTemplate>
