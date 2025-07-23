@@ -446,18 +446,53 @@ namespace BU.Services
         {
             try
             {
-                var voyage = await _context.Voyages.FindAsync(voyageId);
-                if (voyage != null)
+                // Utiliser la stratégie d'exécution pour gérer les transactions
+                var strategy = _context.Database.CreateExecutionStrategy();
+                await strategy.ExecuteAsync(async () =>
                 {
-                    _context.Voyages.Remove(voyage);
-                    await _context.SaveChangesAsync();
-                    _cachedVoyages = null;
-                }
+                    using var transaction = await _context.Database.BeginTransactionAsync();
+                    
+                    try
+                    {
+                        // 1. Charger le voyage avec ses relations
+                        var voyage = await _context.Voyages
+                            .Include(v => v.Activites)
+                            .Include(v => v.Hebergements)
+                            .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
+
+                        if (voyage != null)
+                        {
+                            // 2. Supprimer les relations many-to-many d'abord
+                            voyage.Activites.Clear();
+                            voyage.Hebergements.Clear();
+                            
+                            // 3. Sauvegarder pour supprimer les relations
+                            await _context.SaveChangesAsync();
+                            
+                            // 4. Supprimer le voyage
+                            _context.Voyages.Remove(voyage);
+                            await _context.SaveChangesAsync();
+                            
+                            Debug.WriteLine($"Voyage {voyageId} supprimé avec succès");
+                        }
+
+                        await transaction.CommitAsync();
+                        
+                        // Invalider le cache
+                        _cachedVoyages = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        Debug.WriteLine($"Erreur lors de la suppression du voyage: {ex}");
+                        throw;
+                    }
+                });
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"DB Error deleting voyage: {ex}");
-                throw;
+                throw new InvalidOperationException($"Impossible de supprimer le voyage: {ex.Message}", ex);
             }
         }
     }

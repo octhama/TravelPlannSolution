@@ -42,32 +42,32 @@ public partial class TravelPlannDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
        
-        // Configuration de la relation many-to-many Voyage-Activite
-        modelBuilder.Entity<Voyage>()
-            .HasMany(v => v.Activites)
-            .WithMany(a => a.Voyages)
-            .UsingEntity<Dictionary<string, object>>(
-                "ActiviteVoyage",
-                j => j.HasOne<Activite>().WithMany().HasForeignKey("ActiviteId"),
-                j => j.HasOne<Voyage>().WithMany().HasForeignKey("VoyageId"),
-                j => j.ToTable("ActiviteVoyage"));
+        // Configuration des relations many-to-many avec cascade delete
+    modelBuilder.Entity<Voyage>()
+        .HasMany(v => v.Activites)
+        .WithMany(a => a.Voyages)
+        .UsingEntity<Dictionary<string, object>>(
+            "ActiviteVoyage",
+            j => j.HasOne<Activite>().WithMany().HasForeignKey("ActiviteId").OnDelete(DeleteBehavior.Cascade),
+            j => j.HasOne<Voyage>().WithMany().HasForeignKey("VoyageId").OnDelete(DeleteBehavior.Cascade),
+            j =>
+            {
+                j.HasKey("VoyageId", "ActiviteId");
+                j.ToTable("ActiviteVoyage");
+            });
 
-        // Configuration de la relation many-to-many Voyage-Hebergement
-        modelBuilder.Entity<Voyage>()
-            .HasMany(v => v.Hebergements)
-            .WithMany(h => h.Voyages)
-            .UsingEntity<Dictionary<string, object>>(
-                "HebergementVoyage",
-                j => j.HasOne<Hebergement>().WithMany().HasForeignKey("HebergementId"),
-                j => j.HasOne<Voyage>().WithMany().HasForeignKey("VoyageId"),
-                j => j.ToTable("HebergementVoyage"));
-
-        // Désactiver le comportement de suppression en cascade
-        foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-            .SelectMany(e => e.GetForeignKeys()))
-        {
-            relationship.DeleteBehavior = DeleteBehavior.Restrict;
-        }
+    modelBuilder.Entity<Voyage>()
+        .HasMany(v => v.Hebergements)
+        .WithMany(h => h.Voyages)
+        .UsingEntity<Dictionary<string, object>>(
+            "HebergementVoyage",
+            j => j.HasOne<Hebergement>().WithMany().HasForeignKey("HebergementId").OnDelete(DeleteBehavior.Cascade),
+            j => j.HasOne<Voyage>().WithMany().HasForeignKey("VoyageId").OnDelete(DeleteBehavior.Cascade),
+            j =>
+            {
+                j.HasKey("VoyageId", "HebergementId");
+                j.ToTable("HebergementVoyage");
+            });
 
         modelBuilder.Entity<Activite>(entity =>
         {
