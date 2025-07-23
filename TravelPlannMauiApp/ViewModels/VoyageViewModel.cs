@@ -13,7 +13,6 @@ namespace TravelPlannMauiApp.ViewModels
         private readonly IVoyageService _voyageService;
         private bool _isBusy;
         public ObservableCollection<Voyage> Voyages { get; } = new();
-
         public ICommand LoadVoyagesCommand { get; }
         public ICommand ViewVoyageDetailsCommand { get; }
         public ICommand AddVoyageCommand { get; }
