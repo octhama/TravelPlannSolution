@@ -7,11 +7,14 @@ namespace TravelPlannMauiApp
     public partial class MainPage : ContentPage
     {
         private int _currentTab = 1; // 0: Map, 1: Home, 2: Trips
+        private MainPageViewModel _viewModel; // ViewModel for MainPage
 
         public MainPage()
         {
             InitializeComponent();
-            BindingContext = this;
+
+            _viewModel = Handler.MauiContext.Services.GetService<MainPageViewModel>();
+        BindingContext = _viewModel;
             UpdateTabSelection();
             UpdateIndicatorPosition();
             
@@ -19,6 +22,12 @@ namespace TravelPlannMauiApp
             NavigationPage.SetHasNavigationBar(this, false);
             this.Appearing += OnPageAppearing;
         }
+
+        protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.ChargerDonnees();
+    }
 
         private void OnPageAppearing(object sender, EventArgs e)
         {

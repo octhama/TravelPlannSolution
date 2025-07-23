@@ -20,7 +20,9 @@ namespace BU.Services
         Task RemoveActiviteFromVoyageAsync(int voyageId, int activiteId);
         Task RemoveHebergementFromVoyageAsync(int voyageId, int hebergementId);
 
-        
+        Task<Utilisateur> GetUtilisateurParEmail(string email);
+        Task<bool> AjouterUtilisateur(Utilisateur utilisateur);
+        Task<List<Voyage>> GetVoyagesParUtilisateur(int utilisateurId);    
 
     }
 }

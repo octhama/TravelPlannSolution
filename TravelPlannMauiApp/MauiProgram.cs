@@ -44,6 +44,13 @@ public static class MauiProgram
             options.EnableSensitiveDataLogging();
         });
 
+        builder.Services.AddSingleton<IAuthService, AuthService>();
+        builder.Services.AddSingleton<AuthViewModel>();
+        builder.Services.AddSingleton<MainPageViewModel>();
+
+        builder.Services.AddTransient<ConnexionPage>();
+        builder.Services.AddTransient<InscriptionPage>();
+
         // CORRECTION PRINCIPALE: Changer les services en Scoped au lieu de Singleton
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
