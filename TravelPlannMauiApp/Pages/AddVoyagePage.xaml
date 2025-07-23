@@ -10,6 +10,7 @@
 
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBool"/>
+        <converters:DecimalToEuroConverter x:Key="DecimalToEuro"/>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -239,8 +240,9 @@
                                            FontAttributes="Italic"
                                            VerticalOptions="Center"/>
                                     <Label Grid.Column="2" 
-                                           Text="{Binding Cout, StringFormat='{0:C}'}"
+                                           Text="{Binding Cout, Converter={StaticResource DecimalToEuro}}"
                                            TextColor="Green"
+                                           FontAttributes="Bold"
                                            VerticalOptions="Center"/>
                                     <Button Grid.Column="3" 
                                             Text="×"
