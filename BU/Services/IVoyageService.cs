@@ -1,7 +1,6 @@
-using DAL.DB;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BU.Models;
+using DAL.DB;
 
 namespace BU.Services
 {

@@ -44,8 +44,9 @@ public static class MauiProgram
             options.EnableSensitiveDataLogging();
         });
 
-        builder.Services.AddSingleton<IAuthService, AuthService>();
-        builder.Services.AddSingleton<AuthViewModel>();
+        builder.Services.AddScoped<IUtilisateurService, UtilisateurService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddTransient<AuthViewModel>();
         builder.Services.AddSingleton<MainPageViewModel>();
 
         builder.Services.AddTransient<ConnexionPage>();
