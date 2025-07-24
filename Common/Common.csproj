@@ -1,22 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- Change to library output 
-    <TargetFramework>net8.0</TargetFramework>-->
-
-    <!-- OR if you need multi-targeting -->
-    <!---->
-    <TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
+    <!-- Support both standard .NET and mobile platforms -->
+    <TargetFrameworks>net8.0;net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
     
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <OutputType>Library</OutputType> <!-- Changed from Exe -->
+    <OutputType>Library</OutputType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Exception\" />
-  </ItemGroup>
 
   <ItemGroup>
     <!-- Entity Framework Packages -->
@@ -32,7 +24,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="8.0.83" />
+    
+    <!-- MAUI Controls only for mobile platforms -->
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="8.0.83" Condition="'$(TargetFramework)' != 'net8.0'" />
   </ItemGroup>
 
 </Project>

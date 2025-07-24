@@ -1,0 +1,6 @@
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0/Common.csproj.AssemblyReference.cache
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0/Common.GeneratedMSBuildEditorConfig.editorconfig
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0/Common.AssemblyInfoInputs.cache
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0/Common.AssemblyInfo.cs
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0/Common.csproj.CoreCompileInputs.cache
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0/Common.sourcelink.json

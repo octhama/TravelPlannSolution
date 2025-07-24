@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelPlannMauiApp", "TravelPlannMauiApp\TravelPlannMauiApp.csproj", "{8A16AA0B-5C5E-4874-A210-92152B19FE56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{FF428343-5795-4324-9ABB-325851CD3A6C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,9 +42,5 @@ Global
 		{8A16AA0B-5C5E-4874-A210-92152B19FE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A16AA0B-5C5E-4874-A210-92152B19FE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A16AA0B-5C5E-4874-A210-92152B19FE56}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FF428343-5795-4324-9ABB-325851CD3A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FF428343-5795-4324-9ABB-325851CD3A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FF428343-5795-4324-9ABB-325851CD3A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FF428343-5795-4324-9ABB-325851CD3A6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
