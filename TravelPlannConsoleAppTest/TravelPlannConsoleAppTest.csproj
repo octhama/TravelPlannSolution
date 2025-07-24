@@ -2,14 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <!-- Change to library output 
-    <TargetFramework>net8.0</TargetFramework>-->
-
-    <!-- OR if you need multi-targeting -->
-    <!---->
-    <TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
-    
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -38,6 +31,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 
 </Project>
