@@ -307,6 +307,7 @@ namespace TravelPlannMauiApp.ViewModels
             RefreshCommandStates();
         }
 
+        // Méthode SaveVoyageAsync corrigée dans VoyageDetailsViewModel
         private async Task SaveVoyageAsync()
         {
             if (_isLoading) return;
@@ -338,8 +339,20 @@ namespace TravelPlannMauiApp.ViewModels
                     Description = Description?.Trim(),
                     DateDebut = DateOnly.FromDateTime(DateDebut),
                     DateFin = DateOnly.FromDateTime(DateFin),
-                    Activites = Activites.ToList(),
-                    Hebergements = Hebergements.ToList()
+                    // Créer de nouveaux objets pour éviter les problèmes de tracking
+                    Activites = Activites.Select(a => new Activite 
+                    { 
+                        ActiviteId = a.ActiviteId,
+                        Nom = a.Nom,
+                        Description = a.Description 
+                    }).ToList(),
+                    Hebergements = Hebergements.Select(h => new Hebergement 
+                    { 
+                        HebergementId = h.HebergementId,
+                        Nom = h.Nom,
+                        TypeHebergement = h.TypeHebergement,
+                        Cout = h.Cout 
+                    }).ToList()
                 };
 
                 await _voyageService.UpdateVoyageAsync(voyage);

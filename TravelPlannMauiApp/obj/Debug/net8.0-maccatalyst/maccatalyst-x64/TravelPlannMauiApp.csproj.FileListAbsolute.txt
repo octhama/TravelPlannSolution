@@ -333,9 +333,6 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/_ProcessedBundleResourcesPath.items
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/_ProcessedContentPath.items
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.csproj.AssemblyReference.cache
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/BU.stamp
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/Common.stamp
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/DAL.stamp
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.GeneratedMSBuildEditorConfig.editorconfig
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.AssemblyInfoInputs.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.AssemblyInfo.cs
