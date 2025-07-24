@@ -68,6 +68,11 @@
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
         }
+      },
+      "runtimes": {
+        "maccatalyst-x64": {
+          "#import": []
+        }
       }
     },
     "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj": {
@@ -113,6 +118,15 @@
             "Microsoft.Extensions.Configuration.Json": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Microsoft.Maui.Controls": {
+              "target": "Package",
+              "version": "[8.0.14, )"
+            },
+            "Microsoft.Maui.Controls.Compatibility": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.100, )"
             }
           },
           "imports": [
@@ -132,6 +146,11 @@
             }
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "maccatalyst-x64": {
+          "#import": []
         }
       }
     },
@@ -228,6 +247,11 @@
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
         }
+      },
+      "runtimes": {
+        "maccatalyst-x64": {
+          "#import": []
+        }
       }
     },
     "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/TravelPlannMauiApp.csproj": {
@@ -259,6 +283,9 @@
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj"
               },
+              "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj": {
+                "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj"
+              },
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/DAL.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/DAL.csproj"
               }
@@ -270,6 +297,9 @@
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj"
               },
+              "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj": {
+                "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj"
+              },
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/DAL.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/DAL.csproj"
               }
@@ -280,6 +310,9 @@
             "projectReferences": {
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj"
+              },
+              "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj": {
+                "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/Common.csproj"
               },
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/DAL.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/DAL.csproj"
@@ -443,21 +476,6 @@
         }
       },
       "runtimes": {
-        "android-arm": {
-          "#import": []
-        },
-        "android-arm64": {
-          "#import": []
-        },
-        "android-x64": {
-          "#import": []
-        },
-        "android-x86": {
-          "#import": []
-        },
-        "iossimulator-x64": {
-          "#import": []
-        },
         "maccatalyst-x64": {
           "#import": []
         }

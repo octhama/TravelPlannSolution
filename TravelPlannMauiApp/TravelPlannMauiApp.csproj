@@ -64,8 +64,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\BU\BU.csproj" />
-	  <ProjectReference Include="..\DAL\DAL.csproj" />
+		<ProjectReference Include="..\Common\Common.csproj" />
+		<ProjectReference Include="..\BU\BU.csproj" />
+		<ProjectReference Include="..\DAL\DAL.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

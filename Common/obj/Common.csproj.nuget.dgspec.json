@@ -47,6 +47,15 @@
             "Microsoft.Extensions.Configuration.Json": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Microsoft.Maui.Controls": {
+              "target": "Package",
+              "version": "[8.0.14, )"
+            },
+            "Microsoft.Maui.Controls.Compatibility": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.100, )"
             }
           },
           "imports": [
@@ -66,6 +75,11 @@
             }
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "maccatalyst-x64": {
+          "#import": []
         }
       }
     }

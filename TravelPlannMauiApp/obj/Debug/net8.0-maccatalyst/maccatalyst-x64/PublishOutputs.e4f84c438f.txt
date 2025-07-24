@@ -266,9 +266,9 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/System.Private.CoreLib.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/Microsoft.MacCatalyst.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/TravelPlannMauiApp.pdb
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/Common.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/BU.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/DAL.pdb
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/Common.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/Microsoft.MacCatalyst.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MonoBundle/System.Private.CoreLib.aotdata.x86_64
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/publish/../TravelPlannMauiApp.app/Contents/MacOS//TravelPlannMauiApp
