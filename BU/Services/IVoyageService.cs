@@ -19,8 +19,5 @@ namespace BU.Services
         Task<List<Voyage>> GetVoyagesAsync(); // Avec relations
         Task RemoveActiviteFromVoyageAsync(int voyageId, int activiteId);
         Task RemoveHebergementFromVoyageAsync(int voyageId, int hebergementId);
-
-        
-
     }
 }
