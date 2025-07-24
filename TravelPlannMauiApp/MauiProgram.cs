@@ -25,22 +25,18 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Configuration pour la console
+        // Configuration pour lire le fichier appsettings.json depuis les ressources embarquées
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream("TravelPlannMauiApp.appsettings.json");
+        
         var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
+            .AddJsonStream(stream)
             .Build();
-
-        var options = new DbContextOptionsBuilder<TravelPlannDbContext>()
-            .UseSqlServer(config.GetConnectionString("TravelPlannConnectionString"))
-            .Options;
-
-        using var context = new TravelPlannDbContext(options);
 
         // Configuration DB avec la chaîne depuis appsettings.json
         builder.Services.AddDbContext<TravelPlannDbContext>(options =>
         {
-            var connectionString = configuration.GetConnectionString("TravelPlannConnectionString");
+            var connectionString = config.GetConnectionString("TravelPlannConnectionString");
             options.UseSqlServer(connectionString, sqlOptions =>
             {
                 sqlOptions.EnableRetryOnFailure(
