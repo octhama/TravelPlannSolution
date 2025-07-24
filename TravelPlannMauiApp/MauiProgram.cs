@@ -25,10 +25,22 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Configuration DB Microsoft SQL Server
+        // Configuration pour la console
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TravelPlannDbContext>()
+            .UseSqlServer(config.GetConnectionString("TravelPlannConnectionString"))
+            .Options;
+
+        using var context = new TravelPlannDbContext(options);
+
+        // Configuration DB avec la chaîne depuis appsettings.json
         builder.Services.AddDbContext<TravelPlannDbContext>(options =>
         {
-            var connectionString = $"Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;";
+            var connectionString = configuration.GetConnectionString("TravelPlannConnectionString");
             options.UseSqlServer(connectionString, sqlOptions =>
             {
                 sqlOptions.EnableRetryOnFailure(
@@ -37,19 +49,16 @@ public static class MauiProgram
                     errorNumbersToAdd: null);
             });
             
-            // IMPORTANT: Retirer NoTracking pour éviter les problèmes de concurrence
-            // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
         });
 
-        // CORRECTION PRINCIPALE: Changer les services en Scoped au lieu de Singleton
+        // Services
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
         builder.Services.AddScoped<IVoyageService, VoyageService>();
 
-        // ViewModels et Pages en Transient
+        // ViewModels et Pages
         builder.Services.AddTransient<VoyageViewModel>();
         builder.Services.AddTransient<AddVoyageViewModel>();
         builder.Services.AddTransient<VoyageDetailsViewModel>();
