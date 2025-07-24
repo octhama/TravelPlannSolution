@@ -1669,7 +1669,11 @@
       },
       "BU/1.0.0": {
         "type": "project",
-        "framework": "Unsupported,Version=v0.0",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Common": "1.0.0",
+          "DAL": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/BU.dll": {}
         },
@@ -1681,11 +1685,6 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "8.0.14",
-          "Microsoft.EntityFrameworkCore.Proxies": "8.0.14",
-          "Microsoft.EntityFrameworkCore.SqlServer": "8.0.14",
-          "Microsoft.Extensions.Configuration": "8.0.0",
-          "Microsoft.Extensions.Configuration.FileExtensions": "8.0.0",
           "Microsoft.Extensions.Configuration.Json": "8.0.0"
         },
         "compile": {
@@ -1697,7 +1696,16 @@
       },
       "DAL/1.0.0": {
         "type": "project",
-        "framework": "Unsupported,Version=v0.0",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Common": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "8.0.14",
+          "Microsoft.EntityFrameworkCore.Proxies": "8.0.14",
+          "Microsoft.EntityFrameworkCore.SqlServer": "8.0.14",
+          "Microsoft.Extensions.Configuration": "8.0.0",
+          "Microsoft.Extensions.Configuration.FileExtensions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Json": "8.0.0"
+        },
         "compile": {
           "bin/placeholder/DAL.dll": {}
         },
@@ -4623,25 +4631,5 @@
         "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1201",
-      "level": "Error",
-      "message": "Project BU is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Project BU supports:\n  - net8.0-android34.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-ios18.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-maccatalyst18.0 (.NETCoreApp,Version=v8.0)",
-      "libraryId": "BU",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1201",
-      "level": "Error",
-      "message": "Project DAL is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Project DAL supports:\n  - net8.0-android34.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-ios18.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-maccatalyst18.0 (.NETCoreApp,Version=v8.0)",
-      "libraryId": "DAL",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }

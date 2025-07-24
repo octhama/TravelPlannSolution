@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "VPET9uT4g/A=",
-  "success": false,
+  "dgSpecHash": "E1g698SK3Ac=",
+  "success": true,
   "projectFilePath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/TravelPlannConsoleAppTest.csproj",
   "expectedPackageFiles": [
     "/Users/kuassitehou/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
@@ -89,28 +89,5 @@
     "/Users/kuassitehou/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1201",
-      "level": "Error",
-      "message": "Project BU is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Project BU supports:\n  - net8.0-android34.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-ios18.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-maccatalyst18.0 (.NETCoreApp,Version=v8.0)",
-      "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/TravelPlannConsoleAppTest.csproj",
-      "filePath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/TravelPlannConsoleAppTest.csproj",
-      "libraryId": "BU",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1201",
-      "level": "Error",
-      "message": "Project DAL is not compatible with net8.0 (.NETCoreApp,Version=v8.0). Project DAL supports:\n  - net8.0-android34.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-ios18.0 (.NETCoreApp,Version=v8.0)\n  - net8.0-maccatalyst18.0 (.NETCoreApp,Version=v8.0)",
-      "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/TravelPlannConsoleAppTest.csproj",
-      "filePath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/TravelPlannConsoleAppTest.csproj",
-      "libraryId": "DAL",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }
