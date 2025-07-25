@@ -127,14 +127,25 @@ namespace TravelPlannMauiApp.ViewModels
             // Commandes pour les formulaires
             AjouterActiviteCommand = new Command(() => ShowActiviteForm = true);
             AjouterHebergementCommand = new Command(() => ShowHebergementForm = true);
-            AnnulerAjoutActiviteCommand = new Command(() => ShowActiviteForm = false);
-            AnnulerAjoutHebergementCommand = new Command(() => ShowHebergementForm = false);
+            AnnulerAjoutActiviteCommand = new Command(() => 
+            {
+                NouvelleActiviteNom = string.Empty;
+                NouvelleActiviteDescription = string.Empty;
+                ShowActiviteForm = false;
+            });
+            AnnulerAjoutHebergementCommand = new Command(() => 
+            {
+                NouvelHebergementNom = string.Empty;
+                NouvelHebergementType = string.Empty;
+                NouvelHebergementCout = 0;
+                ShowHebergementForm = false;
+            });
             AjouterNouvelleActiviteCommand = new Command(async () => await AjouterNouvelleActivite());
             AjouterNouvelHebergementCommand = new Command(async () => await AjouterNouvelHebergement());
             
-            // Commandes de suppression
-            SupprimerActiviteCommand = new Command<Activite>(async (a) => await SupprimerActivite(a));
-            SupprimerHebergementCommand = new Command<Hebergement>(async (h) => await SupprimerHebergement(h));
+            // Commandes de suppression (suppression locale uniquement)
+            SupprimerActiviteCommand = new Command<Activite>(SupprimerActiviteLocale);
+            SupprimerHebergementCommand = new Command<Hebergement>(SupprimerHebergementLocal);
         }
 
         private async Task AjouterNouvelleActivite()
@@ -149,21 +160,28 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 var nouvelleActivite = new Activite
                 {
-                    Nom = NouvelleActiviteNom,
-                    Description = NouvelleActiviteDescription
+                    Nom = NouvelleActiviteNom?.Trim(),
+                    Description = NouvelleActiviteDescription?.Trim()
                 };
 
+                // Créer l'activité d'abord
                 var activiteCree = await _activiteService.AddActiviteAsync(nouvelleActivite);
-                NouvellesActivites.Add(activiteCree);
                 
-                // Réinitialiser le formulaire
-                NouvelleActiviteNom = string.Empty;
-                NouvelleActiviteDescription = string.Empty;
-                ShowActiviteForm = false;
+                if (activiteCree != null)
+                {
+                    NouvellesActivites.Add(activiteCree);
+                    
+                    // Réinitialiser le formulaire
+                    NouvelleActiviteNom = string.Empty;
+                    NouvelleActiviteDescription = string.Empty;
+                    ShowActiviteForm = false;
+                }
             }
             catch (Exception ex)
             {
-                await HandleError(ex, "Erreur lors de l'ajout de l'activité");
+                Debug.WriteLine($"Erreur lors de l'ajout d'activité: {ex}");
+                await Shell.Current.DisplayAlert("Erreur", 
+                    $"Erreur lors de l'ajout de l'activité: {ex.Message}", "OK");
             }
         }
 
@@ -179,72 +197,68 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 var nouvelHebergement = new Hebergement
                 {
-                    Nom = NouvelHebergementNom,
-                    TypeHebergement = NouvelHebergementType,
+                    Nom = NouvelHebergementNom?.Trim(),
+                    TypeHebergement = NouvelHebergementType?.Trim(),
                     Cout = NouvelHebergementCout
                 };
 
+                // Créer l'hébergement d'abord
                 var hebergementCree = await _hebergementService.AddHebergementAsync(nouvelHebergement);
-                NouveauxHebergements.Add(hebergementCree);
                 
-                // Réinitialiser le formulaire
-                NouvelHebergementNom = string.Empty;
-                NouvelHebergementType = string.Empty;
-                NouvelHebergementCout = 0;
-                ShowHebergementForm = false;
-            }
-            catch (Exception ex)
-            {
-                await HandleError(ex, "Erreur lors de l'ajout de l'hébergement");
-            }
-        }
-
-        private async Task SupprimerActivite(Activite activite)
-        {
-            try
-            {
-                bool confirm = await Shell.Current.DisplayAlert(
-                    "Confirmation",
-                    $"Supprimer l'activité {activite.Nom}?",
-                    "Oui", "Non");
-
-                if (confirm)
+                if (hebergementCree != null)
                 {
-                    NouvellesActivites.Remove(activite);
-                    await _activiteService.DeleteActiviteAsync(activite.ActiviteId);
+                    NouveauxHebergements.Add(hebergementCree);
+                    
+                    // Réinitialiser le formulaire
+                    NouvelHebergementNom = string.Empty;
+                    NouvelHebergementType = string.Empty;
+                    NouvelHebergementCout = 0;
+                    ShowHebergementForm = false;
                 }
             }
             catch (Exception ex)
             {
-                await HandleError(ex, "Erreur lors de la suppression de l'activité");
+                Debug.WriteLine($"Erreur lors de l'ajout d'hébergement: {ex}");
+                await Shell.Current.DisplayAlert("Erreur", 
+                    $"Erreur lors de l'ajout de l'hébergement: {ex.Message}", "OK");
             }
         }
 
-        private async Task SupprimerHebergement(Hebergement hebergement)
+        // Suppression locale uniquement (les éléments ne sont pas encore dans la BD pour le voyage)
+        private void SupprimerActiviteLocale(Activite activite)
         {
-            try
+            if (activite != null)
             {
-                bool confirm = await Shell.Current.DisplayAlert(
-                    "Confirmation",
-                    $"Supprimer l'hébergement {hebergement.Nom}?",
-                    "Oui", "Non");
-
-                if (confirm)
-                {
-                    NouveauxHebergements.Remove(hebergement);
-                    await _hebergementService.DeleteHebergementAsync(hebergement.HebergementId);
-                }
+                NouvellesActivites.Remove(activite);
             }
-            catch (Exception ex)
+        }
+
+        private void SupprimerHebergementLocal(Hebergement hebergement)
+        {
+            if (hebergement != null)
             {
-                await HandleError(ex, "Erreur lors de la suppression de l'hébergement");
+                NouveauxHebergements.Remove(hebergement);
             }
         }
 
         private async Task AddVoyageAsync()
         {
+            // Validation
+            if (string.IsNullOrWhiteSpace(NomVoyage))
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Le nom du voyage est requis", "OK");
+                return;
+            }
+
+            if (DateFin < DateDebut)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "La date de fin doit être après la date de début", "OK");
+                return;
+            }
+
             try
             {
+                IsBusy = true;
                 Debug.WriteLine("Début de l'ajout du voyage...");
                 
                 var voyage = new Voyage
@@ -255,8 +269,20 @@ namespace TravelPlannMauiApp.ViewModels
                     DateFin = DateOnly.FromDateTime(DateFin),
                     EstComplete = false,
                     EstArchive = false,
-                    Activites = NouvellesActivites?.ToList() ?? new List<Activite>(),
-                    Hebergements = NouveauxHebergements?.ToList() ?? new List<Hebergement>()
+                    // Créer des copies des activités et hébergements pour éviter les problèmes de tracking
+                    Activites = NouvellesActivites?.Select(a => new Activite 
+                    { 
+                        ActiviteId = a.ActiviteId,
+                        Nom = a.Nom,
+                        Description = a.Description 
+                    }).ToList() ?? new List<Activite>(),
+                    Hebergements = NouveauxHebergements?.Select(h => new Hebergement 
+                    { 
+                        HebergementId = h.HebergementId,
+                        Nom = h.Nom,
+                        TypeHebergement = h.TypeHebergement,
+                        Cout = h.Cout 
+                    }).ToList() ?? new List<Hebergement>()
                 };
 
                 Debug.WriteLine($"Voyage créé avec {voyage.Activites.Count} activités et {voyage.Hebergements.Count} hébergements");
@@ -273,10 +299,14 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 Debug.WriteLine($"ERREUR CRITIQUE: {ex}");
                 await Shell.Current.DisplayAlert("Erreur", 
-                    $"Erreur technique: {ex.Message}\nVeuillez réessayer.", "OK");
+                    $"Erreur lors de l'ajout du voyage: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+                Debug.WriteLine("Fin de l'ajout du voyage");
             }
         }
-
         private void ResetForm()
         {
             NomVoyage = string.Empty;
@@ -288,7 +318,6 @@ namespace TravelPlannMauiApp.ViewModels
             ShowActiviteForm = false;
             ShowHebergementForm = false;
         }
-
         public event EventHandler<Voyage> VoyageAdded;
     }
 }

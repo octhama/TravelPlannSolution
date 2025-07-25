@@ -82,12 +82,23 @@ namespace BU.Services
                             DateDebut = voyage.DateDebut,
                             DateFin = voyage.DateFin,
                             EstComplete = voyage.EstComplete,
-                            EstArchive = voyage.EstArchive
+                            EstArchive = voyage.EstArchive,
+                            Activites = new List<Activite>(),
+                            Hebergements = new List<Hebergement>()
                         };
 
                         // Ajouter d'abord le voyage pour obtenir un ID
                         await _context.Voyages.AddAsync(newVoyage);
                         await _context.SaveChangesAsync();
+
+                        // Détacher le voyage du contexte pour éviter les problèmes de tracking
+                        _context.Entry(newVoyage).State = EntityState.Detached;
+
+                        // Recharger le voyage avec les collections
+                        var voyageReloaded = await _context.Voyages
+                            .Include(v => v.Activites)
+                            .Include(v => v.Hebergements)
+                            .FirstAsync(v => v.VoyageId == newVoyage.VoyageId);
 
                         // Gestion des activités - récupérer les entités existantes depuis la BD
                         if (voyage.Activites != null && voyage.Activites.Any())
@@ -100,7 +111,7 @@ namespace BU.Services
                             // Attacher les activités existantes au voyage
                             foreach (var activite in existingActivites)
                             {
-                                newVoyage.Activites.Add(activite);
+                                voyageReloaded.Activites.Add(activite);
                             }
                         }
 
@@ -115,7 +126,7 @@ namespace BU.Services
                             // Attacher les hébergements existants au voyage
                             foreach (var hebergement in existingHebergements)
                             {
-                                newVoyage.Hebergements.Add(hebergement);
+                                voyageReloaded.Hebergements.Add(hebergement);
                             }
                         }
 
@@ -169,9 +180,39 @@ namespace BU.Services
                         existingVoyage.EstComplete = voyage.EstComplete;
                         existingVoyage.EstArchive = voyage.EstArchive;
 
-                        // Gestion des relations many-to-many avec la nouvelle approche
-                        await UpdateVoyageActivitesAsync(existingVoyage, voyage.Activites);
-                        await UpdateVoyageHebergementsAsync(existingVoyage, voyage.Hebergements);
+                        // Vider les collections existantes
+                        existingVoyage.Activites.Clear();
+                        existingVoyage.Hebergements.Clear();
+                        
+                        // Sauvegarder pour supprimer les relations existantes
+                        await _context.SaveChangesAsync();
+
+                        // Ajouter les nouvelles relations
+                        if (voyage.Activites != null && voyage.Activites.Any())
+                        {
+                            var activiteIds = voyage.Activites.Select(a => a.ActiviteId).ToList();
+                            var activitesFromDb = await _context.Activites
+                                .Where(a => activiteIds.Contains(a.ActiviteId))
+                                .ToListAsync();
+
+                            foreach (var activite in activitesFromDb)
+                            {
+                                existingVoyage.Activites.Add(activite);
+                            }
+                        }
+
+                        if (voyage.Hebergements != null && voyage.Hebergements.Any())
+                        {
+                            var hebergementIds = voyage.Hebergements.Select(h => h.HebergementId).ToList();
+                            var hebergementsFromDb = await _context.Hebergements
+                                .Where(h => hebergementIds.Contains(h.HebergementId))
+                                .ToListAsync();
+
+                            foreach (var hebergement in hebergementsFromDb)
+                            {
+                                existingVoyage.Hebergements.Add(hebergement);
+                            }
+                        }
 
                         await _context.SaveChangesAsync();
                         await transaction.CommitAsync();
@@ -191,58 +232,6 @@ namespace BU.Services
             {
                 Debug.WriteLine($"Erreur lors de la mise à jour du voyage: {ex}");
                 throw;
-            }
-        }
-
-        // Méthode helper corrigée pour gérer les activités
-        private async Task UpdateVoyageActivitesAsync(Voyage existingVoyage, ICollection<Activite> newActivites)
-        {
-            if (newActivites == null) newActivites = new List<Activite>();
-
-            // Vider complètement la collection existante
-            existingVoyage.Activites.Clear();
-            
-            // Sauvegarder pour supprimer les relations existantes
-            await _context.SaveChangesAsync();
-
-            // Ajouter les nouvelles activités
-            if (newActivites.Any())
-            {
-                var activiteIds = newActivites.Select(a => a.ActiviteId).ToList();
-                var activitesFromDb = await _context.Activites
-                    .Where(a => activiteIds.Contains(a.ActiviteId))
-                    .ToListAsync();
-
-                foreach (var activite in activitesFromDb)
-                {
-                    existingVoyage.Activites.Add(activite);
-                }
-            }
-        }
-
-        // Méthode helper corrigée pour gérer les hébergements
-        private async Task UpdateVoyageHebergementsAsync(Voyage existingVoyage, ICollection<Hebergement> newHebergements)
-        {
-            if (newHebergements == null) newHebergements = new List<Hebergement>();
-
-            // Vider complètement la collection existante
-            existingVoyage.Hebergements.Clear();
-            
-            // Sauvegarder pour supprimer les relations existantes
-            await _context.SaveChangesAsync();
-
-            // Ajouter les nouveaux hébergements
-            if (newHebergements.Any())
-            {
-                var hebergementIds = newHebergements.Select(h => h.HebergementId).ToList();
-                var hebergementsFromDb = await _context.Hebergements
-                    .Where(h => hebergementIds.Contains(h.HebergementId))
-                    .ToListAsync();
-
-                foreach (var hebergement in hebergementsFromDb)
-                {
-                    existingVoyage.Hebergements.Add(hebergement);
-                }
             }
         }
         
@@ -288,35 +277,32 @@ namespace BU.Services
                     
                     try
                     {
-                        // 1. Ajouter l'activité si elle n'existe pas
+                        // Chercher si l'activité existe déjà
                         var existingActivite = await _context.Activites
-                            .FirstOrDefaultAsync(a => a.Nom == activite.Nom && a.Description == activite.Description);
-                        
+                            .FirstOrDefaultAsync(a => a.ActiviteId == activite.ActiviteId);
+
+                        // Si l'activité n'existe pas, la créer
                         if (existingActivite == null)
                         {
-                            existingActivite = new Activite
+                            var newActivite = new Activite
                             {
                                 Nom = activite.Nom,
                                 Description = activite.Description
                             };
-                            await _context.Activites.AddAsync(existingActivite);
+                            await _context.Activites.AddAsync(newActivite);
                             await _context.SaveChangesAsync();
+                            existingActivite = newActivite;
                         }
 
-                        // 2. Lier au voyage
+                        // Charger le voyage avec ses activités
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
                         
                         if (voyage != null && !voyage.Activites.Any(a => a.ActiviteId == existingActivite.ActiviteId))
                         {
-                            // Récupérer l'activité depuis la BD pour s'assurer qu'elle est trackée
-                            var activiteFromDb = await _context.Activites.FindAsync(existingActivite.ActiviteId);
-                            if (activiteFromDb != null)
-                            {
-                                voyage.Activites.Add(activiteFromDb);
-                                await _context.SaveChangesAsync();
-                            }
+                            voyage.Activites.Add(existingActivite);
+                            await _context.SaveChangesAsync();
                         }
 
                         await transaction.CommitAsync();
@@ -348,36 +334,33 @@ namespace BU.Services
                     
                     try
                     {
-                        // 1. Ajouter l'hébergement s'il n'existe pas
+                        // Chercher si l'hébergement existe déjà
                         var existingHebergement = await _context.Hebergements
-                            .FirstOrDefaultAsync(h => h.Nom == hebergement.Nom && h.TypeHebergement == hebergement.TypeHebergement);
-                        
+                            .FirstOrDefaultAsync(h => h.HebergementId == hebergement.HebergementId);
+
+                        // Si l'hébergement n'existe pas, le créer
                         if (existingHebergement == null)
                         {
-                            existingHebergement = new Hebergement
+                            var newHebergement = new Hebergement
                             {
                                 Nom = hebergement.Nom,
                                 TypeHebergement = hebergement.TypeHebergement,
                                 Cout = hebergement.Cout
                             };
-                            await _context.Hebergements.AddAsync(existingHebergement);
+                            await _context.Hebergements.AddAsync(newHebergement);
                             await _context.SaveChangesAsync();
+                            existingHebergement = newHebergement;
                         }
 
-                        // 2. Lier au voyage
+                        // Charger le voyage avec ses hébergements
                         var voyage = await _context.Voyages
                             .Include(v => v.Hebergements)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
                         
                         if (voyage != null && !voyage.Hebergements.Any(h => h.HebergementId == existingHebergement.HebergementId))
                         {
-                            // Récupérer l'hébergement depuis la BD pour s'assurer qu'il est tracké
-                            var hebergementFromDb = await _context.Hebergements.FindAsync(existingHebergement.HebergementId);
-                            if (hebergementFromDb != null)
-                            {
-                                voyage.Hebergements.Add(hebergementFromDb);
-                                await _context.SaveChangesAsync();
-                            }
+                            voyage.Hebergements.Add(existingHebergement);
+                            await _context.SaveChangesAsync();
                         }
 
                         await transaction.CommitAsync();
@@ -493,7 +476,7 @@ namespace BU.Services
                     
                     try
                     {
-                        // 1. Charger le voyage avec ses relations
+                        // Charger le voyage avec ses relations
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .Include(v => v.Hebergements)
@@ -501,14 +484,14 @@ namespace BU.Services
 
                         if (voyage != null)
                         {
-                            // 2. Supprimer les relations many-to-many d'abord
+                            // Supprimer les relations many-to-many d'abord
                             voyage.Activites.Clear();
                             voyage.Hebergements.Clear();
                             
-                            // 3. Sauvegarder pour supprimer les relations
+                            // Sauvegarder pour supprimer les relations
                             await _context.SaveChangesAsync();
                             
-                            // 4. Supprimer le voyage
+                            // Supprimer le voyage
                             _context.Voyages.Remove(voyage);
                             await _context.SaveChangesAsync();
                             
