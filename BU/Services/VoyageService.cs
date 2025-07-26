@@ -481,10 +481,11 @@ namespace BU.Services
                     
                     try
                     {
-                        // Vérifier que le voyage existe
+                        // Charger l'entité existante avec toutes ses relations
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .Include(v => v.Hebergements)
+                            .Include(v => v.Utilisateurs) // Inclure les utilisateurs liés
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
                         if (voyage == null)
@@ -496,30 +497,39 @@ namespace BU.Services
                         Debug.WriteLine($"Suppression du voyage ID: {voyageId}");
                         Debug.WriteLine($"Activités liées: {voyage.Activites?.Count ?? 0}");
                         Debug.WriteLine($"Hébergements liés: {voyage.Hebergements?.Count ?? 0}");
+                        Debug.WriteLine($"Utilisateurs liés: {voyage.Utilisateurs?.Count ?? 0}");
 
-                        // Supprimer toutes les relations many-to-many
+                        // 1. Supprimer les relations avec les utilisateurs (OrganisationVoyage)
+                        if (voyage.Utilisateurs != null && voyage.Utilisateurs.Any())
+                        {
+                            voyage.Utilisateurs.Clear();
+                            Debug.WriteLine("Relations avec utilisateurs supprimées");
+                        }
+
+                        // 2. Supprimer les relations avec les activités (ActiviteVoyage)
                         if (voyage.Activites != null && voyage.Activites.Any())
                         {
                             voyage.Activites.Clear();
                             Debug.WriteLine("Relations avec activités supprimées");
                         }
 
+                        // 3. Supprimer les relations avec les hébergements (HebergementVoyage)
                         if (voyage.Hebergements != null && voyage.Hebergements.Any())
                         {
                             voyage.Hebergements.Clear();
                             Debug.WriteLine("Relations avec hébergements supprimées");
                         }
 
-                        // Sauvegarder la suppression des relations
+                        // 4. Sauvegarder la suppression des relations
                         await _context.SaveChangesAsync();
-                        Debug.WriteLine("Relations sauvegardées");
+                        Debug.WriteLine("Toutes les relations supprimées et sauvegardées");
 
-                        // Supprimer le voyage lui-même
+                        // 5. Supprimer le voyage lui-même
                         _context.Voyages.Remove(voyage);
                         await _context.SaveChangesAsync();
                         Debug.WriteLine("Voyage supprimé");
 
-                        // Valider la transaction
+                        // 6. Valider la transaction
                         await transaction.CommitAsync();
                         _cachedVoyages = null;
                         

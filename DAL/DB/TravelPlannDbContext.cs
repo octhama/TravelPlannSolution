@@ -227,11 +227,11 @@ public partial class TravelPlannDbContext : DbContext
                     "OrganisationVoyage",
                     r => r.HasOne<Voyage>().WithMany()
                         .HasForeignKey("VoyageId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade) // Changé de ClientSetNull à Cascade
                         .HasConstraintName("FK_OrganisationVoyage_Voyage"),
                     l => l.HasOne<Utilisateur>().WithMany()
                         .HasForeignKey("UtilisateurId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade) // Changé de ClientSetNull à Cascade
                         .HasConstraintName("FK_OrganisationVoyage_Utilisateur"),
                     j =>
                     {
