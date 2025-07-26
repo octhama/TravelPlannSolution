@@ -8,11 +8,12 @@ namespace BU.Services;
 
 public class UtilisateurService : IUtilisateurService
 {
-    private readonly TravelPlannDbContext _context;
+    private readonly IDbContextFactory<TravelPlannDbContext> _dbContextFactory;
 
-    public UtilisateurService(TravelPlannDbContext context)
+    // Modifié pour utiliser le DbContextFactory au lieu du DbContext direct
+    public UtilisateurService(IDbContextFactory<TravelPlannDbContext> dbContextFactory)
     {
-        _context = context;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<Utilisateur?> AuthenticateAsync(string email, string motDePasse)
@@ -23,7 +24,21 @@ public class UtilisateurService : IUtilisateurService
             Debug.WriteLine($"Email recherché: '{email}'");
             Debug.WriteLine($"Mot de passe fourni: '{motDePasse}'");
 
-            var user = await _context.Utilisateurs
+            // Utiliser le factory pour créer le contexte
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            Debug.WriteLine("Contexte DB créé avec succès via factory");
+
+            // Test de connexion
+            var canConnect = await context.Database.CanConnectAsync();
+            Debug.WriteLine($"Connexion DB possible: {canConnect}");
+
+            if (!canConnect)
+            {
+                Debug.WriteLine("ERREUR: Impossible de se connecter à la base de données");
+                throw new InvalidOperationException("Connexion à la base de données impossible");
+            }
+
+            var user = await context.Utilisateurs
                 .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
@@ -66,7 +81,14 @@ public class UtilisateurService : IUtilisateurService
         catch (Exception ex)
         {
             Debug.WriteLine($"ERREUR dans AuthenticateAsync: {ex.Message}");
+            Debug.WriteLine($"Type d'exception: {ex.GetType().Name}");
             Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            
+            if (ex.InnerException != null)
+            {
+                Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+            }
+            
             throw;
         }
         finally
@@ -77,129 +99,220 @@ public class UtilisateurService : IUtilisateurService
 
     public async Task<Utilisateur> CreateUserAsync(string nom, string prenom, string email, string motDePasse)
     {
-        if (await EmailExistsAsync(email))
+        try
         {
-            throw new InvalidOperationException("Cette adresse email est déjà utilisée.");
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            
+            if (await EmailExistsAsync(email))
+            {
+                throw new InvalidOperationException("Cette adresse email est déjà utilisée.");
+            }
+
+            var utilisateur = new Utilisateur
+            {
+                Nom = nom,
+                Prenom = prenom,
+                Email = email,
+                MotDePasse = HashPassword(motDePasse),
+                PointsRecompenses = 0
+            };
+
+            context.Utilisateurs.Add(utilisateur);
+            await context.SaveChangesAsync();
+
+            return utilisateur;
         }
-
-        var utilisateur = new Utilisateur
+        catch (Exception ex)
         {
-            Nom = nom,
-            Prenom = prenom,
-            Email = email,
-            MotDePasse = HashPassword(motDePasse), // Les nouveaux utilisateurs auront des mots de passe hashés
-            PointsRecompenses = 0
-        };
-
-        _context.Utilisateurs.Add(utilisateur);
-        await _context.SaveChangesAsync();
-
-        return utilisateur;
+            Debug.WriteLine($"Erreur CreateUserAsync: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task<Utilisateur?> GetByIdAsync(int id)
     {
-        return await _context.Utilisateurs
-            .Include(u => u.Voyages)
-            .Include(u => u.MembreGroupes)
-            .Include(u => u.PointsRecompensesNavigation)
-            .FirstOrDefaultAsync(u => u.UtilisateurId == id);
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.Utilisateurs
+                .Include(u => u.Voyages)
+                .Include(u => u.MembreGroupes)
+                .Include(u => u.PointsRecompensesNavigation)
+                .FirstOrDefaultAsync(u => u.UtilisateurId == id);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur GetByIdAsync: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task<Utilisateur?> GetByEmailAsync(string email)
     {
-        return await _context.Utilisateurs
-            .FirstOrDefaultAsync(u => u.Email == email);
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.Utilisateurs
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur GetByEmailAsync: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task<List<Utilisateur>> GetAllAsync()
     {
-        return await _context.Utilisateurs
-            .OrderBy(u => u.Nom)
-            .ThenBy(u => u.Prenom)
-            .ToListAsync();
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.Utilisateurs
+                .OrderBy(u => u.Nom)
+                .ThenBy(u => u.Prenom)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur GetAllAsync: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task UpdateAsync(Utilisateur utilisateur)
     {
-        _context.Utilisateurs.Update(utilisateur);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            context.Utilisateurs.Update(utilisateur);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur UpdateAsync: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task DeleteAsync(int id)
     {
-        var utilisateur = await _context.Utilisateurs.FindAsync(id);
-        if (utilisateur != null)
+        try
         {
-            _context.Utilisateurs.Remove(utilisateur);
-            await _context.SaveChangesAsync();
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            var utilisateur = await context.Utilisateurs.FindAsync(id);
+            if (utilisateur != null)
+            {
+                context.Utilisateurs.Remove(utilisateur);
+                await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur DeleteAsync: {ex.Message}");
+            throw;
         }
     }
 
     public async Task<bool> EmailExistsAsync(string email)
     {
-        return await _context.Utilisateurs
-            .AnyAsync(u => u.Email == email);
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.Utilisateurs
+                .AnyAsync(u => u.Email == email);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur EmailExistsAsync: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task AddPointsAsync(int utilisateurId, int points)
     {
-        var utilisateur = await _context.Utilisateurs.FindAsync(utilisateurId);
-        if (utilisateur != null)
+        try
         {
-            utilisateur.PointsRecompenses += points;
-
-            var pointsRecompense = new PointsRecompense
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            var utilisateur = await context.Utilisateurs.FindAsync(utilisateurId);
+            if (utilisateur != null)
             {
-                UtilisateurId = utilisateurId,
-                PointsGagnes = points,
-                DateObtention = DateOnly.FromDateTime(DateTime.Now)
-            };
+                utilisateur.PointsRecompenses += points;
 
-            _context.PointsRecompenses.Add(pointsRecompense);
-            await _context.SaveChangesAsync();
+                var pointsRecompense = new PointsRecompense
+                {
+                    UtilisateurId = utilisateurId,
+                    PointsGagnes = points,
+                    DateObtention = DateOnly.FromDateTime(DateTime.Now)
+                };
 
-            await UpdateClassementAsync();
+                context.PointsRecompenses.Add(pointsRecompense);
+                await context.SaveChangesAsync();
+
+                await UpdateClassementAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur AddPointsAsync: {ex.Message}");
+            throw;
         }
     }
 
     public async Task<List<ClassementVoyageur>> GetClassementAsync()
     {
-        return await _context.ClassementVoyageurs
-            .Include(c => c.Utilisateur)
-            .OrderBy(c => c.Rang)
-            .ToListAsync();
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.ClassementVoyageurs
+                .Include(c => c.Utilisateur)
+                .OrderBy(c => c.Rang)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur GetClassementAsync: {ex.Message}");
+            throw;
+        }
     }
 
     private async Task UpdateClassementAsync()
     {
-        var utilisateurs = await _context.Utilisateurs
-            .Include(u => u.Voyages)
-            .ToListAsync();
-
-        // Supprimer l'ancien classement
-        _context.ClassementVoyageurs.RemoveRange(_context.ClassementVoyageurs);
-
-        // Créer le nouveau classement
-        var classement = utilisateurs
-            .Select(u => new ClassementVoyageur
-            {
-                UtilisateurId = u.UtilisateurId,
-                NombreVoyages = u.Voyages.Count,
-                DistanceTotale = 0, // À calculer selon vos besoins
-                Rang = 0
-            })
-            .OrderByDescending(c => c.NombreVoyages)
-            .ThenByDescending(c => c.DistanceTotale)
-            .ToList();
-
-        for (int i = 0; i < classement.Count; i++)
+        try
         {
-            classement[i].Rang = i + 1;
-        }
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            var utilisateurs = await context.Utilisateurs
+                .Include(u => u.Voyages)
+                .ToListAsync();
 
-        _context.ClassementVoyageurs.AddRange(classement);
-        await _context.SaveChangesAsync();
+            // Supprimer l'ancien classement
+            context.ClassementVoyageurs.RemoveRange(context.ClassementVoyageurs);
+
+            // Créer le nouveau classement
+            var classement = utilisateurs
+                .Select(u => new ClassementVoyageur
+                {
+                    UtilisateurId = u.UtilisateurId,
+                    NombreVoyages = u.Voyages.Count,
+                    DistanceTotale = 0,
+                    Rang = 0
+                })
+                .OrderByDescending(c => c.NombreVoyages)
+                .ThenByDescending(c => c.DistanceTotale)
+                .ToList();
+
+            for (int i = 0; i < classement.Count; i++)
+            {
+                classement[i].Rang = i + 1;
+            }
+
+            context.ClassementVoyageurs.AddRange(classement);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur UpdateClassementAsync: {ex.Message}");
+            throw;
+        }
     }
 
     private string HashPassword(string password)
@@ -215,15 +328,11 @@ public class UtilisateurService : IUtilisateurService
         return hashedInput == hashedPassword;
     }
 
-    // Méthode pour détecter si un mot de passe est hashé ou en clair
     private bool IsPasswordHashed(string password)
     {
-        // Un hash SHA256 en Base64 fait toujours 44 caractères
-        // Et ne contient que des caractères alphanumériques + / et =
-        if (password.Length != 44)
+        if (string.IsNullOrEmpty(password) || password.Length != 44)
             return false;
 
-        // Vérifier si le string contient uniquement des caractères Base64 valides
         return System.Text.RegularExpressions.Regex.IsMatch(password, @"^[A-Za-z0-9+/]*={0,2}$");
     }
 }

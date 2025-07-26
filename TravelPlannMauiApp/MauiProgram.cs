@@ -37,44 +37,35 @@ public static class MauiProgram
         var connectionString = config.GetConnectionString("TravelPlannConnectionString") ?? 
                               "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;";
 
-        // Configuration DbContext avec Factory
+        Debug.WriteLine($"Chaîne de connexion: {connectionString}");
+
+        // IMPORTANT: Utiliser seulement DbContextFactory pour éviter les conflits
         builder.Services.AddDbContextFactory<TravelPlannDbContext>(options =>
         {
             options.UseSqlServer(connectionString, sqlOptions =>
             {
                 sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 5,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
                     errorNumbersToAdd: null);
+                sqlOptions.CommandTimeout(30);
             });
             
+#if DEBUG
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
+            options.LogTo(message => Debug.WriteLine(message));
+#endif
         });
 
-        // Ajouter aussi DbContext pour compatibilité
-        builder.Services.AddDbContext<TravelPlannDbContext>(options =>
-        {
-            options.UseSqlServer(connectionString, sqlOptions =>
-            {
-                sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 5,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorNumbersToAdd: null);
-            });
-            
-            options.EnableDetailedErrors();
-            options.EnableSensitiveDataLogging();
-        });
-
-        // Services - IMPORTANT: S'assurer que tous les services sont enregistrés
+        // Services - IMPORTANT: Tous utilisant IDbContextFactory
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
         builder.Services.AddScoped<IVoyageService, VoyageService>();
         builder.Services.AddScoped<IUtilisateurService, UtilisateurService>();
         builder.Services.AddScoped<ISettingsService, SettingsService>();
 
-        // Enregistrement des ViewModels - IMPORTANT: Tous en Transient pour éviter les problèmes de cycle de vie
+        // Enregistrement des ViewModels
         builder.Services.AddTransient<VoyageViewModel>();
         builder.Services.AddTransient<MapViewModel>();
         builder.Services.AddTransient<VoyageDetailsViewModel>();
@@ -101,18 +92,41 @@ public static class MauiProgram
 
         var app = builder.Build();
         
-        // Test de la configuration au démarrage
+        // Test de la configuration au démarrage avec gestion d'erreur améliorée
         using (var scope = app.Services.CreateScope())
         {
             try
             {
+                Debug.WriteLine("Test de configuration des services...");
+                
                 var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TravelPlannDbContext>>();
+                Debug.WriteLine("DbContextFactory obtenu");
+                
                 var utilisateurService = scope.ServiceProvider.GetRequiredService<IUtilisateurService>();
+                Debug.WriteLine("UtilisateurService obtenu");
+                
+                // Test de connexion DB
+                using var context = dbFactory.CreateDbContext();
+                var canConnect = context.Database.CanConnect();
+                Debug.WriteLine($"Test de connexion DB: {canConnect}");
+                
+                if (!canConnect)
+                {
+                    Debug.WriteLine("ATTENTION: Connexion à la base de données impossible");
+                }
+                
                 Debug.WriteLine("Services configurés correctement");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Erreur de configuration des services: {ex}");
+                Debug.WriteLine($"ERREUR de configuration des services: {ex.Message}");
+                Debug.WriteLine($"Type: {ex.GetType().Name}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
             }
         }
 
