@@ -4,10 +4,271 @@
              x:Class="TravelPlannMauiApp.Pages.SettingsPage"
              Title="Paramètres"
              BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
+             
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-            <Label Text="Paramètres" FontAttributes="Bold" />
-            <Label Text="Version: 1.0.0" />
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <!-- Section Profil Utilisateur -->
+            <Frame CornerRadius="12" 
+                   Padding="20"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="👤 Profil Utilisateur" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="{Binding UserDisplayName}" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                            <Label Text="{Binding Email}" 
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                            <Label Text="{Binding TotalPoints, StringFormat='{0} pts'}" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                            <Label Text="Points" 
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Section Informations Personnelles -->
+            <Frame CornerRadius="12" 
+                   Padding="20"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="✏️ Informations Personnelles" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Entry x:Name="NomEntry"
+                           Text="{Binding Nom}"
+                           Placeholder="Nom"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Entry x:Name="PrenomEntry"
+                           Text="{Binding Prenom}"
+                           Placeholder="Prénom"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Entry x:Name="EmailEntry"
+                           Text="{Binding Email}"
+                           Placeholder="Email"
+                           Keyboard="Email"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Button Text="Sauvegarder les informations"
+                            Command="{Binding SaveUserInfoCommand}"
+                            BackgroundColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Section Changement de Mot de Passe -->
+            <Frame CornerRadius="12" 
+                   Padding="20"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="🔒 Changer le Mot de Passe" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Entry x:Name="CurrentPasswordEntry"
+                           Text="{Binding CurrentPassword}"
+                           Placeholder="Mot de passe actuel"
+                           IsPassword="True"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Entry x:Name="NewPasswordEntry"
+                           Text="{Binding NewPassword}"
+                           Placeholder="Nouveau mot de passe (min. 6 caractères)"
+                           IsPassword="True"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Entry x:Name="ConfirmPasswordEntry"
+                           Text="{Binding ConfirmPassword}"
+                           Placeholder="Confirmer le nouveau mot de passe"
+                           IsPassword="True"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Button Text="Changer le mot de passe"
+                            Command="{Binding ChangePasswordCommand}"
+                            BackgroundColor="{AppThemeBinding Light=#FF6B35, Dark=#FF8A50}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Section Paramètres de l'Application -->
+            <Frame CornerRadius="12" 
+                   Padding="20"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="⚙️ Paramètres de l'Application" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <!-- Langue -->
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <Label Text="Langue" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Picker x:Name="LanguagePicker"
+                                Grid.Column="1"
+                                SelectedItem="{Binding Language}"
+                                WidthRequest="120"
+                                BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                                TextColor="{AppThemeBinding Light=#333333, Dark=White}">
+                            <Picker.Items>
+                                <x:String>fr</x:String>
+                                <x:String>en</x:String>
+                                <x:String>es</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
+                    
+                    <!-- Thème -->
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <Label Text="Thème" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Picker x:Name="ThemePicker"
+                                Grid.Column="1"
+                                SelectedItem="{Binding Theme}"
+                                WidthRequest="120"
+                                BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                                TextColor="{AppThemeBinding Light=#333333, Dark=White}">
+                            <Picker.Items>
+                                <x:String>Light</x:String>
+                                <x:String>Dark</x:String>
+                                <x:String>System</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
+                    
+                    <!-- Monnaie -->
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <Label Text="Monnaie" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Picker x:Name="CurrencyPicker"
+                                Grid.Column="1"
+                                SelectedItem="{Binding Currency}"
+                                WidthRequest="120"
+                                BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#2A2A2A}"
+                                TextColor="{AppThemeBinding Light=#333333, Dark=White}">
+                            <Picker.Items>
+                                <x:String>EUR</x:String>
+                                <x:String>USD</x:String>
+                                <x:String>GBP</x:String>
+                                <x:String>CHF</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
+                    
+                    <!-- Notifications -->
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <Label Text="Notifications" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Switch x:Name="NotificationsSwitch"
+                                Grid.Column="1"
+                                IsToggled="{Binding NotificationsEnabled}"
+                                OnColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                    </Grid>
+                    
+                    <!-- Localisation -->
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <Label Text="Localisation" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Switch x:Name="LocationSwitch"
+                                Grid.Column="1"
+                                IsToggled="{Binding LocationEnabled}"
+                                OnColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                    </Grid>
+                    
+                    <Button Text="Sauvegarder les paramètres"
+                            Command="{Binding SaveSettingsCommand}"
+                            BackgroundColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Section Actions -->
+            <Frame CornerRadius="12" 
+                   Padding="20"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="🚪 Actions" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Button Text="Se déconnecter"
+                            Command="{Binding LogoutCommand}"
+                            BackgroundColor="{AppThemeBinding Light=#DC3545, Dark=#FF4444}"
+                            TextColor="White"
+                            CornerRadius="8"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Section Informations -->
+            <Frame CornerRadius="12" 
+                   Padding="20"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ℹ️ Informations" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    
+                    <Label Text="Version: 1.0.0" 
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                    
+                    <Label Text="TravelPlann - Votre compagnon de voyage" 
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Indicateur de chargement -->
+            <ActivityIndicator IsVisible="{Binding IsBusy}" 
+                              IsRunning="{Binding IsBusy}"
+                              Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
