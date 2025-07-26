@@ -457,7 +457,7 @@ public class MapViewModel : INotifyPropertyChanged
     {
         try
         {
-            var currentUser = _sessionService.GetCurrentUser();
+            var currentUser = await _sessionService.GetCurrentUserAsync();
             if (currentUser != null)
             {
                 _userVoyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUser.Id);
@@ -480,7 +480,7 @@ public class MapViewModel : INotifyPropertyChanged
             foreach (var voyage in _userVoyages)
             {
                 // Charger les hébergements du voyage
-                var hebergements = await _hebergementService.GetHebergementsByVoyageAsync(voyage.Id);
+                var hebergements = await _hebergementService.GetAllAsync(); 
                 foreach (var hebergement in hebergements)
                 {
                     if (!string.IsNullOrEmpty(hebergement.Adresse))
@@ -501,7 +501,7 @@ public class MapViewModel : INotifyPropertyChanged
                 }
 
                 // Charger les activités du voyage
-                var activites = await _activiteService.GetActivitesByVoyageAsync(voyage.Id);
+                var activites = await _activiteService.GetAllAsync();
                 foreach (var activite in activites)
                 {
                     if (!string.IsNullOrEmpty(activite.Localisation))

@@ -1,7 +1,7 @@
-using Microsoft.Maui.Controls.Maps; // Required for MapSpan
+using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Maps;
 using TravelPlannMauiApp.ViewModels;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Devices.Sensors; // Required for Distance
 
 namespace TravelPlannMauiApp.Pages
 {
