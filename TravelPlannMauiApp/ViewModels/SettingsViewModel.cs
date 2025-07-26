@@ -22,6 +22,9 @@ public class SettingsViewModel : INotifyPropertyChanged
     private string _confirmPassword = string.Empty;
     private bool _isBusy;
 
+    // Event for navigation requests
+    public event EventHandler<string> NavigationRequested;
+
     public SettingsViewModel(ISettingsService settingsService, ISessionService sessionService, IUtilisateurService utilisateurService)
     {
         _settingsService = settingsService;
@@ -201,6 +204,13 @@ public class SettingsViewModel : INotifyPropertyChanged
     public ICommand SaveUserInfoCommand { get; }
     public ICommand ChangePasswordCommand { get; }
     public ICommand LogoutCommand { get; }
+    #endregion
+
+    #region Navigation Helper
+    protected virtual void OnNavigationRequested(string route)
+    {
+        NavigationRequested?.Invoke(this, route);
+    }
     #endregion
 
     #region Command Methods
@@ -383,7 +393,9 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 System.Diagnostics.Debug.WriteLine("Déconnexion utilisateur...");
                 await _sessionService.ClearSessionAsync();
-                await Shell.Current.GoToAsync("//LoginPage");
+                
+                // Use NavigationRequested event instead of direct navigation
+                OnNavigationRequested("//LoginPage");
             }
         }
         catch (Exception ex)
