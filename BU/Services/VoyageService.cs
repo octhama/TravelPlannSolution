@@ -482,46 +482,43 @@ namespace BU.Services
                     try
                     {
                         // Vérifier que le voyage existe
-                        var voyageExists = await _context.Voyages
-                            .AnyAsync(v => v.VoyageId == voyageId);
+                        var voyage = await _context.Voyages
+                            .Include(v => v.Activites)
+                            .Include(v => v.Hebergements)
+                            .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
-                        if (!voyageExists)
+                        if (voyage == null)
                         {
                             Debug.WriteLine($"Voyage avec ID {voyageId} non trouvé");
                             return;
                         }
 
                         Debug.WriteLine($"Suppression du voyage ID: {voyageId}");
+                        Debug.WriteLine($"Activités liées: {voyage.Activites?.Count ?? 0}");
+                        Debug.WriteLine($"Hébergements liés: {voyage.Hebergements?.Count ?? 0}");
 
-                        /*  Méthode 1: Utiliser Entity Framework (recommandée)
-                        var voyage = await _context.Voyages
-                            .Include(v => v.Activites)
-                            .Include(v => v.Hebergements)
-                            .FirstAsync(v => v.VoyageId == voyageId);
+                        // Supprimer toutes les relations many-to-many
+                        if (voyage.Activites != null && voyage.Activites.Any())
+                        {
+                            voyage.Activites.Clear();
+                            Debug.WriteLine("Relations avec activités supprimées");
+                        }
 
-                        // Supprimer toutes les relations
-                        voyage.Activites.Clear();
-                        voyage.Hebergements.Clear();
+                        if (voyage.Hebergements != null && voyage.Hebergements.Any())
+                        {
+                            voyage.Hebergements.Clear();
+                            Debug.WriteLine("Relations avec hébergements supprimées");
+                        }
+
+                        // Sauvegarder la suppression des relations
                         await _context.SaveChangesAsync();
+                        Debug.WriteLine("Relations sauvegardées");
 
-                        // Supprimer le voyage
+                        // Supprimer le voyage lui-même
                         _context.Voyages.Remove(voyage);
                         await _context.SaveChangesAsync();
-                        */
+                        Debug.WriteLine("Voyage supprimé");
 
-                        // Méthode 2: Si la méthode EF échoue, décommentez cette section pour utiliser SQL brut
-
-                        // Supprimer les relations many-to-many avec des requêtes SQL directes
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "DELETE FROM VoyageActivites WHERE VoyageId = {0}", voyageId);
-                        
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "DELETE FROM VoyageHebergements WHERE VoyageId = {0}", voyageId);
-                        
-                        // Supprimer le voyage lui-même
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "DELETE FROM Voyages WHERE VoyageId = {0}", voyageId);
-                            
                         // Valider la transaction
                         await transaction.CommitAsync();
                         _cachedVoyages = null;
