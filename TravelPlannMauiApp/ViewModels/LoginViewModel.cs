@@ -7,18 +7,20 @@ namespace TravelPlannMauiApp.ViewModels;
 public class LoginViewModel : BaseViewModel
 {
     private readonly IUtilisateurService _utilisateurService;
+    private readonly ISessionService _sessionService;
     private string _email = string.Empty;
     private string _motDePasse = string.Empty;
 
-    public LoginViewModel() : this(null)
+    public LoginViewModel() : this(null, null)
     {
         // Constructeur sans paramètre pour les cas où l'injection échoue
     }
 
-    public LoginViewModel(IUtilisateurService utilisateurService = null)
+    public LoginViewModel(IUtilisateurService utilisateurService = null, ISessionService sessionService = null)
     {
         // Si utilisateurService est null, on peut créer une instance temporaire ou gérer l'erreur
         _utilisateurService = utilisateurService ?? throw new InvalidOperationException("Service utilisateur non disponible");
+        _sessionService = sessionService; // Peut être null, on gérera le fallback
         
         try
         {
@@ -100,30 +102,25 @@ public class LoginViewModel : BaseViewModel
                 System.Diagnostics.Debug.WriteLine($"Connexion réussie pour: {utilisateur.Prenom} {utilisateur.Nom}");
                 System.Diagnostics.Debug.WriteLine($"ID utilisateur: {utilisateur.UtilisateurId}");
                 
-                // Sauvegarder l'utilisateur connecté avec gestion d'erreur SecureStorage
-                try
+                // Utiliser le SessionService si disponible
+                if (_sessionService != null)
                 {
-                    await SecureStorage.SetAsync("current_user_id", utilisateur.UtilisateurId.ToString());
-                    await SecureStorage.SetAsync("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
-                    System.Diagnostics.Debug.WriteLine("Informations sauvegardées dans SecureStorage");
-                }
-                catch (Exception secureStorageEx)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Erreur SecureStorage: {secureStorageEx.Message}");
-                    
-                    // Alternative: utiliser Preferences comme fallback
                     try
                     {
-                        Preferences.Set("current_user_id", utilisateur.UtilisateurId.ToString());
-                        Preferences.Set("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
-                        System.Diagnostics.Debug.WriteLine("Informations sauvegardées dans Preferences (fallback)");
+                        await _sessionService.SetCurrentUserAsync(utilisateur.UtilisateurId, $"{utilisateur.Prenom} {utilisateur.Nom}");
+                        System.Diagnostics.Debug.WriteLine("Session sauvegardée via SessionService");
                     }
-                    catch (Exception prefEx)
+                    catch (Exception sessionEx)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Erreur Preferences: {prefEx.Message}");
-                        await Shell.Current.DisplayAlert("Avertissement", 
-                            "Connexion réussie mais impossible de sauvegarder les informations de session.", "OK");
+                        System.Diagnostics.Debug.WriteLine($"Erreur SessionService: {sessionEx.Message}");
+                        // Fallback vers la méthode manuelle
+                        await SaveUserSessionManually(utilisateur);
                     }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("SessionService non disponible, utilisation méthode manuelle");
+                    await SaveUserSessionManually(utilisateur);
                 }
                 
                 System.Diagnostics.Debug.WriteLine("Navigation vers MainPage...");
@@ -174,6 +171,35 @@ public class LoginViewModel : BaseViewModel
             }
             
             await HandleError(ex, "Erreur lors de la connexion");
+        }
+    }
+
+    private async Task SaveUserSessionManually(Utilisateur utilisateur)
+    {
+        // Sauvegarder l'utilisateur connecté avec gestion d'erreur SecureStorage
+        try
+        {
+            await SecureStorage.SetAsync("current_user_id", utilisateur.UtilisateurId.ToString());
+            await SecureStorage.SetAsync("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
+            System.Diagnostics.Debug.WriteLine("Informations sauvegardées dans SecureStorage");
+        }
+        catch (Exception secureStorageEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur SecureStorage: {secureStorageEx.Message}");
+            
+            // Alternative: utiliser Preferences comme fallback
+            try
+            {
+                Preferences.Set("current_user_id", utilisateur.UtilisateurId.ToString());
+                Preferences.Set("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
+                System.Diagnostics.Debug.WriteLine("Informations sauvegardées dans Preferences (fallback)");
+            }
+            catch (Exception prefEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur Preferences: {prefEx.Message}");
+                await Shell.Current.DisplayAlert("Avertissement", 
+                    "Connexion réussie mais impossible de sauvegarder les informations de session.", "OK");
+            }
         }
     }
 

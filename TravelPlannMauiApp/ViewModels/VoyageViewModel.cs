@@ -11,6 +11,7 @@ namespace TravelPlannMauiApp.ViewModels
     public class VoyageViewModel : BaseViewModel
     {
         private readonly IVoyageService _voyageService;
+        private readonly ISessionService _sessionService;
         private bool _isBusy;
         private int _currentUserId;
         
@@ -27,9 +28,10 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _isBusy, value);
         }
         
-        public VoyageViewModel(IVoyageService voyageService)
+        public VoyageViewModel(IVoyageService voyageService, ISessionService sessionService = null)
         {
             _voyageService = voyageService;
+            _sessionService = sessionService;
 
             LoadVoyagesCommand = new Command(async () => await LoadVoyagesAsync());
             ViewVoyageDetailsCommand = new Command<Voyage>(async (v) => await ViewVoyageDetails(v));
@@ -40,14 +42,79 @@ namespace TravelPlannMauiApp.ViewModels
 
         private async Task<int> GetCurrentUserIdAsync()
         {
-            var userIdString = await SecureStorage.GetAsync("current_user_id");
-            if (int.TryParse(userIdString, out int userId))
+            try
             {
-                return userId;
+                int userId = 0;
+                
+                if (_sessionService != null)
+                {
+                    // Utiliser le service de session si disponible
+                    var userIdNullable = await _sessionService.GetCurrentUserIdAsync();
+                    userId = userIdNullable ?? 0;
+                }
+                else
+                {
+                    // Fallback direct sur SecureStorage/Preferences
+                    userId = await GetCurrentUserIdWithFallback();
+                }
+
+                if (userId > 0)
+                {
+                    Debug.WriteLine($"ID utilisateur récupéré: {userId}");
+                    return userId;
+                }
+                else
+                {
+                    Debug.WriteLine("Aucun ID utilisateur trouvé - redirection vers login");
+                    await Shell.Current.DisplayAlert("Session expirée", 
+                        "Votre session a expiré. Vous allez être redirigé vers la page de connexion.", "OK");
+                    await Shell.Current.GoToAsync("//LoginPage");
+                    return 0;
+                }
             }
-            
-            // Si pas d'utilisateur connecté, rediriger vers la page de connexion
-            await Shell.Current.GoToAsync("//LoginPage");
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur lors de la récupération de l'ID utilisateur: {ex}");
+                await Shell.Current.DisplayAlert("Erreur", 
+                    "Impossible de récupérer les informations utilisateur.", "OK");
+                await Shell.Current.GoToAsync("//LoginPage");
+                return 0;
+            }
+        }
+
+        private async Task<int> GetCurrentUserIdWithFallback()
+        {
+            try
+            {
+                // Essayer SecureStorage d'abord
+                var userIdString = await SecureStorage.GetAsync("current_user_id");
+                if (int.TryParse(userIdString, out int userId))
+                {
+                    Debug.WriteLine($"ID utilisateur trouvé dans SecureStorage: {userId}");
+                    return userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur SecureStorage pour ID utilisateur: {ex.Message}");
+            }
+
+            try
+            {
+                // Fallback vers Preferences
+                var userIdString = Preferences.Get("current_user_id", null);
+                if (int.TryParse(userIdString, out int userId))
+                {
+                    Debug.WriteLine($"ID utilisateur trouvé dans Preferences: {userId}");
+                    return userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur Preferences pour ID utilisateur: {ex.Message}");
+            }
+
+            Debug.WriteLine("Aucun ID utilisateur trouvé dans le stockage");
             return 0;
         }
      
@@ -58,26 +125,49 @@ namespace TravelPlannMauiApp.ViewModels
             IsBusy = true;
             try
             {
+                Debug.WriteLine("=== DÉBUT CHARGEMENT VOYAGES ===");
+                
                 _currentUserId = await GetCurrentUserIdAsync();
-                if (_currentUserId == 0) return;
+                if (_currentUserId == 0) 
+                {
+                    Debug.WriteLine("Utilisateur non connecté - arrêt du chargement");
+                    return;
+                }
 
+                Debug.WriteLine($"Chargement des voyages pour l'utilisateur ID: {_currentUserId}");
+                
                 Voyages.Clear();
                 
                 // Charger uniquement les voyages de l'utilisateur connecté
                 var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                 
-                foreach (var v in voyages)
+                Debug.WriteLine($"Nombre de voyages trouvés: {voyages?.Count ?? 0}");
+                
+                if (voyages != null)
                 {
-                    Voyages.Add(v);
+                    foreach (var v in voyages)
+                    {
+                        Debug.WriteLine($"Ajout du voyage: {v.NomVoyage} (ID: {v.VoyageId})");
+                        Voyages.Add(v);
+                    }
                 }
+                else
+                {
+                    Debug.WriteLine("Aucun voyage retourné par le service");
+                }
+                
+                Debug.WriteLine($"Total voyages dans la collection: {Voyages.Count}");
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"=== ERREUR CHARGEMENT VOYAGES ===");
+                Debug.WriteLine($"Exception: {ex}");
                 await HandleError(ex, "Erreur lors du chargement des voyages");
             }
             finally
             {
                 IsBusy = false;
+                Debug.WriteLine("=== FIN CHARGEMENT VOYAGES ===");
             }
         }
       

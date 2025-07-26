@@ -1,40 +1,106 @@
-namespace TravelPlannMauiApp.ViewModels;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using BU.Services;
 
-public class MainPageViewModel : BaseViewModel
+namespace TravelPlannMauiApp.ViewModels
 {
-    private string _userName = "Utilisateur";
-
-    public MainPageViewModel()
+    public class MainPageViewModel : INotifyPropertyChanged
     {
-        LoadUserInfoAsync();
-    }
+        private readonly ISessionService _sessionService;
+        private string _userName = "Utilisateur";
 
-    public string UserName
-    {
-        get => _userName;
-        set => SetProperty(ref _userName, value);
-    }
-
-    public async Task LoadUserInfoAsync()
-    {
-        try
+        public MainPageViewModel() : this(null)
         {
-            // Utiliser les méthodes de fallback du LoginViewModel
-            var userName = await LoginViewModel.GetCurrentUserNameAsync();
-            
-            if (!string.IsNullOrEmpty(userName))
+        }
+
+        public MainPageViewModel(ISessionService sessionService = null)
+        {
+            _sessionService = sessionService;
+            _ = LoadUserInfoAsync(); // Chargement asynchrone initial
+        }
+
+        public string UserName
+        {
+            get => _userName;
+            set
             {
-                UserName = userName;
+                if (_userName != value)
+                {
+                    _userName = value;
+                    OnPropertyChanged();
+                }
             }
-            else
+        }
+
+        public async Task LoadUserInfoAsync()
+        {
+            try
             {
+                string userName = null;
+                
+                if (_sessionService != null)
+                {
+                    // Utiliser le service de session si disponible
+                    userName = await _sessionService.GetCurrentUserNameAsync();
+                }
+                else
+                {
+                    // Fallback direct sur SecureStorage/Preferences
+                    userName = await GetCurrentUserNameWithFallback();
+                }
+
+                if (!string.IsNullOrEmpty(userName))
+                {
+                    UserName = userName;
+                    System.Diagnostics.Debug.WriteLine($"Nom utilisateur chargé: {userName}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Aucun nom d'utilisateur trouvé");
+                    UserName = "Utilisateur";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des infos utilisateur: {ex}");
                 UserName = "Utilisateur";
             }
         }
-        catch (Exception ex)
+
+        private async Task<string> GetCurrentUserNameWithFallback()
         {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des infos utilisateur: {ex}");
-            UserName = "Utilisateur";
+            try
+            {
+                // Essayer SecureStorage d'abord
+                var userName = await SecureStorage.GetAsync("current_user_name");
+                if (!string.IsNullOrEmpty(userName))
+                {
+                    return userName;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur SecureStorage pour nom utilisateur: {ex.Message}");
+            }
+
+            try
+            {
+                // Fallback vers Preferences
+                var userName = Preferences.Get("current_user_name", null);
+                return userName;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur Preferences pour nom utilisateur: {ex.Message}");
+                return null;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
