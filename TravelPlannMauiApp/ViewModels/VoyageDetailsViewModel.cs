@@ -391,29 +391,57 @@ namespace TravelPlannMauiApp.ViewModels
 
             bool confirm = await Shell.Current.DisplayAlert(
                 "Confirmer la suppression",
-                "Êtes-vous sûr de vouloir supprimer ce voyage?",
-                "Oui", "Non");
+                $"Êtes-vous sûr de vouloir supprimer définitivement le voyage '{NomVoyage}'?\n\nCette action supprimera également toutes les activités et hébergements associés.",
+                "Supprimer", "Annuler");
 
-            if (confirm)
+            if (!confirm) return;
+
+            try
             {
-                try
-                {
-                    _isLoading = true;
-                    IsBusy = true;
+                _isLoading = true;
+                IsBusy = true;
 
-                    await _voyageService.DeleteVoyageAsync(VoyageId);
-                    await Shell.Current.GoToAsync("..");
-                }
-                catch (Exception ex)
+                Debug.WriteLine($"Début de la suppression du voyage ID: {VoyageId}");
+
+                // Afficher un indicateur de progression
+                await Shell.Current.DisplayAlert("Suppression", "Suppression en cours...", "OK");
+
+                await _voyageService.DeleteVoyageAsync(VoyageId);
+                
+                Debug.WriteLine("Voyage supprimé avec succès, retour à la page précédente");
+                
+                // Naviguer vers la page précédente
+                await Shell.Current.GoToAsync("..");
+                
+                // Afficher un message de confirmation
+                await Shell.Current.DisplayAlert("Succès", "Voyage supprimé avec succès", "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur lors de la suppression du voyage: {ex}");
+                
+                // Analyser le type d'erreur pour fournir un message plus utile
+                string userMessage;
+                if (ex.Message.Contains("foreign key") || ex.Message.Contains("constraint"))
                 {
-                    await Shell.Current.DisplayAlert("Erreur", $"Échec de la suppression: {ex.Message}", "OK");
+                    userMessage = "Impossible de supprimer le voyage car il contient encore des données liées. Veuillez contacter le support technique.";
                 }
-                finally
+                else if (ex.Message.Contains("timeout"))
                 {
-                    _isLoading = false;
-                    IsBusy = false;
-                    RefreshCommandStates();
+                    userMessage = "La suppression a pris trop de temps. Veuillez réessayer.";
                 }
+                else
+                {
+                    userMessage = $"Erreur lors de la suppression: {ex.Message}";
+                }
+                
+                await Shell.Current.DisplayAlert("Erreur", userMessage, "OK");
+            }
+            finally
+            {
+                _isLoading = false;
+                IsBusy = false;
+                RefreshCommandStates();
             }
         }
 

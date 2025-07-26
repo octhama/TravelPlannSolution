@@ -481,48 +481,78 @@ namespace BU.Services
                     
                     try
                     {
-                        // Méthode alternative : charger le voyage avec ses relations
-                        // mais détacher immédiatement pour éviter les problèmes de tracking
+                        // Vérifier que le voyage existe
+                        var voyageExists = await _context.Voyages
+                            .AnyAsync(v => v.VoyageId == voyageId);
+
+                        if (!voyageExists)
+                        {
+                            Debug.WriteLine($"Voyage avec ID {voyageId} non trouvé");
+                            return;
+                        }
+
+                        Debug.WriteLine($"Suppression du voyage ID: {voyageId}");
+
+                        /*  Méthode 1: Utiliser Entity Framework (recommandée)
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .Include(v => v.Hebergements)
-                            .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
+                            .FirstAsync(v => v.VoyageId == voyageId);
 
-                        if (voyage != null)
-                        {
-                            // Vider les collections de relations
-                            voyage.Activites.Clear();
-                            voyage.Hebergements.Clear();
-                            
-                            // Sauvegarder pour supprimer les relations
-                            await _context.SaveChangesAsync();
-                            
-                            // Détacher l'entité pour éviter les conflits
-                            _context.Entry(voyage).State = EntityState.Detached;
-                            
-                            // Créer une nouvelle instance avec seulement l'ID pour la suppression
-                            var voyageToDelete = new Voyage { VoyageId = voyageId };
-                            _context.Entry(voyageToDelete).State = EntityState.Deleted;
-                            
-                            await _context.SaveChangesAsync();
-                            Debug.WriteLine($"Voyage {voyageId} supprimé avec succès");
-                        }
+                        // Supprimer toutes les relations
+                        voyage.Activites.Clear();
+                        voyage.Hebergements.Clear();
+                        await _context.SaveChangesAsync();
 
+                        // Supprimer le voyage
+                        _context.Voyages.Remove(voyage);
+                        await _context.SaveChangesAsync();
+                        */
+
+                        // Méthode 2: Si la méthode EF échoue, décommentez cette section pour utiliser SQL brut
+
+                        // Supprimer les relations many-to-many avec des requêtes SQL directes
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "DELETE FROM VoyageActivites WHERE VoyageId = {0}", voyageId);
+                        
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "DELETE FROM VoyageHebergements WHERE VoyageId = {0}", voyageId);
+                        
+                        // Supprimer le voyage lui-même
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "DELETE FROM Voyages WHERE VoyageId = {0}", voyageId);
+                            
+                        // Valider la transaction
                         await transaction.CommitAsync();
                         _cachedVoyages = null;
+                        
+                        Debug.WriteLine($"Voyage {voyageId} supprimé avec succès");
                     }
                     catch (Exception ex)
                     {
+                        Debug.WriteLine($"Erreur dans la transaction de suppression: {ex}");
                         await transaction.RollbackAsync();
-                        Debug.WriteLine($"Erreur lors de la suppression du voyage: {ex}");
                         throw;
                     }
                 });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"DB Error deleting voyage: {ex}");
-                throw new InvalidOperationException($"Impossible de supprimer le voyage: {ex.Message}", ex);
+                Debug.WriteLine($"Erreur lors de la suppression du voyage {voyageId}: {ex}");
+                
+                var errorDetails = new List<string> { ex.Message };
+                
+                var currentEx = ex.InnerException;
+                while (currentEx != null)
+                {
+                    errorDetails.Add(currentEx.Message);
+                    currentEx = currentEx.InnerException;
+                }
+                
+                var fullErrorMessage = string.Join(" -> ", errorDetails);
+                Debug.WriteLine($"Détails complets de l'erreur: {fullErrorMessage}");
+                
+                throw new InvalidOperationException($"Impossible de supprimer le voyage: {fullErrorMessage}", ex);
             }
         }
     }
