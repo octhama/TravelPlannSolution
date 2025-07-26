@@ -12,6 +12,8 @@ namespace TravelPlannMauiApp.ViewModels
     {
         private readonly IVoyageService _voyageService;
         private bool _isBusy;
+        private int _currentUserId;
+        
         public ObservableCollection<Voyage> Voyages { get; } = new();
         public ICommand LoadVoyagesCommand { get; }
         public ICommand ViewVoyageDetailsCommand { get; }
@@ -35,6 +37,19 @@ namespace TravelPlannMauiApp.ViewModels
             ToggleCompleteVoyageCommand = new Command<Voyage>(async (v) => await ToggleCompleteVoyage(v));
             ToggleArchiveVoyageCommand = new Command<Voyage>(async (v) => await ToggleArchiveVoyage(v));
         }
+
+        private async Task<int> GetCurrentUserIdAsync()
+        {
+            var userIdString = await SecureStorage.GetAsync("current_user_id");
+            if (int.TryParse(userIdString, out int userId))
+            {
+                return userId;
+            }
+            
+            // Si pas d'utilisateur connecté, rediriger vers la page de connexion
+            await Shell.Current.GoToAsync("//LoginPage");
+            return 0;
+        }
      
         public async Task LoadVoyagesAsync()
         {
@@ -43,15 +58,15 @@ namespace TravelPlannMauiApp.ViewModels
             IsBusy = true;
             try
             {
+                _currentUserId = await GetCurrentUserIdAsync();
+                if (_currentUserId == 0) return;
+
                 Voyages.Clear();
-                // S'assurer que les relations (Activités et Hébergements) sont chargées
-                var voyages = await _voyageService.GetVoyagesAsync();
                 
-                // Trier les voyages par date de création décroissante (du plus récent au plus ancien)
-                // Si pas de date de création, trier par VoyageId décroissant (supposé être auto-incrémenté)
-                var voyagesTries = voyages.OrderByDescending(v => v.VoyageId).ToList();
+                // Charger uniquement les voyages de l'utilisateur connecté
+                var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                 
-                foreach (var v in voyagesTries)
+                foreach (var v in voyages)
                 {
                     Voyages.Add(v);
                 }
@@ -72,7 +87,13 @@ namespace TravelPlannMauiApp.ViewModels
 
             try
             {
-                // Récupérer le voyage complet avec ses relations depuis la DB
+                // Vérifier que l'utilisateur est propriétaire du voyage
+                if (voyage.UtilisateurId != _currentUserId)
+                {
+                    await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à modifier ce voyage", "OK");
+                    return;
+                }
+
                 var voyageComplet = await _voyageService.GetVoyageByIdAsync(voyage.VoyageId);
                 if (voyageComplet == null) return;
 
@@ -87,9 +108,6 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     Voyages[index] = voyageComplet;
                 }
-                
-                // Optionnel : Recharger uniquement si nécessaire
-                // await LoadVoyagesAsync();
             }
             catch (Exception ex)
             {
@@ -103,6 +121,13 @@ namespace TravelPlannMauiApp.ViewModels
 
             try
             {
+                // Vérifier que l'utilisateur est propriétaire du voyage
+                if (voyage.UtilisateurId != _currentUserId)
+                {
+                    await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à modifier ce voyage", "OK");
+                    return;
+                }
+
                 if (!voyage.EstArchive && !voyage.EstComplete)
                 {
                     bool confirm = await Shell.Current.DisplayAlert(
@@ -112,7 +137,6 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
-                // Récupérer le voyage complet avec ses relations depuis la DB
                 var voyageComplet = await _voyageService.GetVoyageByIdAsync(voyage.VoyageId);
                 if (voyageComplet == null) return;
 
@@ -125,9 +149,6 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     Voyages[index] = voyageComplet;
                 }
-                
-                // Optionnel : Recharger uniquement si nécessaire
-                // await LoadVoyagesAsync();
             }
             catch (Exception ex)
             {
@@ -141,9 +162,15 @@ namespace TravelPlannMauiApp.ViewModels
 
             try
             {
+                // Vérifier que l'utilisateur est propriétaire du voyage
+                if (voyage.UtilisateurId != _currentUserId)
+                {
+                    await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à voir ce voyage", "OK");
+                    return;
+                }
+
                 Debug.WriteLine($"Navigation vers détails du voyage ID: {voyage.VoyageId}");
                 
-                // Récupérer le voyage complet avec toutes ses relations
                 var voyageComplet = await _voyageService.GetVoyageByIdAsync(voyage.VoyageId);
                 if (voyageComplet == null)
                 {
@@ -160,7 +187,6 @@ namespace TravelPlannMauiApp.ViewModels
                     DateFin = voyageComplet.DateFin.ToDateTime(TimeOnly.MinValue),
                     EstComplete = voyageComplet.EstComplete,
                     EstArchive = voyageComplet.EstArchive,
-                    // S'assurer que les relations sont incluses
                     NombreActivites = voyageComplet.Activites?.Count ?? 0,
                     NombreHebergements = voyageComplet.Hebergements?.Count ?? 0
                 };
@@ -179,34 +205,7 @@ namespace TravelPlannMauiApp.ViewModels
 
         public async Task RefreshVoyagesAsync()
         {
-            if (IsBusy) return;
-
-            IsBusy = true;
-            try
-            {
-                // S'assurer que les relations sont chargées
-                var voyages = await _voyageService.GetVoyagesAsync();
-                
-                // Trier les voyages par VoyageId décroissant (du plus récent au plus ancien)
-                var voyagesTries = voyages.OrderByDescending(v => v.VoyageId).ToList();
-
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    Voyages.Clear();
-                    foreach (var v in voyagesTries)
-                    {
-                        Voyages.Add(v);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                await HandleError(ex, "Erreur lors du chargement des voyages");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            await LoadVoyagesAsync();
         }
         
         public async Task AddVoyageAsync()

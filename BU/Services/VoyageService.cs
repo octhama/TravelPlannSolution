@@ -63,10 +63,12 @@ namespace BU.Services
         public async Task<List<Voyage>> GetVoyagesByUtilisateurAsync(int utilisateurId)
         {
             return await _context.Voyages
+                .Include(v => v.Activites)
+                .Include(v => v.Hebergements)
                 .Where(v => v.UtilisateurId == utilisateurId)
+                .OrderByDescending(v => v.VoyageId)
                 .ToListAsync();
-        }
-        
+        }    
 
         public async Task AddVoyageAsync(Voyage voyage)
         {

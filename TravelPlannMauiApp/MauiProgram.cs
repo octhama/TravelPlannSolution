@@ -60,13 +60,19 @@ public static class MauiProgram
         builder.Services.AddTransient<VoyageViewModel>();
         builder.Services.AddTransient<MapViewModel>();
         builder.Services.AddTransient<VoyageDetailsViewModel>();
-
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<AddVoyageViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<RegisterViewModel>();
         // Enregistrement des Pages
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<VoyageListPage>();
         builder.Services.AddTransient<MapPage>();
         builder.Services.AddTransient<VoyageDetailsPage>();
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<AddVoyagePage>();
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<RegisterPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
