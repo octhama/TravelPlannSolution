@@ -1,5 +1,5 @@
 using TravelPlannMauiApp.ViewModels;
-using Microsoft.Maui.Authentication.WebUI;
+
 
 namespace TravelPlannMauiApp.Pages;
 
@@ -66,6 +66,7 @@ public partial class MapPage : ContentPage
         let map;
         let currentMarker = null;
         let is3DMode = false;
+        let currentLayer;
         
         // Initialisation de la carte
         function initMap() {
@@ -77,7 +78,7 @@ public partial class MapPage : ContentPage
             });
 
             // Couche de base
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            currentLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
@@ -125,14 +126,129 @@ public partial class MapPage : ContentPage
                     const locationName = data.display_name || 'Lieu inconnu';
                     const address = data.address || {};
                     
-                    // Communiquer avec l'application MAUI
-                    window.webkit?.messageHandlers?.locationSelected?.postMessage({
-                        name: locationName,
-                        address: locationName,
-                        lat: latlng.lat,
-                        lng: latlng.lng
-                    });
+                    addMarker(latlng, locationName);
+                    
+                    // Communiquer avec l'application MAUI (si disponible)
+                    if (window.webkit?.messageHandlers?.locationSelected) {
+                        window.webkit.messageHandlers.locationSelected.postMessage({
+                            name: locationName,
+                            address: locationName,
+                            lat: latlng.lat,
+                            lng: latlng.lng
+                        });
+                    }
                 })
                 .catch(error => {
                     console.log('Erreur de géocodage:', error);
-                    addMarker(l
+                    addMarker(latlng, 'Lieu sélectionné');
+                });
+        }
+
+        // Rechercher une localisation
+        function searchLocation(query) {
+            if (!query) return;
+            
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const result = data[0];
+                        const latlng = L.latLng(parseFloat(result.lat), parseFloat(result.lon));
+                        map.setView(latlng, 15);
+                        addMarker(latlng, result.display_name);
+                    }
+                })
+                .catch(error => {
+                    console.log('Erreur de recherche:', error);
+                });
+        }
+
+        // Changer de mode de vue
+        function toggleViewMode() {
+            if (is3DMode) {
+                // Retour en 2D
+                map.removeLayer(currentLayer);
+                currentLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                is3DMode = false;
+            } else {
+                // Mode satellite/3D
+                map.removeLayer(currentLayer);
+                currentLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: '© Esri'
+                }).addTo(map);
+                is3DMode = true;
+            }
+        }
+
+        // Aller à ma position
+        function goToMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
+                    map.setView(latlng, 15);
+                    addMarker(latlng, 'Ma position');
+                });
+            }
+        }
+
+        // Fonctions de zoom
+        function zoomIn() {
+            map.zoomIn();
+        }
+
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+        // Initialiser la carte au chargement
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>";
+
+        MapWebView.Source = new HtmlWebViewSource { Html = htmlContent };
+        MapWebView.Navigated += OnMapNavigated;
+    }
+
+    private async void OnMapNavigated(object sender, WebNavigatedEventArgs e)
+    {
+        if (e.Result == WebNavigationResult.Success && !_isMapLoaded)
+        {
+            _isMapLoaded = true;
+            // Attendre que la carte soit complètement chargée
+            await Task.Delay(1000);
+
+            // Injecter les fonctions JavaScript pour la communication
+            await MapWebView.EvaluateJavaScriptAsync(@"
+                window.searchLocationFromApp = function(query) {
+                    searchLocation(query);
+                };
+                
+                window.toggleViewModeFromApp = function() {
+                    toggleViewMode();
+                    return is3DMode ? '🌍' : '🗺️';
+                };
+                
+                window.goToMyLocationFromApp = function() {
+                    goToMyLocation();
+                };
+                
+                window.zoomInFromApp = function() {
+                    zoomIn();
+                };
+                
+                window.zoomOutFromApp = function() {
+                    zoomOut();
+                };
+            ");
+        }
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.SetWebView(MapWebView);
+    }
+}

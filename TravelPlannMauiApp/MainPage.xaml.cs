@@ -70,7 +70,8 @@ namespace TravelPlannMauiApp
             switch (tabIndex)
             {
                 case 0:
-                    await Navigation.PushAsync(new MapPage());
+                    var mapPage = new MapPage(Handler.MauiContext.Services.GetService<MapViewModel>());
+                    await Navigation.PushAsync(mapPage);
                     break;
                 case 2:
                     var voyageListPage = new VoyageListPage(
