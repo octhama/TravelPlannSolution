@@ -1,4 +1,7 @@
+using Microsoft.Maui.Controls.Maps; // Required for MapSpan
 using TravelPlannMauiApp.ViewModels;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Devices.Sensors; // Required for Distance
 
 namespace TravelPlannMauiApp.Pages
 {
@@ -14,96 +17,181 @@ namespace TravelPlannMauiApp.Pages
             BindingContext = _viewModel;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
             
             try
             {
-                // Configurer la WebView dans le ViewModel
-                _viewModel.SetWebView(MapWebView);
+                // Configurer le contrôle Map dans le ViewModel
+                _viewModel.SetMapControl(MapControl);
                 
-                // Charger le contenu HTML de la carte
-                LoadMapContent();
+                // Initialiser la carte avec la position par défaut (Paris)
+                await InitializeMapAsync();
+                
+                // Configurer les événements de la carte
+                SetupMapEvents();
+                
+                // Rafraîchir les données utilisateur
+                await _viewModel.RefreshDataAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
-                DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
+                await DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
             }
         }
 
-        private void LoadMapContent()
+        private async Task InitializeMapAsync()
         {
-            // Ici, vous devriez charger votre contenu HTML pour la carte
-            // Par exemple, une carte Leaflet ou Google Maps
-            var htmlContent = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Carte</title>
-    <style>
-        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        #map { height: 100vh; width: 100%; }
-        .placeholder { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            background: #f0f0f0;
-            color: #666;
-            font-size: 18px;
-        }
-    </style>
-</head>
-<body>
-    <div class='placeholder'>
-        <div>
-            <h2>🗺️ Carte</h2>
-            <p>La carte sera affichée ici</p>
-            <p>Intégrez ici votre solution de cartographie<br>(Leaflet, Google Maps, etc.)</p>
-        </div>
-    </div>
-    
-    <script>
-        // Fonctions appelées depuis l'application
-        function searchLocationFromApp(query) {
-            console.log('Recherche:', query);
-            // Implémentez la recherche ici
-        }
-        
-        function toggleViewModeFromApp() {
-            console.log('Changement de vue');
-            return '🌍'; // Retourner l'icône appropriée
-        }
-        
-        function goToMyLocationFromApp() {
-            console.log('Aller à ma position');
-            // Implémentez la géolocalisation ici
-        }
-        
-        function zoomInFromApp() {
-            console.log('Zoom in');
-            // Implémentez le zoom ici
-        }
-        
-        function zoomOutFromApp() {
-            console.log('Zoom out');
-            // Implémentez le zoom ici
-        }
-    </script>
-</body>
-</html>";
+            try
+            {
+                // Position par défaut : Paris, France
+                var parisLocation = new Location(48.8566, 2.3522);
+                var mapSpan = MapSpan.FromCenterAndRadius(parisLocation, Distance.FromKilometers(10));
+                
+                MapControl.MoveToRegion(mapSpan);
+                
+                // Demander la permission de géolocalisation
+                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+                if (status != PermissionStatus.Granted)
+                {
+                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                }
 
-            MapWebView.Source = new HtmlWebViewSource { Html = htmlContent };
+                if (status == PermissionStatus.Granted)
+                {
+                    MapControl.IsShowingUser = true;
+                    
+                    // Essayer d'obtenir la position actuelle
+                    try
+                    {
+                        var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest
+                        {
+                            DesiredAccuracy = GeolocationAccuracy.Medium,
+                            Timeout = TimeSpan.FromSeconds(5)
+                        });
+
+                        if (location != null)
+                        {
+                            var userMapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(5));
+                            MapControl.MoveToRegion(userMapSpan);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Impossible d'obtenir la position actuelle: {ex.Message}");
+                        // Rester sur Paris si la géolocalisation échoue
+                    }
+                }
+                else
+                {
+                    MapControl.IsShowingUser = false;
+                    System.Diagnostics.Debug.WriteLine("Permission de géolocalisation refusée");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex.Message}");
+            }
+        }
+
+        private void SetupMapEvents()
+        {
+            // Événement lorsqu'un pin est sélectionné
+            MapControl.MapClicked += OnMapClicked;
+            
+            // Vous pouvez ajouter d'autres événements ici si nécessaire
+            // MapControl.PropertyChanged += OnMapPropertyChanged;
+        }
+
+        private void OnMapClicked(object sender, MapClickedEventArgs e)
+        {
+            try
+            {
+                // Fermer le panel d'informations si l'utilisateur clique ailleurs
+                _viewModel.CloseLocationInfoCommand?.Execute(null);
+                
+                // Optionnel : Ajouter un pin temporaire à l'emplacement cliqué
+                var clickedLocation = e.Location;
+                System.Diagnostics.Debug.WriteLine($"Carte cliquée à: {clickedLocation.Latitude}, {clickedLocation.Longitude}");
+                
+                // Vous pouvez implémenter une logique pour afficher des informations
+                // sur le lieu cliqué ou effectuer une recherche inverse de géocodage
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du clic sur la carte: {ex.Message}");
+            }
         }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            // Nettoyer si nécessaire
+            
+            try
+            {
+                // Nettoyer les événements pour éviter les fuites mémoire
+                if (MapControl != null)
+                {
+                    MapControl.MapClicked -= OnMapClicked;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du nettoyage de la carte: {ex.Message}");
+            }
+        }
+
+        // Méthode utilitaire pour centrer la carte sur un lieu spécifique
+        public void CenterMapOn(Location location, double radiusKm = 5)
+        {
+            try
+            {
+                if (location != null)
+                {
+                    var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(radiusKm));
+                    MapControl.MoveToRegion(mapSpan);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du centrage de la carte: {ex.Message}");
+            }
+        }
+
+        // Méthode pour ajouter un pin personnalisé
+        public void AddCustomPin(Location location, string label, string address)
+        {
+            try
+            {
+                var pin = new Pin
+                {
+                    Location = location,
+                    Label = label,
+                    Address = address,
+                    Type = PinType.Place
+                };
+
+                MapControl.Pins.Add(pin);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'ajout du pin: {ex.Message}");
+            }
+        }
+
+        // Méthode pour nettoyer tous les pins
+        public void ClearAllPins()
+        {
+            try
+            {
+                MapControl.Pins.Clear();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du nettoyage des pins: {ex.Message}");
+            }
         }
     }
 }

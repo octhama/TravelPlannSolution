@@ -4,12 +4,17 @@ using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
-using Microsoft.Maui.Authentication.WebAuthenticator;
+using BU.Services;
 
 namespace TravelPlannMauiApp.ViewModels;
 
 public class MapViewModel : INotifyPropertyChanged
 {
+    private readonly IVoyageService _voyageService;
+    private readonly IActiviteService _activiteService;
+    private readonly IHebergementService _hebergementService;
+    private readonly ISessionService _sessionService;
+
     private Map _mapControl;
     private string _searchQuery = "";
     private bool _isLoading = false;
@@ -41,6 +46,9 @@ public class MapViewModel : INotifyPropertyChanged
     private List<Pin> _activityPins = new();
     private List<Pin> _restaurantPins = new();
     private List<Pin> _transportPins = new();
+
+    // Données des voyages
+    private List<Voyage> _userVoyages = new();
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -217,8 +225,16 @@ public class MapViewModel : INotifyPropertyChanged
 
     #endregion
 
-    public MapViewModel()
+    public MapViewModel(IVoyageService voyageService, 
+                      IActiviteService activiteService, 
+                      IHebergementService hebergementService,
+                      ISessionService sessionService)
     {
+        _voyageService = voyageService ?? throw new ArgumentNullException(nameof(voyageService));
+        _activiteService = activiteService ?? throw new ArgumentNullException(nameof(activiteService));
+        _hebergementService = hebergementService ?? throw new ArgumentNullException(nameof(hebergementService));
+        _sessionService = sessionService ?? throw new ArgumentNullException(nameof(sessionService));
+
         SearchCommand = new Command(async () => await ExecuteSearchCommand());
         ToggleViewModeCommand = new Command(() => ExecuteToggleViewModeCommand());
         ToggleMapStyleCommand = new Command(() => ExecuteToggleMapStyleCommand());
@@ -230,13 +246,28 @@ public class MapViewModel : INotifyPropertyChanged
         ShowRestaurantsCommand = new Command(() => ExecuteShowRestaurantsCommand());
         ShowDirectionsCommand = new Command(() => ExecuteShowDirectionsCommand());
         
-        LoadSampleData();
+        _ = LoadUserDataAsync();
     }
 
-    public void SetMapControl(Map mapControl)
+    public void SetMapControl(Microsoft.Maui.Controls.Maps.Map mapControl)
     {
         _mapControl = mapControl;
+        
+        // Configurer les événements de la carte
+        if (_mapControl != null)
+        {
+            // S'abonner aux événements nécessaires
+            SetupMapEvents();
+        }
+        
         UpdateMapPins();
+    }
+    
+    private void SetupMapEvents()
+    {
+        // Événement pour détecter quand un pin est tapé
+        // Note: Cet événement n'existe pas directement sur Map, 
+        // il devra être géré dans le code-behind de la page
     }
 
     #region Command Implementations
@@ -252,7 +283,6 @@ public class MapViewModel : INotifyPropertyChanged
             // Simuler une recherche géocodée
             await Task.Delay(1000); // Simulation d'API call
             
-            // Exemple de résultat de recherche (à remplacer par une vraie API)
             var searchResult = await GeocodeLocationAsync(SearchQuery);
             
             if (searchResult != null)
@@ -384,9 +414,299 @@ public class MapViewModel : INotifyPropertyChanged
     {
         ShowLocationInfo = false;
         ShowAccommodations = true;
+        ShowRestaurants = false;
+        ShowActivities = false;
+        ShowTransport = false;
         ShowTemporaryMessage("Hébergements affichés");
     }
 
     private void ExecuteShowActivitiesCommand()
     {
-        ShowLocationInfo = false
+        ShowLocationInfo = false;
+        ShowAccommodations = false;
+        ShowRestaurants = false;
+        ShowActivities = true;
+        ShowTransport = false;
+        ShowTemporaryMessage("Activités affichées");
+    }
+
+    private void ExecuteShowRestaurantsCommand()
+    {
+        ShowLocationInfo = false;
+        ShowAccommodations = false;
+        ShowRestaurants = true;
+        ShowActivities = false;
+        ShowTransport = false;
+        ShowTemporaryMessage("Restaurants affichés");
+    }
+
+    private void ExecuteShowDirectionsCommand()
+    {
+        ShowLocationInfo = false;
+        ShowTemporaryMessage("Itinéraire calculé");
+        // Ici vous pouvez implémenter la logique d'itinéraire
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    private async Task LoadUserDataAsync()
+    {
+        try
+        {
+            var currentUser = _sessionService.GetCurrentUser(); // Ensure ISessionService has this method
+            if (currentUser != null)
+            {
+                _userVoyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUser.Id);
+                await LoadPinsFromUserDataAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des données utilisateur: {ex.Message}");
+        }
+    }
+
+    private async Task LoadPinsFromUserDataAsync()
+    {
+        try
+        {
+            _accommodationPins.Clear();
+            _activityPins.Clear();
+
+            foreach (var voyage in _userVoyages)
+            {
+                // Charger les hébergements du voyage
+                var hebergements = await _hebergementService.GetHebergementsByVoyageAsync(voyage.Id);
+                foreach (var hebergement in hebergements)
+                {
+                    if (!string.IsNullOrEmpty(hebergement.Adresse))
+                    {
+                        var location = await GeocodeLocationAsync(hebergement.Adresse);
+                        if (location != null)
+                        {
+                            var pin = new Pin
+                            {
+                                Location = location,
+                                Label = hebergement.Nom,
+                                Address = hebergement.Adresse,
+                                Type = PinType.Place
+                            };
+                            _accommodationPins.Add(pin);
+                        }
+                    }
+                }
+
+                // Charger les activités du voyage
+                var activites = await _activiteService.GetActivitesByVoyageAsync(voyage.Id);
+                foreach (var activite in activites)
+                {
+                    if (!string.IsNullOrEmpty(activite.Localisation))
+                    {
+                        var location = await GeocodeLocationAsync(activite.Localisation);
+                        if (location != null)
+                        {
+                            var pin = new Pin
+                            {
+                                Location = location,
+                                Label = activite.Nom,
+                                Address = activite.Localisation,
+                                Type = PinType.Place
+                            };
+                            _activityPins.Add(pin);
+                        }
+                    }
+                }
+            }
+
+            // Charger des données de démonstration pour les restaurants et transports
+            LoadSampleRestaurantAndTransportPins();
+
+            UpdateMapPins();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des pins: {ex.Message}");
+        }
+    }
+
+    private void LoadSampleRestaurantAndTransportPins()
+    {
+        // Données de démonstration pour les restaurants
+        _restaurantPins = new List<Pin>
+        {
+            new Pin
+            {
+                Location = new Location(48.8566, 2.3522), // Paris
+                Label = "Le Grand Véfour",
+                Address = "17 Rue de Beaujolais, Paris",
+                Type = PinType.Place
+            },
+            new Pin
+            {
+                Location = new Location(48.8606, 2.3376), // Paris
+                Label = "L'Ami Jean",
+                Address = "27 Rue Malar, Paris",
+                Type = PinType.Place
+            }
+        };
+
+        // Données de démonstration pour les transports
+        _transportPins = new List<Pin>
+        {
+            new Pin
+            {
+                Location = new Location(48.8738, 2.2950), // Gare du Nord
+                Label = "Gare du Nord",
+                Address = "18 Rue de Dunkerque, Paris",
+                Type = PinType.Place
+            },
+            new Pin
+            {
+                Location = new Location(48.844, 2.3737), // Gare de Lyon
+                Label = "Gare de Lyon",
+                Address = "20 Boulevard Diderot, Paris",
+                Type = PinType.Place
+            }
+        };
+    }
+
+    private void UpdateMapPins()
+    {
+        if (_mapControl == null) return;
+
+        _mapControl.Pins.Clear();
+
+        if (ShowAccommodations)
+        {
+            foreach (var pin in _accommodationPins)
+            {
+                _mapControl.Pins.Add(pin);
+            }
+        }
+
+        if (ShowActivities)
+        {
+            foreach (var pin in _activityPins)
+            {
+                _mapControl.Pins.Add(pin);
+            }
+        }
+
+        if (ShowRestaurants)
+        {
+            foreach (var pin in _restaurantPins)
+            {
+                _mapControl.Pins.Add(pin);
+            }
+        }
+
+        if (ShowTransport)
+        {
+            foreach (var pin in _transportPins)
+            {
+                _mapControl.Pins.Add(pin);
+            }
+        }
+    }
+
+    private async Task<Location> GeocodeLocationAsync(string address)
+    {
+        try
+        {
+            var locations = await Geocoding.Default.GetLocationsAsync(address);
+            return locations?.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur de géocodage pour '{address}': {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<Location> GetCurrentLocationAsync()
+    {
+        try
+        {
+            var request = new GeolocationRequest
+            {
+                DesiredAccuracy = GeolocationAccuracy.Medium,
+                Timeout = TimeSpan.FromSeconds(10)
+            };
+
+            var location = await Geolocation.Default.GetLocationAsync(request);
+            return location;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur de géolocalisation: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async void ShowTemporaryMessage(string message)
+    {
+        MessageText = message;
+        ShowMessage = true;
+
+        // Masquer le message après 3 secondes
+        await Task.Delay(3000);
+        ShowMessage = false;
+    }
+
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public async Task RefreshDataAsync()
+    {
+        await LoadUserDataAsync();
+    }
+
+    public void ShowLocationDetails(Pin pin)
+    {
+        if (pin != null)
+        {
+            SelectedLocationName = pin.Label;
+            SelectedLocationAddress = pin.Address;
+            
+            // Calculer la distance si la position utilisateur est disponible
+            if (_userLocation != null)
+            {
+                var distance = Location.CalculateDistance(_userLocation, pin.Location, DistanceUnits.Kilometers);
+                SelectedLocationDistance = $"À {distance:F1} km";
+            }
+            else
+            {
+                SelectedLocationDistance = "";
+            }
+
+            ShowLocationInfo = true;
+        }
+    }
+
+    public void CenterMapOnLocation(Location location, double radiusKm = 5)
+    {
+        if (_mapControl != null && location != null)
+        {
+            var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(radiusKm));
+            _mapControl.MoveToRegion(mapSpan);
+        }
+    }
+
+    public void HandlePinTapped(Pin tappedPin)
+    {
+        if (tappedPin != null)
+        {
+            ShowLocationDetails(tappedPin);
+        }
+    }
+
+    #endregion
+}

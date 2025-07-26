@@ -3,6 +3,7 @@ using System.Reflection;
 using BU.Services;
 using DAL.DB;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
@@ -18,6 +19,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiMaps() // Ajoutez cette ligne
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => 
             {
