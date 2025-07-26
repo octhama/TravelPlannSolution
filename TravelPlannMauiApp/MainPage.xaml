@@ -194,9 +194,9 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <Label Text="🗺️"
+                    <!--<Label Text="🗺️"
                            HorizontalOptions="Center"
-                           FontSize="24"/>
+                           FontSize="24"/>-->
                     <Label x:Name="MapLabel"
                            Text="Carte"
                            FontSize="16"/>
@@ -213,9 +213,9 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <Label Text="🏠"
+                    <!--<Label Text="🏠"
                            HorizontalOptions="Center"
-                           FontSize="24"/>
+                           FontSize="24"/>-->
                     <Label x:Name="HomeLabel"
                            Text="Accueil"
                            FontSize="16"/>
@@ -232,9 +232,9 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <Label Text="✈️"
+                    <!--<Label Text="✈️"
                            HorizontalOptions="Center"
-                           FontSize="24"/>
+                           FontSize="24"/>-->
                     <Label x:Name="TripsLabel"
                            Text="Voyages"
                            FontSize="16"/>
