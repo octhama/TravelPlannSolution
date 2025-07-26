@@ -14,9 +14,17 @@ public class LoginViewModel : BaseViewModel
     {
         _utilisateurService = utilisateurService ?? throw new ArgumentNullException(nameof(utilisateurService));
         
-        // Utiliser les méthodes CreateCommand corrigées
-        LoginCommand = CreateCommand(LoginAsync, CanLogin);
-        RegisterCommand = CreateCommand(NavigateToRegisterAsync);
+        try
+        {
+            // Créer les commandes avec les méthodes corrigées
+            LoginCommand = CreateCommand(LoginAsync, CanLogin);
+            RegisterCommand = CreateCommand(NavigateToRegisterAsync);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la création des commandes: {ex}");
+            throw;
+        }
     }
 
     public string Email
@@ -25,6 +33,7 @@ public class LoginViewModel : BaseViewModel
         set
         {
             SetProperty(ref _email, value);
+            // Forcer la réévaluation du CanExecute
             (LoginCommand as Command)?.ChangeCanExecute();
         }
     }
@@ -35,6 +44,7 @@ public class LoginViewModel : BaseViewModel
         set
         {
             SetProperty(ref _motDePasse, value);
+            // Forcer la réévaluation du CanExecute
             (LoginCommand as Command)?.ChangeCanExecute();
         }
     }
@@ -44,7 +54,9 @@ public class LoginViewModel : BaseViewModel
 
     private bool CanLogin()
     {
-        return !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(MotDePasse);
+        return !string.IsNullOrWhiteSpace(Email) && 
+               !string.IsNullOrWhiteSpace(MotDePasse) && 
+               !IsBusy;
     }
 
     private async Task LoginAsync()
@@ -83,6 +95,8 @@ public class LoginViewModel : BaseViewModel
 
     private async Task NavigateToRegisterAsync()
     {
+        if (IsBusy) return;
+
         try
         {
             await Shell.Current.GoToAsync("RegisterPage");

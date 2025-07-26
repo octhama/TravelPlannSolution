@@ -61,11 +61,25 @@ namespace TravelPlannMauiApp.ViewModels
                 Debug.WriteLine($"INNER STACK TRACE: {ex.InnerException.StackTrace}");
             }
 
-            await Shell.Current.DisplayAlert("Erreur", $"{message}\n\nDétails techniques:\n{ex.Message}", "OK");
+            try
+            {
+                if (Shell.Current?.CurrentPage != null)
+                {
+                    await Shell.Current.DisplayAlert("Erreur", $"{message}\n\nDétails techniques:\n{ex.Message}", "OK");
+                }
+            }
+            catch (Exception displayEx)
+            {
+                Debug.WriteLine($"Erreur lors de l'affichage de l'alerte: {displayEx.Message}");
+            }
         }
 
+        // Version pour les commandes asynchrones
         protected ICommand CreateCommand(Func<Task> execute, Func<bool> canExecute = null)
         {
+            if (execute == null)
+                throw new ArgumentNullException(nameof(execute));
+
             return new Command(async () =>
             {
                 if (IsBusy) return;
@@ -83,11 +97,42 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     IsBusy = false;
                 }
-            }, canExecute);
+            }, canExecute ?? (() => !IsBusy));
         }
 
+        // Version pour les commandes synchrones
+        protected ICommand CreateCommand(Action execute, Func<bool> canExecute = null)
+        {
+            if (execute == null)
+                throw new ArgumentNullException(nameof(execute));
+
+            return new Command(() =>
+            {
+                if (IsBusy) return;
+
+                try
+                {
+                    IsBusy = true;
+                    execute();
+                }
+                catch (Exception ex)
+                {
+                    // Pour les actions synchrones, on ne peut pas await
+                    Task.Run(async () => await HandleError(ex));
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+            }, canExecute ?? (() => !IsBusy));
+        }
+
+        // Version générique pour les commandes asynchrones avec paramètre
         protected ICommand CreateCommand<T>(Func<T, Task> execute, Func<T, bool> canExecute = null)
         {
+            if (execute == null)
+                throw new ArgumentNullException(nameof(execute));
+
             return new Command<T>(async (param) =>
             {
                 if (IsBusy) return;
@@ -105,14 +150,39 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     IsBusy = false;
                 }
-            }, canExecute);
+            }, canExecute ?? ((_) => !IsBusy));
+        }
+
+        // Version générique pour les commandes synchrones avec paramètre
+        protected ICommand CreateCommand<T>(Action<T> execute, Func<T, bool> canExecute = null)
+        {
+            if (execute == null)
+                throw new ArgumentNullException(nameof(execute));
+
+            return new Command<T>((param) =>
+            {
+                if (IsBusy) return;
+
+                try
+                {
+                    IsBusy = true;
+                    execute(param);
+                }
+                catch (Exception ex)
+                {
+                    Task.Run(async () => await HandleError(ex));
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+            }, canExecute ?? ((_) => !IsBusy));
         }
 
         protected virtual void OnDisappearing()
         {
             // Méthode à surcharger pour le nettoyage
             // ou la sauvegarde d'état si nécessaire
-
         }
     }
 }
