@@ -64,6 +64,7 @@ public static class MauiProgram
         builder.Services.AddScoped<IVoyageService, VoyageService>();
         builder.Services.AddScoped<IUtilisateurService, UtilisateurService>();
         builder.Services.AddScoped<ISettingsService, SettingsService>();
+        builder.Services.AddSingleton<ISessionService, SessionService>();
 
         // Enregistrement des ViewModels
         builder.Services.AddTransient<VoyageViewModel>();

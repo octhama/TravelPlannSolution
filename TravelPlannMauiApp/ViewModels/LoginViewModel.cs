@@ -100,11 +100,33 @@ public class LoginViewModel : BaseViewModel
                 System.Diagnostics.Debug.WriteLine($"Connexion réussie pour: {utilisateur.Prenom} {utilisateur.Nom}");
                 System.Diagnostics.Debug.WriteLine($"ID utilisateur: {utilisateur.UtilisateurId}");
                 
-                // Sauvegarder l'utilisateur connecté
-                await SecureStorage.SetAsync("current_user_id", utilisateur.UtilisateurId.ToString());
-                await SecureStorage.SetAsync("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
+                // Sauvegarder l'utilisateur connecté avec gestion d'erreur SecureStorage
+                try
+                {
+                    await SecureStorage.SetAsync("current_user_id", utilisateur.UtilisateurId.ToString());
+                    await SecureStorage.SetAsync("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
+                    System.Diagnostics.Debug.WriteLine("Informations sauvegardées dans SecureStorage");
+                }
+                catch (Exception secureStorageEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Erreur SecureStorage: {secureStorageEx.Message}");
+                    
+                    // Alternative: utiliser Preferences comme fallback
+                    try
+                    {
+                        Preferences.Set("current_user_id", utilisateur.UtilisateurId.ToString());
+                        Preferences.Set("current_user_name", $"{utilisateur.Prenom} {utilisateur.Nom}");
+                        System.Diagnostics.Debug.WriteLine("Informations sauvegardées dans Preferences (fallback)");
+                    }
+                    catch (Exception prefEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Erreur Preferences: {prefEx.Message}");
+                        await Shell.Current.DisplayAlert("Avertissement", 
+                            "Connexion réussie mais impossible de sauvegarder les informations de session.", "OK");
+                    }
+                }
                 
-                System.Diagnostics.Debug.WriteLine("Informations sauvegardées, navigation vers MainPage...");
+                System.Diagnostics.Debug.WriteLine("Navigation vers MainPage...");
                 
                 // Naviguer vers la page principale
                 await Shell.Current.GoToAsync("//MainPage");
@@ -118,9 +140,15 @@ public class LoginViewModel : BaseViewModel
                 try
                 {
                     System.Diagnostics.Debug.WriteLine("Test de diagnostic de la base de données...");
-                    // Si vous avez une méthode GetAllAsync ou similaire, décommentez cette ligne :
-                    // var allUsers = await _utilisateurService.GetAllAsync();
-                    // System.Diagnostics.Debug.WriteLine($"Nombre d'utilisateurs en DB: {allUsers?.Count ?? 0}");
+                    var testUser = await _utilisateurService.GetByEmailAsync(Email.Trim());
+                    System.Diagnostics.Debug.WriteLine($"Utilisateur trouvé par email: {testUser != null}");
+                    
+                    if (testUser != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Mot de passe en DB: '{testUser.MotDePasse}'");
+                        System.Diagnostics.Debug.WriteLine($"Mot de passe saisi: '{MotDePasse}'");
+                        System.Diagnostics.Debug.WriteLine($"Comparaison directe: {testUser.MotDePasse == MotDePasse}");
+                    }
                 }
                 catch (Exception dbEx)
                 {
@@ -160,6 +188,36 @@ public class LoginViewModel : BaseViewModel
         {
             System.Diagnostics.Debug.WriteLine($"Erreur navigation: {ex}");
             await HandleError(ex, "Erreur lors de la navigation");
+        }
+    }
+
+    // Méthode utilitaire pour récupérer l'ID utilisateur avec fallback
+    public static async Task<string?> GetCurrentUserIdAsync()
+    {
+        try
+        {
+            // Essayer SecureStorage d'abord
+            return await SecureStorage.GetAsync("current_user_id");
+        }
+        catch (Exception)
+        {
+            // Fallback vers Preferences
+            return Preferences.Get("current_user_id", null);
+        }
+    }
+
+    // Méthode utilitaire pour récupérer le nom utilisateur avec fallback
+    public static async Task<string?> GetCurrentUserNameAsync()
+    {
+        try
+        {
+            // Essayer SecureStorage d'abord
+            return await SecureStorage.GetAsync("current_user_name");
+        }
+        catch (Exception)
+        {
+            // Fallback vers Preferences
+            return Preferences.Get("current_user_name", null);
         }
     }
 }

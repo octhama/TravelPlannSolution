@@ -195,6 +195,7 @@
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
                     <Label Text="🗺️"
+                           HorizontalOptions="Center"
                            FontSize="24"/>
                     <Label x:Name="MapLabel"
                            Text="Carte"
@@ -213,6 +214,7 @@
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
                     <Label Text="🏠"
+                           HorizontalOptions="Center"
                            FontSize="24"/>
                     <Label x:Name="HomeLabel"
                            Text="Accueil"
@@ -231,6 +233,7 @@
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
                     <Label Text="✈️"
+                           HorizontalOptions="Center"
                            FontSize="24"/>
                     <Label x:Name="TripsLabel"
                            Text="Voyages"
