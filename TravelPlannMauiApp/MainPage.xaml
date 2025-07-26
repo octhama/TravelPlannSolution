@@ -13,13 +13,13 @@
                        Padding="15"
                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
                        HasShadow="True">
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
                         <Label Text="👤"
                                FontSize="24"
                                HeightRequest="40"
                                WidthRequest="40"/>
                         
-                        <Label Text="Bienvenue, Octhama!"
+                        <Label Text="{Binding UserName, StringFormat='Bienvenue, {0}!'}"
                                Grid.Column="1"
                                FontSize="16"
                                FontAttributes="Bold"
@@ -194,7 +194,7 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <Label 
+                    <Label Text="🗺️"
                            FontSize="24"/>
                     <Label x:Name="MapLabel"
                            Text="Carte"
@@ -212,7 +212,7 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <Label 
+                    <Label Text="🏠"
                            FontSize="24"/>
                     <Label x:Name="HomeLabel"
                            Text="Accueil"
@@ -230,7 +230,7 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <Label 
+                    <Label Text="✈️"
                            FontSize="24"/>
                     <Label x:Name="TripsLabel"
                            Text="Voyages"

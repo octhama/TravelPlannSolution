@@ -13,11 +13,25 @@ namespace TravelPlannMauiApp
         public MainPage()
         {
             InitializeComponent();
-            BindingContext = this;
             
             // Obtenir le service provider de manière plus sûre
             _serviceProvider = Handler?.MauiContext?.Services ?? 
                               (Application.Current as App)?.Handler?.MauiContext?.Services;
+            
+            // Créer et assigner le ViewModel
+            if (_serviceProvider != null)
+            {
+                var viewModel = _serviceProvider.GetService<MainPageViewModel>();
+                if (viewModel == null)
+                {
+                    viewModel = new MainPageViewModel();
+                }
+                BindingContext = viewModel;
+            }
+            else
+            {
+                BindingContext = new MainPageViewModel();
+            }
             
             UpdateTabSelection();
             UpdateIndicatorPosition();
@@ -33,6 +47,12 @@ namespace TravelPlannMauiApp
             _currentTab = 1;
             UpdateTabSelection();
             UpdateIndicatorPosition();
+            
+            // Recharger les informations utilisateur
+            if (BindingContext is MainPageViewModel viewModel)
+            {
+                viewModel.LoadUserInfoAsync();
+            }
         }
 
         private async void OnNextTripTapped(object sender, EventArgs e)

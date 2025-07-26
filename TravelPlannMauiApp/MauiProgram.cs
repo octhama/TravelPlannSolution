@@ -64,6 +64,8 @@ public static class MauiProgram
         builder.Services.AddTransient<AddVoyageViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddTransient<MainPageViewModel>(); // Ajout du nouveau ViewModel
+        
         // Enregistrement des Pages
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<VoyageListPage>();
