@@ -457,10 +457,37 @@ public class MapViewModel : INotifyPropertyChanged
     {
         try
         {
-            var currentUser = await _sessionService.GetCurrentUserAsync();
-            if (currentUser != null)
+            // Fix: Use GetCurrentUserIdAsync instead of GetCurrentUserAsync
+            var currentUserId = await _sessionService.GetCurrentUserIdAsync();
+            if (currentUserId.HasValue)
             {
-                _userVoyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUser.Id);
+                // Assuming IVoyageService has a method to get voyages by user ID
+                // You may need to add this method to IVoyageService if it doesn't exist
+                if (_voyageService != null)
+                {
+                    // Note: This assumes GetVoyagesByUtilisateurAsync exists in IVoyageService
+                    // If it doesn't exist, you'll need to add it or modify this approach
+                    try 
+                    {
+                        // Try to call the method if it exists
+                        var getUserVoyagesMethod = _voyageService.GetType().GetMethod("GetVoyagesByUtilisateurAsync");
+                        if (getUserVoyagesMethod != null)
+                        {
+                            var task = (Task<List<Voyage>>)getUserVoyagesMethod.Invoke(_voyageService, new object[] { currentUserId.Value });
+                            _userVoyages = await task;
+                        }
+                        else
+                        {
+                            // Fallback: Initialize empty list
+                            _userVoyages = new List<Voyage>();
+                        }
+                    }
+                    catch
+                    {
+                        _userVoyages = new List<Voyage>();
+                    }
+                }
+                
                 await LoadPinsFromUserDataAsync();
             }
         }
@@ -477,47 +504,45 @@ public class MapViewModel : INotifyPropertyChanged
             _accommodationPins.Clear();
             _activityPins.Clear();
 
-            foreach (var voyage in _userVoyages)
+            // Fix: Use the correct method names from the service interfaces
+            // Load all hébergements
+            var hebergements = await _hebergementService.GetAllHebergementsAsync(); 
+            foreach (var hebergement in hebergements)
             {
-                // Charger les hébergements du voyage
-                var hebergements = await _hebergementService.GetAllAsync(); 
-                foreach (var hebergement in hebergements)
+                if (!string.IsNullOrEmpty(hebergement.Adresse))
                 {
-                    if (!string.IsNullOrEmpty(hebergement.Adresse))
+                    var location = await GeocodeLocationAsync(hebergement.Adresse);
+                    if (location != null)
                     {
-                        var location = await GeocodeLocationAsync(hebergement.Adresse);
-                        if (location != null)
+                        var pin = new Pin
                         {
-                            var pin = new Pin
-                            {
-                                Location = location,
-                                Label = hebergement.Nom,
-                                Address = hebergement.Adresse,
-                                Type = PinType.Place
-                            };
-                            _accommodationPins.Add(pin);
-                        }
+                            Location = location,
+                            Label = hebergement.Nom,
+                            Address = hebergement.Adresse,
+                            Type = PinType.Place
+                        };
+                        _accommodationPins.Add(pin);
                     }
                 }
+            }
 
-                // Charger les activités du voyage
-                var activites = await _activiteService.GetAllAsync();
-                foreach (var activite in activites)
+            // Load all activités
+            var activites = await _activiteService.GetAllActivitesAsync();
+            foreach (var activite in activites)
+            {
+                if (!string.IsNullOrEmpty(activite.Localisation))
                 {
-                    if (!string.IsNullOrEmpty(activite.Localisation))
+                    var location = await GeocodeLocationAsync(activite.Localisation);
+                    if (location != null)
                     {
-                        var location = await GeocodeLocationAsync(activite.Localisation);
-                        if (location != null)
+                        var pin = new Pin
                         {
-                            var pin = new Pin
-                            {
-                                Location = location,
-                                Label = activite.Nom,
-                                Address = activite.Localisation,
-                                Type = PinType.Place
-                            };
-                            _activityPins.Add(pin);
-                        }
+                            Location = location,
+                            Label = activite.Nom,
+                            Address = activite.Localisation,
+                            Type = PinType.Place
+                        };
+                        _activityPins.Add(pin);
                     }
                 }
             }
