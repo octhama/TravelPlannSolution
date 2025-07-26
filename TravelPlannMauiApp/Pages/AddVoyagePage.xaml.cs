@@ -9,10 +9,11 @@ namespace TravelPlannMauiApp.Pages
             InitializeComponent();
             BindingContext = viewModel;
             
-            viewModel.VoyageAdded += async (sender, voyage) => 
+            // Assurez-vous que le ViewModel est correctement initialisé
+            if (viewModel == null)
             {
-                //await Shell.Current.GoToAsync("..");
-            };
+                throw new ArgumentNullException(nameof(viewModel), "Le ViewModel ne peut pas être nul");
+            }
         }
     }
 }

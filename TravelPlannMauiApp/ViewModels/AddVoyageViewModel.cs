@@ -127,13 +127,13 @@ namespace TravelPlannMauiApp.ViewModels
             // Commandes pour les formulaires
             AjouterActiviteCommand = new Command(() => ShowActiviteForm = true);
             AjouterHebergementCommand = new Command(() => ShowHebergementForm = true);
-            AnnulerAjoutActiviteCommand = new Command(() => 
+            AnnulerAjoutActiviteCommand = new Command(() =>
             {
                 NouvelleActiviteNom = string.Empty;
                 NouvelleActiviteDescription = string.Empty;
                 ShowActiviteForm = false;
             });
-            AnnulerAjoutHebergementCommand = new Command(() => 
+            AnnulerAjoutHebergementCommand = new Command(() =>
             {
                 NouvelHebergementNom = string.Empty;
                 NouvelHebergementType = string.Empty;
@@ -142,7 +142,7 @@ namespace TravelPlannMauiApp.ViewModels
             });
             AjouterNouvelleActiviteCommand = new Command(async () => await AjouterNouvelleActivite());
             AjouterNouvelHebergementCommand = new Command(async () => await AjouterNouvelHebergement());
-            
+
             // Commandes de suppression (suppression locale uniquement)
             SupprimerActiviteCommand = new Command<Activite>(SupprimerActiviteLocale);
             SupprimerHebergementCommand = new Command<Hebergement>(SupprimerHebergementLocal);
@@ -166,11 +166,11 @@ namespace TravelPlannMauiApp.ViewModels
 
                 // Créer l'activité d'abord
                 var activiteCree = await _activiteService.AddActiviteAsync(nouvelleActivite);
-                
+
                 if (activiteCree != null)
                 {
                     NouvellesActivites.Add(activiteCree);
-                    
+
                     // Réinitialiser le formulaire
                     NouvelleActiviteNom = string.Empty;
                     NouvelleActiviteDescription = string.Empty;
@@ -180,7 +180,7 @@ namespace TravelPlannMauiApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur lors de l'ajout d'activité: {ex}");
-                await Shell.Current.DisplayAlert("Erreur", 
+                await Shell.Current.DisplayAlert("Erreur",
                     $"Erreur lors de l'ajout de l'activité: {ex.Message}", "OK");
             }
         }
@@ -204,11 +204,11 @@ namespace TravelPlannMauiApp.ViewModels
 
                 // Créer l'hébergement d'abord
                 var hebergementCree = await _hebergementService.AddHebergementAsync(nouvelHebergement);
-                
+
                 if (hebergementCree != null)
                 {
                     NouveauxHebergements.Add(hebergementCree);
-                    
+
                     // Réinitialiser le formulaire
                     NouvelHebergementNom = string.Empty;
                     NouvelHebergementType = string.Empty;
@@ -219,7 +219,7 @@ namespace TravelPlannMauiApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur lors de l'ajout d'hébergement: {ex}");
-                await Shell.Current.DisplayAlert("Erreur", 
+                await Shell.Current.DisplayAlert("Erreur",
                     $"Erreur lors de l'ajout de l'hébergement: {ex.Message}", "OK");
             }
         }
@@ -260,7 +260,8 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 IsBusy = true;
                 Debug.WriteLine("Début de l'ajout du voyage...");
-                
+
+                // Créer le voyage de base SANS les relations many-to-many initialement
                 var voyage = new Voyage
                 {
                     NomVoyage = NomVoyage?.Trim(),
@@ -268,56 +269,55 @@ namespace TravelPlannMauiApp.ViewModels
                     DateDebut = DateOnly.FromDateTime(DateDebut),
                     DateFin = DateOnly.FromDateTime(DateFin),
                     EstComplete = false,
-                    EstArchive = false,
-                    // Créer des copies des activités et hébergements pour éviter les problèmes de tracking
-                    Activites = NouvellesActivites?.Select(a => new Activite 
-                    { 
-                        ActiviteId = a.ActiviteId,
-                        Nom = a.Nom,
-                        Description = a.Description 
-                    }).ToList() ?? new List<Activite>(),
-                    Hebergements = NouveauxHebergements?.Select(h => new Hebergement 
-                    { 
-                        HebergementId = h.HebergementId,
-                        Nom = h.Nom,
-                        TypeHebergement = h.TypeHebergement,
-                        Cout = h.Cout 
-                    }).ToList() ?? new List<Hebergement>()
+                    EstArchive = false
                 };
 
-                Debug.WriteLine($"Voyage créé avec {voyage.Activites.Count} activités et {voyage.Hebergements.Count} hébergements");
+                Debug.WriteLine($"Voyage créé avec {NouvellesActivites.Count} activités et {NouveauxHebergements.Count} hébergements à associer");
 
+                // Ajouter les relations only si il y en a
+                if (NouvellesActivites.Count > 0 || NouveauxHebergements.Count > 0)
+                {
+                    // Créer des listes distinctes pour éviter les problèmes de tracking
+                    var activitesIds = NouvellesActivites.Select(a => a.ActiviteId).ToList();
+                    var hebergementsIds = NouveauxHebergements.Select(h => h.HebergementId).ToList();
+
+                    // Créer de nouvelles instances avec seulement les IDs pour éviter les conflits EF
+                    voyage.Activites = activitesIds.Select(id => new Activite { ActiviteId = id }).ToList();
+                    voyage.Hebergements = hebergementsIds.Select(id => new Hebergement { HebergementId = id }).ToList();
+                }
+                Debug.WriteLine($"Voyage prêt à être ajouté: {voyage.NomVoyage}, Dates: {voyage.DateDebut} - {voyage.DateFin}");
+                // Ajouter le voyage via le service
                 await _voyageService.AddVoyageAsync(voyage);
-                
-                Debug.WriteLine("Voyage ajouté avec succès!");
-                
-                ResetForm();
-                VoyageAdded?.Invoke(this, voyage);
+                Debug.WriteLine($"Voyage ajouté avec succès: {voyage.NomVoyage}");
+                // Réinitialiser les champs
+                NomVoyage = string.Empty;
+                Description = string.Empty;
+                DateDebut = DateTime.Today;
+                DateFin = DateTime.Today.AddDays(1);
+                NouvellesActivites.Clear();
+                NouveauxHebergements.Clear();
+                ShowActiviteForm = false;
+                ShowHebergementForm = false;
+                Debug.WriteLine("Réinitialisation des champs et collections après ajout du voyage");
+                // Retour à la page précédente
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"ERREUR CRITIQUE: {ex}");
-                await Shell.Current.DisplayAlert("Erreur", 
-                    $"Erreur lors de l'ajout du voyage: {ex.Message}", "OK");
+                Debug.WriteLine($"Erreur lors de l'ajout du voyage: {ex}");
+                await HandleError(ex, "Erreur lors de l'ajout du voyage");
             }
             finally
             {
                 IsBusy = false;
-                Debug.WriteLine("Fin de l'ajout du voyage");
+                Debug.WriteLine("Fin de l'ajout du voyage, état IsBusy réinitialisé");
             }
         }
-        private void ResetForm()
+        protected override void OnDisappearing()
         {
-            NomVoyage = string.Empty;
-            Description = string.Empty;
-            DateDebut = DateTime.Today;
-            DateFin = DateTime.Today.AddDays(1);
-            NouvellesActivites.Clear();
-            NouveauxHebergements.Clear();
-            ShowActiviteForm = false;
-            ShowHebergementForm = false;
+            base.OnDisappearing();
+            // Nettoyage ou sauvegarde d'état si nécessaire
+            Debug.WriteLine("OnDisappearing appelé, nettoyage éventuel effectué");
         }
-        public event EventHandler<Voyage> VoyageAdded;
     }
 }
