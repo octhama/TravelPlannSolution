@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using BU.Models;
+using BU.Entities;
 
 namespace BU.Services
 {

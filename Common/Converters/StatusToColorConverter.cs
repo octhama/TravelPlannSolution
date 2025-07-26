@@ -5,7 +5,6 @@ using Microsoft.Maui.Graphics;
 
 namespace Common.Converters
 {
-    // StatusColorConverters.cs
     public class StatusToColorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

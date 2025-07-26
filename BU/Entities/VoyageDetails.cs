@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DAL.DB;
 using System.ComponentModel.DataAnnotations;
 
-namespace BU.Models
+namespace BU.Entities
 {
     public class VoyageDetails
     {
