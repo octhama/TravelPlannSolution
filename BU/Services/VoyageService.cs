@@ -481,7 +481,8 @@ namespace BU.Services
                     
                     try
                     {
-                        // Charger le voyage avec ses relations
+                        // Méthode alternative : charger le voyage avec ses relations
+                        // mais détacher immédiatement pour éviter les problèmes de tracking
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .Include(v => v.Hebergements)
@@ -489,17 +490,21 @@ namespace BU.Services
 
                         if (voyage != null)
                         {
-                            // Supprimer les relations many-to-many d'abord
+                            // Vider les collections de relations
                             voyage.Activites.Clear();
                             voyage.Hebergements.Clear();
                             
                             // Sauvegarder pour supprimer les relations
                             await _context.SaveChangesAsync();
                             
-                            // Supprimer le voyage
-                            _context.Voyages.Remove(voyage);
-                            await _context.SaveChangesAsync();
+                            // Détacher l'entité pour éviter les conflits
+                            _context.Entry(voyage).State = EntityState.Detached;
                             
+                            // Créer une nouvelle instance avec seulement l'ID pour la suppression
+                            var voyageToDelete = new Voyage { VoyageId = voyageId };
+                            _context.Entry(voyageToDelete).State = EntityState.Deleted;
+                            
+                            await _context.SaveChangesAsync();
                             Debug.WriteLine($"Voyage {voyageId} supprimé avec succès");
                         }
 
