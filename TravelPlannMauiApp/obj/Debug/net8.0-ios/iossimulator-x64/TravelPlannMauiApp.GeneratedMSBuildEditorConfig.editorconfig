@@ -46,6 +46,18 @@ build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.L
 build_metadata.AdditionalFiles.TargetPath = Pages/LoginPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Pages/LoginPage.xaml
 
+[/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/Pages/MapPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.MapPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/MapPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/MapPage.xaml
+
+[/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/Pages/RegisterPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.RegisterPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/RegisterPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/RegisterPage.xaml
+
 [/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/Pages/SettingsPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.SettingsPage.xaml
