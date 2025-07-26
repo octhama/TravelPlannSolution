@@ -5,6 +5,7 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using BU.Services;
+using DAL.DB; // Add this using directive for Voyage model
 
 namespace TravelPlannMauiApp.ViewModels;
 
@@ -15,7 +16,8 @@ public class MapViewModel : INotifyPropertyChanged
     private readonly IHebergementService _hebergementService;
     private readonly ISessionService _sessionService;
 
-    private Map _mapControl;
+    // Fix the ambiguous Map reference by using fully qualified name
+    private Microsoft.Maui.Controls.Maps.Map _mapControl;
     private string _searchQuery = "";
     private bool _isLoading = false;
     private bool _showLocationInfo = false;
@@ -47,7 +49,7 @@ public class MapViewModel : INotifyPropertyChanged
     private List<Pin> _restaurantPins = new();
     private List<Pin> _transportPins = new();
 
-    // Données des voyages
+    // Données des voyages - Now properly typed
     private List<Voyage> _userVoyages = new();
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -455,7 +457,7 @@ public class MapViewModel : INotifyPropertyChanged
     {
         try
         {
-            var currentUser = _sessionService.GetCurrentUser(); // Ensure ISessionService has this method
+            var currentUser = _sessionService.GetCurrentUser();
             if (currentUser != null)
             {
                 _userVoyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUser.Id);
