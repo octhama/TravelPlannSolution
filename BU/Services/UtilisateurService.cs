@@ -2,6 +2,7 @@ using DAL.DB;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using System.Diagnostics;
 
 namespace BU.Services;
 
@@ -16,15 +17,62 @@ public class UtilisateurService : IUtilisateurService
 
     public async Task<Utilisateur?> AuthenticateAsync(string email, string motDePasse)
     {
-        var user = await _context.Utilisateurs
-            .FirstOrDefaultAsync(u => u.Email == email);
-
-        if (user != null && VerifyPassword(motDePasse, user.MotDePasse))
+        try
         {
-            return user;
-        }
+            Debug.WriteLine($"=== DÉBUT AuthenticateAsync ===");
+            Debug.WriteLine($"Email recherché: '{email}'");
+            Debug.WriteLine($"Mot de passe fourni: '{motDePasse}'");
 
-        return null;
+            var user = await _context.Utilisateurs
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+            {
+                Debug.WriteLine("Utilisateur non trouvé avec cet email");
+                return null;
+            }
+
+            Debug.WriteLine($"Utilisateur trouvé: {user.Prenom} {user.Nom}");
+            Debug.WriteLine($"Mot de passe en DB: '{user.MotDePasse}'");
+
+            // TEMPORAIRE: Vérifier si le mot de passe en DB semble être en clair ou hashé
+            bool isPasswordHashed = IsPasswordHashed(user.MotDePasse);
+            Debug.WriteLine($"Le mot de passe semble hashé: {isPasswordHashed}");
+
+            bool isAuthenticated = false;
+
+            if (isPasswordHashed)
+            {
+                // Utiliser la vérification avec hash
+                isAuthenticated = VerifyPassword(motDePasse, user.MotDePasse);
+                Debug.WriteLine("Utilisation de la vérification avec hash");
+            }
+            else
+            {
+                // Comparaison directe (mot de passe en clair)
+                isAuthenticated = (motDePasse == user.MotDePasse);
+                Debug.WriteLine("Utilisation de la comparaison directe");
+            }
+
+            Debug.WriteLine($"Authentification réussie: {isAuthenticated}");
+
+            if (isAuthenticated)
+            {
+                return user;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERREUR dans AuthenticateAsync: {ex.Message}");
+            Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            throw;
+        }
+        finally
+        {
+            Debug.WriteLine($"=== FIN AuthenticateAsync ===");
+        }
     }
 
     public async Task<Utilisateur> CreateUserAsync(string nom, string prenom, string email, string motDePasse)
@@ -39,7 +87,7 @@ public class UtilisateurService : IUtilisateurService
             Nom = nom,
             Prenom = prenom,
             Email = email,
-            MotDePasse = HashPassword(motDePasse),
+            MotDePasse = HashPassword(motDePasse), // Les nouveaux utilisateurs auront des mots de passe hashés
             PointsRecompenses = 0
         };
 
@@ -165,5 +213,17 @@ public class UtilisateurService : IUtilisateurService
     {
         var hashedInput = HashPassword(password);
         return hashedInput == hashedPassword;
+    }
+
+    // Méthode pour détecter si un mot de passe est hashé ou en clair
+    private bool IsPasswordHashed(string password)
+    {
+        // Un hash SHA256 en Base64 fait toujours 44 caractères
+        // Et ne contient que des caractères alphanumériques + / et =
+        if (password.Length != 44)
+            return false;
+
+        // Vérifier si le string contient uniquement des caractères Base64 valides
+        return System.Text.RegularExpressions.Regex.IsMatch(password, @"^[A-Za-z0-9+/]*={0,2}$");
     }
 }
