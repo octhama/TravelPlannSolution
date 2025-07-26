@@ -349,6 +349,3 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/Microsoft.VisualStudio.DesignTools.MobileTapContracts.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/Microsoft.VisualStudio.DesignTools.TapContract.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/bin/Debug/net8.0-maccatalyst/maccatalyst-x64/Microsoft.VisualStudio.DesignTools.XamlTapContract.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/BU.stamp
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/Common.stamp
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/DAL.stamp

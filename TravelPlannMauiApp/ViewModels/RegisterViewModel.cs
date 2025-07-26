@@ -12,9 +12,14 @@ public class RegisterViewModel : BaseViewModel
     private string _motDePasse = string.Empty;
     private string _confirmMotDePasse = string.Empty;
 
-    public RegisterViewModel(IUtilisateurService utilisateurService)
+    public RegisterViewModel() : this(null)
     {
-        _utilisateurService = utilisateurService;
+    }
+
+    public RegisterViewModel(IUtilisateurService utilisateurService = null)
+    {
+        _utilisateurService = utilisateurService ?? throw new InvalidOperationException("Service utilisateur non disponible");
+        
         RegisterCommand = CreateCommand(RegisterAsync, CanRegister);
         BackToLoginCommand = CreateCommand(BackToLoginAsync);
     }
@@ -24,8 +29,10 @@ public class RegisterViewModel : BaseViewModel
         get => _nom;
         set
         {
-            SetProperty(ref _nom, value);
-            ((Command)RegisterCommand).ChangeCanExecute();
+            if (SetProperty(ref _nom, value))
+            {
+                ((Command)RegisterCommand)?.ChangeCanExecute();
+            }
         }
     }
 
@@ -34,8 +41,10 @@ public class RegisterViewModel : BaseViewModel
         get => _prenom;
         set
         {
-            SetProperty(ref _prenom, value);
-            ((Command)RegisterCommand).ChangeCanExecute();
+            if (SetProperty(ref _prenom, value))
+            {
+                ((Command)RegisterCommand)?.ChangeCanExecute();
+            }
         }
     }
 
@@ -44,8 +53,10 @@ public class RegisterViewModel : BaseViewModel
         get => _email;
         set
         {
-            SetProperty(ref _email, value);
-            ((Command)RegisterCommand).ChangeCanExecute();
+            if (SetProperty(ref _email, value))
+            {
+                ((Command)RegisterCommand)?.ChangeCanExecute();
+            }
         }
     }
 
@@ -54,8 +65,10 @@ public class RegisterViewModel : BaseViewModel
         get => _motDePasse;
         set
         {
-            SetProperty(ref _motDePasse, value);
-            ((Command)RegisterCommand).ChangeCanExecute();
+            if (SetProperty(ref _motDePasse, value))
+            {
+                ((Command)RegisterCommand)?.ChangeCanExecute();
+            }
         }
     }
 
@@ -64,13 +77,15 @@ public class RegisterViewModel : BaseViewModel
         get => _confirmMotDePasse;
         set
         {
-            SetProperty(ref _confirmMotDePasse, value);
-            ((Command)RegisterCommand).ChangeCanExecute();
+            if (SetProperty(ref _confirmMotDePasse, value))
+            {
+                ((Command)RegisterCommand)?.ChangeCanExecute();
+            }
         }
     }
 
-    public ICommand RegisterCommand { get; }
-    public ICommand BackToLoginCommand { get; }
+    public ICommand RegisterCommand { get; private set; }
+    public ICommand BackToLoginCommand { get; private set; }
 
     private bool CanRegister()
     {
@@ -79,30 +94,45 @@ public class RegisterViewModel : BaseViewModel
                !string.IsNullOrWhiteSpace(Email) &&
                !string.IsNullOrWhiteSpace(MotDePasse) &&
                MotDePasse == ConfirmMotDePasse &&
-               MotDePasse.Length >= 6;
+               MotDePasse.Length >= 6 &&
+               !IsBusy;
     }
 
     private async Task RegisterAsync()
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine($"Tentative de création de compte pour: {Email}");
+            
             var utilisateur = await _utilisateurService.CreateUserAsync(Nom, Prenom, Email, MotDePasse);
             
+            System.Diagnostics.Debug.WriteLine("Compte créé avec succès");
             await Shell.Current.DisplayAlert("Succès", "Compte créé avec succès!", "OK");
             await Shell.Current.GoToAsync("..");
         }
         catch (InvalidOperationException ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Erreur validation: {ex.Message}");
             await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Erreur création compte: {ex}");
             await HandleError(ex, "Erreur lors de la création du compte");
         }
     }
 
     private async Task BackToLoginAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        try
+        {
+            System.Diagnostics.Debug.WriteLine("Retour vers LoginPage");
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur navigation retour: {ex}");
+            await HandleError(ex, "Erreur lors de la navigation");
+        }
     }
 }
