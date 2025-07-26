@@ -53,15 +53,20 @@ public static class MauiProgram
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
         builder.Services.AddScoped<IVoyageService, VoyageService>();
+        builder.Services.AddScoped<IUtilisateurService, UtilisateurService>();
+        builder.Services.AddScoped<ISettingsService, SettingsService>();
 
-        // ViewModels et Pages
+        // Enregistrement des ViewModels
         builder.Services.AddTransient<VoyageViewModel>();
-        builder.Services.AddTransient<AddVoyageViewModel>();
+        builder.Services.AddTransient<MapViewModel>();
         builder.Services.AddTransient<VoyageDetailsViewModel>();
-        
+
+        // Enregistrement des Pages
+        builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<VoyageListPage>();
+        builder.Services.AddTransient<MapPage>();
         builder.Services.AddTransient<VoyageDetailsPage>();
-        builder.Services.AddTransient<AddVoyagePage>();
+        builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -1,254 +1,109 @@
 using TravelPlannMauiApp.ViewModels;
 
-
-namespace TravelPlannMauiApp.Pages;
-
-public partial class MapPage : ContentPage
+namespace TravelPlannMauiApp.Pages
 {
-    private readonly MapViewModel _viewModel;
-    private bool _isMapLoaded = false;
-
-    public MapPage(MapViewModel viewModel)
+    public partial class MapPage : ContentPage
     {
-        InitializeComponent();
-        _viewModel = viewModel;
-        BindingContext = _viewModel;
-        LoadMap();
-    }
+        private readonly MapViewModel _viewModel;
 
-    private void LoadMap()
-    {
-        // HTML pour une carte 3D légère utilisant Leaflet avec plugin 3D
-        var htmlContent = @"
+        public MapPage(MapViewModel viewModel)
+        {
+            InitializeComponent();
+            
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            BindingContext = _viewModel;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            
+            try
+            {
+                // Configurer la WebView dans le ViewModel
+                _viewModel.SetWebView(MapWebView);
+                
+                // Charger le contenu HTML de la carte
+                LoadMapContent();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
+                DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
+            }
+        }
+
+        private void LoadMapContent()
+        {
+            // Ici, vous devriez charger votre contenu HTML pour la carte
+            // Par exemple, une carte Leaflet ou Google Maps
+            var htmlContent = @"
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset='utf-8'>
+    <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>TravelPlann Map</title>
-    <link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' />
+    <title>Carte</title>
     <style>
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            font-family: Arial, sans-serif;
-        }
-        #map { 
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        .placeholder { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
             height: 100vh; 
-            width: 100%;
-        }
-        .custom-marker {
-            background-color: #6200EE;
-            border: 3px solid white;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        .location-popup {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .location-popup h3 {
-            margin: 0 0 10px 0;
-            color: #6200EE;
-        }
-        .location-popup p {
-            margin: 5px 0;
+            background: #f0f0f0;
             color: #666;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <div id='map'></div>
+    <div class='placeholder'>
+        <div>
+            <h2>🗺️ Carte</h2>
+            <p>La carte sera affichée ici</p>
+            <p>Intégrez ici votre solution de cartographie<br>(Leaflet, Google Maps, etc.)</p>
+        </div>
+    </div>
     
-    <script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'></script>
     <script>
-        let map;
-        let currentMarker = null;
-        let is3DMode = false;
-        let currentLayer;
+        // Fonctions appelées depuis l'application
+        function searchLocationFromApp(query) {
+            console.log('Recherche:', query);
+            // Implémentez la recherche ici
+        }
         
-        // Initialisation de la carte
-        function initMap() {
-            map = L.map('map', {
-                center: [48.8566, 2.3522], // Paris par défaut
-                zoom: 13,
-                zoomControl: false,
-                attributionControl: false
-            });
-
-            // Couche de base
-            currentLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            // Événement de clic sur la carte
-            map.on('click', function(e) {
-                addMarker(e.latlng);
-                getLocationInfo(e.latlng);
-            });
-
-            // Notification que la carte est chargée
-            window.mapLoaded = true;
+        function toggleViewModeFromApp() {
+            console.log('Changement de vue');
+            return '🌍'; // Retourner l'icône appropriée
         }
-
-        // Ajouter un marqueur
-        function addMarker(latlng, title = '') {
-            if (currentMarker) {
-                map.removeLayer(currentMarker);
-            }
-
-            const icon = L.divIcon({
-                className: 'custom-marker',
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            });
-
-            currentMarker = L.marker(latlng, { icon: icon }).addTo(map);
-
-            if (title) {
-                currentMarker.bindPopup(`
-                    <div class='location-popup'>
-                        <h3>${title}</h3>
-                        <p>Lat: ${latlng.lat.toFixed(6)}</p>
-                        <p>Lng: ${latlng.lng.toFixed(6)}</p>
-                    </div>
-                `).openPopup();
-            }
+        
+        function goToMyLocationFromApp() {
+            console.log('Aller à ma position');
+            // Implémentez la géolocalisation ici
         }
-
-        // Obtenir les informations de localisation
-        function getLocationInfo(latlng) {
-            // Géocodage inversé simple
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`)
-                .then(response => response.json())
-                .then(data => {
-                    const locationName = data.display_name || 'Lieu inconnu';
-                    const address = data.address || {};
-                    
-                    addMarker(latlng, locationName);
-                    
-                    // Communiquer avec l'application MAUI (si disponible)
-                    if (window.webkit?.messageHandlers?.locationSelected) {
-                        window.webkit.messageHandlers.locationSelected.postMessage({
-                            name: locationName,
-                            address: locationName,
-                            lat: latlng.lat,
-                            lng: latlng.lng
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.log('Erreur de géocodage:', error);
-                    addMarker(latlng, 'Lieu sélectionné');
-                });
+        
+        function zoomInFromApp() {
+            console.log('Zoom in');
+            // Implémentez le zoom ici
         }
-
-        // Rechercher une localisation
-        function searchLocation(query) {
-            if (!query) return;
-            
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.length > 0) {
-                        const result = data[0];
-                        const latlng = L.latLng(parseFloat(result.lat), parseFloat(result.lon));
-                        map.setView(latlng, 15);
-                        addMarker(latlng, result.display_name);
-                    }
-                })
-                .catch(error => {
-                    console.log('Erreur de recherche:', error);
-                });
+        
+        function zoomOutFromApp() {
+            console.log('Zoom out');
+            // Implémentez le zoom ici
         }
-
-        // Changer de mode de vue
-        function toggleViewMode() {
-            if (is3DMode) {
-                // Retour en 2D
-                map.removeLayer(currentLayer);
-                currentLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(map);
-                is3DMode = false;
-            } else {
-                // Mode satellite/3D
-                map.removeLayer(currentLayer);
-                currentLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: '© Esri'
-                }).addTo(map);
-                is3DMode = true;
-            }
-        }
-
-        // Aller à ma position
-        function goToMyLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
-                    map.setView(latlng, 15);
-                    addMarker(latlng, 'Ma position');
-                });
-            }
-        }
-
-        // Fonctions de zoom
-        function zoomIn() {
-            map.zoomIn();
-        }
-
-        function zoomOut() {
-            map.zoomOut();
-        }
-
-        // Initialiser la carte au chargement
-        document.addEventListener('DOMContentLoaded', initMap);
     </script>
 </body>
 </html>";
 
-        MapWebView.Source = new HtmlWebViewSource { Html = htmlContent };
-        MapWebView.Navigated += OnMapNavigated;
-    }
-
-    private async void OnMapNavigated(object sender, WebNavigatedEventArgs e)
-    {
-        if (e.Result == WebNavigationResult.Success && !_isMapLoaded)
-        {
-            _isMapLoaded = true;
-            // Attendre que la carte soit complètement chargée
-            await Task.Delay(1000);
-
-            // Injecter les fonctions JavaScript pour la communication
-            await MapWebView.EvaluateJavaScriptAsync(@"
-                window.searchLocationFromApp = function(query) {
-                    searchLocation(query);
-                };
-                
-                window.toggleViewModeFromApp = function() {
-                    toggleViewMode();
-                    return is3DMode ? '🌍' : '🗺️';
-                };
-                
-                window.goToMyLocationFromApp = function() {
-                    goToMyLocation();
-                };
-                
-                window.zoomInFromApp = function() {
-                    zoomIn();
-                };
-                
-                window.zoomOutFromApp = function() {
-                    zoomOut();
-                };
-            ");
+            MapWebView.Source = new HtmlWebViewSource { Html = htmlContent };
         }
-    }
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        _viewModel.SetWebView(MapWebView);
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            // Nettoyer si nécessaire
+        }
     }
 }

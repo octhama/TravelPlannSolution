@@ -1,17 +1,24 @@
 ﻿using Microsoft.Maui.Controls;
 using TravelPlannMauiApp.Pages;
 using TravelPlannMauiApp.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TravelPlannMauiApp
 {
     public partial class MainPage : ContentPage
     {
         private int _currentTab = 1; // 0: Map, 1: Home, 2: Trips
+        private readonly IServiceProvider _serviceProvider;
 
         public MainPage()
         {
             InitializeComponent();
             BindingContext = this;
+            
+            // Obtenir le service provider de manière plus sûre
+            _serviceProvider = Handler?.MauiContext?.Services ?? 
+                              (Application.Current as App)?.Handler?.MauiContext?.Services;
+            
             UpdateTabSelection();
             UpdateIndicatorPosition();
             
@@ -30,9 +37,29 @@ namespace TravelPlannMauiApp
 
         private async void OnNextTripTapped(object sender, EventArgs e)
         {
-            var voyageListPage = new VoyageListPage(
-                Handler.MauiContext.Services.GetService<VoyageViewModel>());
-            await Navigation.PushAsync(voyageListPage);
+            try
+            {
+                if (_serviceProvider == null)
+                {
+                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
+                    return;
+                }
+
+                var voyageViewModel = _serviceProvider.GetService<VoyageViewModel>();
+                if (voyageViewModel == null)
+                {
+                    await DisplayAlert("Erreur", "ViewModel Voyage non disponible", "OK");
+                    return;
+                }
+
+                var voyageListPage = new VoyageListPage(voyageViewModel);
+                await Navigation.PushAsync(voyageListPage);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers voyages: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -43,8 +70,16 @@ namespace TravelPlannMauiApp
 
         protected async void OnSettingsTapped(object sender, EventArgs e)
         {
-            var settingsPage = new SettingsPage();
-            await Navigation.PushAsync(settingsPage);
+            try
+            {
+                var settingsPage = new SettingsPage();
+                await Navigation.PushAsync(settingsPage);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers paramètres: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
         }
 
         private void UpdateIndicatorPosition()
@@ -57,31 +92,67 @@ namespace TravelPlannMauiApp
 
         private async void OnTabTapped(object sender, EventArgs e)
         {
-            var grid = (Grid)sender;
-            var tabIndex = Grid.GetColumn(grid);
-
-            if (_currentTab == tabIndex)
-                return;
-
-            _currentTab = tabIndex;
-            UpdateTabSelection();
-            UpdateIndicatorPosition();
-
-            switch (tabIndex)
+            try
             {
-                case 0:
-                    var mapPage = new MapPage(Handler.MauiContext.Services.GetService<MapViewModel>());
-                    await Navigation.PushAsync(mapPage);
-                    break;
-                case 2:
-                    var voyageListPage = new VoyageListPage(
-                        Handler.MauiContext.Services.GetService<VoyageViewModel>());
-                    await Navigation.PushAsync(voyageListPage);
-                    break;
-                case 1:
-                default:
-                    // Ne rien faire pour l'onglet Accueil
-                    break;
+                var grid = (Grid)sender;
+                var tabIndex = Grid.GetColumn(grid);
+
+                if (_currentTab == tabIndex)
+                    return;
+
+                _currentTab = tabIndex;
+                UpdateTabSelection();
+                UpdateIndicatorPosition();
+
+                if (_serviceProvider == null)
+                {
+                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
+                    return;
+                }
+
+                switch (tabIndex)
+                {
+                    case 0: // Map
+                        var mapViewModel = _serviceProvider.GetService<MapViewModel>();
+                        if (mapViewModel != null)
+                        {
+                            var mapPage = new MapPage(mapViewModel);
+                            await Navigation.PushAsync(mapPage);
+                        }
+                        else
+                        {
+                            await DisplayAlert("Erreur", "ViewModel Carte non disponible", "OK");
+                        }
+                        break;
+                        
+                    case 2: // Trips
+                        var voyageViewModel = _serviceProvider.GetService<VoyageViewModel>();
+                        if (voyageViewModel != null)
+                        {
+                            var voyageListPage = new VoyageListPage(voyageViewModel);
+                            await Navigation.PushAsync(voyageListPage);
+                        }
+                        else
+                        {
+                            await DisplayAlert("Erreur", "ViewModel Voyage non disponible", "OK");
+                        }
+                        break;
+                        
+                    case 1: // Home
+                    default:
+                        // Ne rien faire pour l'onglet Accueil
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du tap sur onglet: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+                
+                // Remettre l'onglet précédent en cas d'erreur
+                _currentTab = 1;
+                UpdateTabSelection();
+                UpdateIndicatorPosition();
             }
         }
 
