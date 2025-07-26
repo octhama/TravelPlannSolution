@@ -59,6 +59,14 @@ namespace BU.Services
                 throw;
             }
         }
+        
+        public async Task<List<Voyage>> GetVoyagesByUtilisateurAsync(int utilisateurId)
+        {
+            return await _context.Voyages
+                .Where(v => v.UtilisateurId == utilisateurId)
+                .ToListAsync();
+        }
+        
 
         public async Task AddVoyageAsync(Voyage voyage)
         {
@@ -71,7 +79,7 @@ namespace BU.Services
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         // Créer un nouveau voyage avec UNIQUEMENT les propriétés de base
@@ -98,14 +106,14 @@ namespace BU.Services
                             var existingActivites = await _context.Activites
                                 .Where(a => activiteIds.Contains(a.ActiviteId))
                                 .ToListAsync();
-                            
+
                             Debug.WriteLine($"Trouvé {existingActivites.Count} activités existantes");
-                            
+
                             // Recharger le voyage pour établir les relations
                             var voyageForRelations = await _context.Voyages
                                 .Include(v => v.Activites)
                                 .FirstAsync(v => v.VoyageId == newVoyage.VoyageId);
-                            
+
                             foreach (var activite in existingActivites)
                             {
                                 voyageForRelations.Activites.Add(activite);
@@ -118,14 +126,14 @@ namespace BU.Services
                             var existingHebergements = await _context.Hebergements
                                 .Where(h => hebergementIds.Contains(h.HebergementId))
                                 .ToListAsync();
-                            
+
                             Debug.WriteLine($"Trouvé {existingHebergements.Count} hébergements existants");
-                            
+
                             // Recharger le voyage pour établir les relations (si pas déjà fait)
                             var voyageForRelations = await _context.Voyages
                                 .Include(v => v.Hebergements)
                                 .FirstAsync(v => v.VoyageId == newVoyage.VoyageId);
-                            
+
                             foreach (var hebergement in existingHebergements)
                             {
                                 voyageForRelations.Hebergements.Add(hebergement);
@@ -135,7 +143,7 @@ namespace BU.Services
                         // Sauvegarder les relations
                         await _context.SaveChangesAsync();
                         await transaction.CommitAsync();
-                        
+
                         Debug.WriteLine("Voyage et relations sauvegardés avec succès");
                     }
                     catch (Exception ex)
@@ -145,7 +153,7 @@ namespace BU.Services
                         throw;
                     }
                 });
-                
+
                 _cachedVoyages = null;
             }
             catch (Exception ex)

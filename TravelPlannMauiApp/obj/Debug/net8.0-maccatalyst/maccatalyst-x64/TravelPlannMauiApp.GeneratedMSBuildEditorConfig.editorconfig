@@ -40,6 +40,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.A
 build_metadata.AdditionalFiles.TargetPath = Pages/AddVoyagePage.xaml
 build_metadata.AdditionalFiles.RelativePath = Pages/AddVoyagePage.xaml
 
+[/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/Pages/LoginPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.LoginPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/LoginPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/LoginPage.xaml
+
 [/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/Pages/SettingsPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = TravelPlannMauiApp.Pages.SettingsPage.xaml

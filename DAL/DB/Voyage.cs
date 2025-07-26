@@ -18,6 +18,7 @@ public partial class Voyage
     public bool EstComplete { get; set; }
 
     public bool EstArchive { get; set; }
+    public int UtilisateurId { get; set; }
 
     public virtual ICollection<Activite>? Activites { get; set; }
     public virtual ICollection<Hebergement>? Hebergements { get; set; }
