@@ -250,7 +250,16 @@ public partial class TravelPlannDbContext : DbContext
 
             entity.Property(e => e.VoyageId).HasColumnName("VoyageID");
             entity.Property(e => e.NomVoyage).HasMaxLength(100);
+            entity.Property(e => e.UtilisateurId).HasColumnName("UtilisateurID");
 
+            // Relation avec le créateur du voyage
+            entity.HasOne(d => d.Utilisateur)
+                .WithMany(p => p.VoyagesCreated) // Vous devrez ajouter cette propriété dans Utilisateur
+                .HasForeignKey(d => d.UtilisateurId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Voyage_Utilisateur");
+
+            // Relation many-to-many avec les hébergements
             entity.HasMany(d => d.Hebergements).WithMany(p => p.Voyages)
                 .UsingEntity<Dictionary<string, object>>(
                     "HebergementVoyage",
@@ -268,6 +277,26 @@ public partial class TravelPlannDbContext : DbContext
                         j.ToTable("HebergementVoyage");
                         j.IndexerProperty<int>("VoyageId").HasColumnName("VoyageID");
                         j.IndexerProperty<int>("HebergementId").HasColumnName("HebergementID");
+                    });
+
+            // Relation many-to-many avec les organisateurs (table OrganisationVoyage)
+            entity.HasMany(d => d.Utilisateurs).WithMany(p => p.Voyages)
+                .UsingEntity<Dictionary<string, object>>(
+                    "OrganisationVoyage",
+                    r => r.HasOne<Utilisateur>().WithMany()
+                        .HasForeignKey("UtilisateurId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_OrganisationVoyage_Utilisateur"),
+                    l => l.HasOne<Voyage>().WithMany()
+                        .HasForeignKey("VoyageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_OrganisationVoyage_Voyage"),
+                    j =>
+                    {
+                        j.HasKey("UtilisateurId", "VoyageId");
+                        j.ToTable("OrganisationVoyage");
+                        j.IndexerProperty<int>("UtilisateurId").HasColumnName("UtilisateurID");
+                        j.IndexerProperty<int>("VoyageId").HasColumnName("VoyageID");
                     });
         });
 

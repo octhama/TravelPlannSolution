@@ -12,7 +12,9 @@ public class LoginViewModel : BaseViewModel
 
     public LoginViewModel(IUtilisateurService utilisateurService)
     {
-        _utilisateurService = utilisateurService;
+        _utilisateurService = utilisateurService ?? throw new ArgumentNullException(nameof(utilisateurService));
+        
+        // Utiliser les méthodes CreateCommand corrigées
         LoginCommand = CreateCommand(LoginAsync, CanLogin);
         RegisterCommand = CreateCommand(NavigateToRegisterAsync);
     }
@@ -23,7 +25,7 @@ public class LoginViewModel : BaseViewModel
         set
         {
             SetProperty(ref _email, value);
-            ((Command)LoginCommand).ChangeCanExecute();
+            (LoginCommand as Command)?.ChangeCanExecute();
         }
     }
 
@@ -33,7 +35,7 @@ public class LoginViewModel : BaseViewModel
         set
         {
             SetProperty(ref _motDePasse, value);
-            ((Command)LoginCommand).ChangeCanExecute();
+            (LoginCommand as Command)?.ChangeCanExecute();
         }
     }
 
@@ -47,8 +49,12 @@ public class LoginViewModel : BaseViewModel
 
     private async Task LoginAsync()
     {
+        if (IsBusy) return;
+        
         try
         {
+            IsBusy = true;
+            
             var utilisateur = await _utilisateurService.AuthenticateAsync(Email, MotDePasse);
             
             if (utilisateur != null)
@@ -69,10 +75,21 @@ public class LoginViewModel : BaseViewModel
         {
             await HandleError(ex, "Erreur lors de la connexion");
         }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task NavigateToRegisterAsync()
     {
-        await Shell.Current.GoToAsync("RegisterPage");
+        try
+        {
+            await Shell.Current.GoToAsync("RegisterPage");
+        }
+        catch (Exception ex)
+        {
+            await HandleError(ex, "Erreur lors de la navigation");
+        }
     }
 }

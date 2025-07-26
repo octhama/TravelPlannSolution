@@ -24,4 +24,5 @@ public partial class Voyage
     public virtual ICollection<Hebergement>? Hebergements { get; set; }
 
     public virtual ICollection<Utilisateur> Utilisateurs { get; set; } = new List<Utilisateur>();
+    public virtual Utilisateur Utilisateur { get; set; } = null!;
 }

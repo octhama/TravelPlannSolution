@@ -24,4 +24,7 @@ public partial class Utilisateur
     public virtual ICollection<PointsRecompense> PointsRecompensesNavigation { get; set; } = new List<PointsRecompense>();
 
     public virtual ICollection<Voyage> Voyages { get; set; } = new List<Voyage>();
+
+    // Voyages créés par cet utilisateur (relation one-to-many)
+    public virtual ICollection<Voyage> VoyagesCreated { get; set; } = new List<Voyage>();
 }
