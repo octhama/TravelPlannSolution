@@ -14,7 +14,6 @@ namespace TravelPlannMauiApp.Pages
     {
         private readonly VoyageDetailsViewModel _viewModel;
 
-        // CORRECTION: Injecter directement le ViewModel au lieu des services
         public VoyageDetailsPage(VoyageDetailsViewModel viewModel)
         {
             InitializeComponent();

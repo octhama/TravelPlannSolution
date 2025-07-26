@@ -307,7 +307,6 @@ namespace TravelPlannMauiApp.ViewModels
             RefreshCommandStates();
         }
 
-        // Méthode SaveVoyageAsync corrigée dans VoyageDetailsViewModel
         private async Task SaveVoyageAsync()
         {
             if (_isLoading) return;
