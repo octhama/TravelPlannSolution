@@ -604,7 +604,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
         try
         {
-            var newRadius = _currentRegion.Radius.Multiply(2);
+            var newRadius = Distance.FromMeters(_currentRegion.Radius.Meters * 2);
             var newRegion = MapSpan.FromCenterAndRadius(_currentRegion.Center, newRadius);
             _mapControl.MoveToRegion(newRegion);
         }
@@ -748,10 +748,10 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             try
             {
                 // Charger les voyages de l'utilisateur
-                var userId = _sessionService.GetCurrentUserId();
-                if (userId > 0)
+                var currentUser = await _sessionService.GetCurrentUserAsync();
+                if (currentUser != null)
                 {
-                    _userVoyages = await _voyageService.GetVoyagesByUserAsync(userId);
+                    _userVoyages = await _voyageService.GetUserVoyagesAsync(currentUser.Id);
                     
                     // Charger les points d'intérêt des voyages
                     await LoadPointsOfInterestAsync();
@@ -779,7 +779,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                 foreach (var voyage in _userVoyages)
                 {
                     // Hébergements
-                    var hebergements = await _hebergementService.GetHebergementsByVoyageAsync(voyage.VoyageId);
+                    var hebergements = await _hebergementService.GetAllAsync();
                     foreach (var hebergement in hebergements)
                     {
                         if (!string.IsNullOrEmpty(hebergement.Adresse))
@@ -799,7 +799,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                     }
 
                     // Activités
-                    var activites = await _activiteService.GetActivitesByVoyageAsync(voyage.VoyageId);
+                    var activites = await _activiteService.GetAllAsync();
                     foreach (var activite in activites)
                     {
                         if (!string.IsNullOrEmpty(activite.Localisation))
