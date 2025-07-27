@@ -138,6 +138,10 @@ public partial class TravelPlannDbContext : DbContext
             entity.Property(e => e.Nom).HasMaxLength(100);
             entity.Property(e => e.TypeHebergement).HasMaxLength(50);
             entity.Property(e => e.Adresse).HasMaxLength(255); // Nouvelle propriété
+            /**entity.HasOne<Voyage>()
+                .WithMany()
+                .HasForeignKey(h => h.VoyageId)
+                .OnDelete(DeleteBehavior.ClientSetNull);**/
         });
 
         modelBuilder.Entity<MembreGroupe>(entity =>
