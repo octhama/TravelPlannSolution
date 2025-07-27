@@ -520,7 +520,16 @@ public class MapViewModel : INotifyPropertyChanged
                         var getUserVoyagesMethod = _voyageService.GetType().GetMethod("GetVoyagesByUtilisateurAsync");
                         if (getUserVoyagesMethod != null)
                         {
-                            var task = (Task<List<Voyage>>)getUserVoyagesMethod.Invoke(_voyageService, new object[] { currentUserId.Value });
+                            var result = getUserVoyagesMethod.Invoke(_voyageService, new object[] { currentUserId.Value });
+                            var task = result as Task<List<Voyage>>;
+                            if (task != null)
+                            {
+                                _userVoyages = await task;
+                            }
+                            else
+                            {
+                                _userVoyages = new List<Voyage>();
+                            }
                             _userVoyages = await task ?? new List<Voyage>();
                         }
                         else
