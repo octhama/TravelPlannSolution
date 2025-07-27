@@ -1,3 +1,5 @@
+using DAL.DB;
+
 namespace BU.Services;
 
 public class SessionService : ISessionService
@@ -169,5 +171,21 @@ public class SessionService : ISessionService
             System.Diagnostics.Debug.WriteLine($"Erreur IsLoggedIn: {ex.Message}");
             return false;
         }
+    }
+
+    // Méthode helper pour obtenir un utilisateur basique
+    public async Task<Utilisateur?> GetCurrentUserAsync()
+    {
+        var userId = await GetCurrentUserIdAsync();
+        var userName = await GetCurrentUserNameAsync();
+        
+        if (!userId.HasValue)
+            return null;
+            
+        return new Utilisateur 
+        { 
+            UtilisateurId = userId.Value, 
+            Nom = userName ?? "Utilisateur"
+        };
     }
 }

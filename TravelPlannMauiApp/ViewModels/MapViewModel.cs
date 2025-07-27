@@ -588,7 +588,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
         try
         {
-            var newRadius = _currentRegion.Radius.Multiply(0.5);
+            var newRadius = Distance.FromMeters(_currentRegion.Radius.Meters * 0.5);
             var newRegion = MapSpan.FromCenterAndRadius(_currentRegion.Center, newRadius);
             _mapControl.MoveToRegion(newRegion);
         }
@@ -747,11 +747,11 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         IsLoading = true;
         try
         {
-            // Charger les voyages de l'utilisateur
-            var currentUser = await _sessionService.GetCurrentUserAsync();
-            if (currentUser != null)
+            // Obtenir l'ID de l'utilisateur actuel
+            var currentUserId = await _sessionService.GetCurrentUserIdAsync();
+            if (currentUserId.HasValue)
             {
-                _userVoyages = await _voyageService.GetUserVoyagesAsync(currentUser.Id);
+                _userVoyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUserId.Value);
                 
                 // Charger les points d'intérêt des voyages
                 await LoadPointsOfInterestAsync();
@@ -779,7 +779,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             foreach (var voyage in _userVoyages)
             {
                 // Hébergements
-                var hebergements = await _hebergementService.GetAllAsync();
+                var hebergements = await _hebergementService.GetAllHebergementsAsync();
                 foreach (var hebergement in hebergements)
                 {
                     if (!string.IsNullOrEmpty(hebergement.Adresse))
@@ -799,7 +799,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                 }
 
                 // Activités
-                var activites = await _activiteService.GetAllAsync();
+                var activites = await _activiteService.GetAllActivitesAsync();
                 foreach (var activite in activites)
                 {
                     if (!string.IsNullOrEmpty(activite.Localisation))

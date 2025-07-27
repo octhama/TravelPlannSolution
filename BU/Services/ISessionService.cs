@@ -1,3 +1,5 @@
+using DAL.DB;
+
 namespace BU.Services;
 
 public interface ISessionService
