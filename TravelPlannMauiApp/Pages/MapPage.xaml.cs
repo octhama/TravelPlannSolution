@@ -18,31 +18,39 @@ namespace TravelPlannMauiApp.Pages
         }
 
         protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-            
-            try
-            {
-                // Configurer le contrôle Map dans le ViewModel
-                _viewModel.SetMapControl(MapControl);
-                
-                // Initialiser la carte avec la position par défaut (Paris)
-                await InitializeMapAsync();
-                
-                // Configurer les événements de la carte
-                SetupMapEvents();
-                
-                // Rafraîchir les données utilisateur
-                await _viewModel.RefreshDataAsync();
-                
-                System.Diagnostics.Debug.WriteLine("MapPage initialisée avec succès");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
-                await DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
-            }
-        }
+{
+    base.OnAppearing();
+    
+    try
+    {
+        System.Diagnostics.Debug.WriteLine("=== MapPage OnAppearing ===");
+        
+        // Configurer le contrôle Map dans le ViewModel
+        _viewModel.SetMapControl(MapControl);
+        
+        // Initialiser la carte avec la position par défaut (Paris)
+        await InitializeMapAsync();
+        
+        // Configurer les événements de la carte
+        SetupMapEvents();
+        
+        // Rafraîchir les données utilisateur - IMPORTANT: Attendre que ce soit terminé
+        System.Diagnostics.Debug.WriteLine("Début du rafraîchissement des données...");
+        await _viewModel.RefreshDataAsync();
+        System.Diagnostics.Debug.WriteLine("Rafraîchissement des données terminé");
+        
+        // Log de l'état final
+        _viewModel.LogCurrentState();
+        
+        System.Diagnostics.Debug.WriteLine("MapPage initialisée avec succès");
+    }
+    catch (Exception ex)
+    {
+        System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
+        await DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
+    }
+}
+
 
         private async Task InitializeMapAsync()
         {
@@ -123,48 +131,50 @@ namespace TravelPlannMauiApp.Pages
         }
 
         private async void OnMapClicked(object sender, MapClickedEventArgs e)
+{
+    try
+    {
+        var clickedLocation = e.Location;
+        System.Diagnostics.Debug.WriteLine($"Carte cliquée à: {clickedLocation.Latitude:F6}, {clickedLocation.Longitude:F6}");
+        
+        // Fermer le panel d'informations si ouvert
+        _viewModel.CloseLocationInfoCommand?.Execute(null);
+        
+        // Effectuer un géocodage inverse pour obtenir l'adresse
+        var address = await _viewModel.GetAddressFromLocationAsync(clickedLocation);
+        System.Diagnostics.Debug.WriteLine($"Adresse obtenue: {address}");
+        
+        // Créer un pin temporaire à l'emplacement cliqué
+        var tempPin = new Pin
         {
-            try
-            {
-                var clickedLocation = e.Location;
-                System.Diagnostics.Debug.WriteLine($"Carte cliquée à: {clickedLocation.Latitude}, {clickedLocation.Longitude}");
-                
-                // Fermer le panel d'informations si ouvert
-                _viewModel.CloseLocationInfoCommand?.Execute(null);
-                
-                // Optionnel : Effectuer un géocodage inverse pour obtenir l'adresse
-                var address = await _viewModel.GetAddressFromLocationAsync(clickedLocation);
-                
-                // Créer un pin temporaire à l'emplacement cliqué
-                var tempPin = new Pin
-                {
-                    Location = clickedLocation,
-                    Label = "Lieu sélectionné",
-                    Address = address,
-                    Type = PinType.Generic
-                };
-                
-                // Supprimer les anciens pins temporaires
-                var existingTempPins = MapControl.Pins
-                    .Where(p => p.Label == "Lieu sélectionné")
-                    .ToList();
-                
-                foreach (var pin in existingTempPins)
-                {
-                    MapControl.Pins.Remove(pin);
-                }
-                
-                // Ajouter le nouveau pin temporaire
-                MapControl.Pins.Add(tempPin);
-                
-                // Afficher les détails du lieu
-                _viewModel.ShowLocationDetails(tempPin);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erreur lors du clic sur la carte: {ex.Message}");
-            }
+            Location = clickedLocation,
+            Label = "Lieu sélectionné",
+            Address = address,
+            Type = PinType.Generic
+        };
+        
+        // Supprimer les anciens pins temporaires
+        var existingTempPins = MapControl.Pins
+            .Where(p => p.Label == "Lieu sélectionné")
+            .ToList();
+        
+        foreach (var pin in existingTempPins)
+        {
+            MapControl.Pins.Remove(pin);
         }
+        
+        // Ajouter le nouveau pin temporaire
+        MapControl.Pins.Add(tempPin);
+        System.Diagnostics.Debug.WriteLine("Pin temporaire ajouté");
+        
+        // Afficher les détails du lieu
+        _viewModel.ShowLocationDetails(tempPin);
+    }
+    catch (Exception ex)
+    {
+        System.Diagnostics.Debug.WriteLine($"Erreur lors du clic sur la carte: {ex.Message}");
+    }
+}
 
         private void OnMapPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

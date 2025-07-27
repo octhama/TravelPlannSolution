@@ -10,6 +10,7 @@ namespace BU.Services
         Task<List<Activite>> GetAllActivitesAsync();
         Task<Activite> AddActiviteAsync(Activite activite);
         Task DeleteActiviteAsync(int activiteId);
+        Task<IEnumerable<Activite>> GetActivitesByVoyageAsync(int voyageId);
 
     }
 }

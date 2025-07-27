@@ -29,6 +29,27 @@ namespace BU.Services
             return hebergement;
         }
 
+        public async Task<IEnumerable<Hebergement>> GetHebergementsByVoyageAsync(int voyageId)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Recherche des hébergements pour le voyage {voyageId}");
+                
+            
+                var hebergements = await _context.Hebergements
+                    .Where(h => h.VoyageId == voyageId)
+                    .ToListAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Trouvé {hebergements?.Count() ?? 0} hébergements pour le voyage {voyageId}");
+                
+                return hebergements ?? new List<Hebergement>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de la récupération des hébergements pour le voyage {voyageId}: {ex.Message}");
+                return new List<Hebergement>();
+            }
+        }
         public async Task DeleteHebergementAsync(int hebergementId)
         {
             try

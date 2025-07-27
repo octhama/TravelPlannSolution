@@ -29,6 +29,28 @@ namespace BU.Services
             return activite;
         }
 
+        public async Task<IEnumerable<Activite>> GetActivitesByVoyageAsync(int voyageId)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Recherche des activités pour le voyage {voyageId}");
+                
+                // Assurez-vous que votre DAL a une méthode pour récupérer les activités par voyage
+                var activites = await _context.Activites
+                    .Where(a => a.Voyages.Any(v => v.VoyageId == voyageId))
+                    .ToListAsync();
+                
+                System.Diagnostics.Debug.WriteLine($"Trouvé {activites?.Count() ?? 0} activités pour le voyage {voyageId}");
+                
+                return activites ?? new List<Activite>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de la récupération des activités pour le voyage {voyageId}: {ex.Message}");
+                return new List<Activite>();
+            }
+        }
+
         public async Task DeleteActiviteAsync(int activiteId)
         {
             try
