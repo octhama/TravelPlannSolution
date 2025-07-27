@@ -26,232 +26,233 @@
         </maps:Map>
 
         <!-- Overlay de contrôles -->
-        <Grid ZIndex="2" Margin="20" InputTransparent="True">
+        <!-- Overlay de contrôles -->
+<Grid ZIndex="2" Margin="20" InputTransparent="False">
+    
+    <!-- Barre de recherche en haut -->
+    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+           CornerRadius="25"
+           HasShadow="True"
+           Padding="15,10"
+           VerticalOptions="Start"
+           HorizontalOptions="Fill"
+           Margin="0,50,0,0"
+           InputTransparent="False">
+        <Grid ColumnDefinitions="*,Auto">
+            <Entry x:Name="SearchEntry"
+                   Grid.Column="0"
+                   Text="{Binding SearchQuery}"
+                   Placeholder="Rechercher une destination..."
+                   BackgroundColor="Transparent"
+                   TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}"
+                   PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#888888}"
+                   FontSize="16"
+                   ReturnCommand="{Binding SearchCommand}"/>
+            <Button Grid.Column="1"
+                    Text="🔍"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                    FontSize="18"
+                    Command="{Binding SearchCommand}"
+                    WidthRequest="40"/>
+        </Grid>
+    </Frame>
+
+    <!-- Boutons de contrôle à droite -->
+    <VerticalStackLayout Spacing="10" 
+                       HorizontalOptions="End" 
+                       VerticalOptions="Center"
+                       InputTransparent="False">
+        
+        <!-- Bouton Style de carte -->
+        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+               CornerRadius="20"
+               HasShadow="True"
+               Padding="0"
+               WidthRequest="50"
+               HeightRequest="50">
+            <Button Text="{Binding MapStyleIcon}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                    FontSize="20"
+                    Command="{Binding ToggleMapStyleCommand}"/>
+        </Frame>
+
+        <!-- Bouton Type de vue -->
+        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+               CornerRadius="20"
+               HasShadow="True"
+               Padding="0"
+               WidthRequest="50"
+               HeightRequest="50">
+            <Button Text="{Binding ViewModeIcon}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                    FontSize="20"
+                    Command="{Binding ToggleViewModeCommand}"/>
+        </Frame>
+
+        <!-- Bouton Ma position - DÉSACTIVÉ -->
+        <Frame BackgroundColor="{AppThemeBinding Light=#CCCCCC, Dark=#444444}"
+               CornerRadius="20"
+               HasShadow="True"
+               Padding="0"
+               WidthRequest="50"
+               HeightRequest="50">
+            <Button Text="📍"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#999999, Dark=#666666}"
+                    FontSize="20"
+                    IsEnabled="False"/>
+        </Frame>
+
+        <!-- Bouton Filtres -->
+        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+               CornerRadius="20"
+               HasShadow="True"
+               Padding="0"
+               WidthRequest="50"
+               HeightRequest="50">
+            <Button Text="🎯"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                    FontSize="20"
+                    Command="{Binding ToggleFiltersCommand}"/>
+        </Frame>
+
+    </VerticalStackLayout>
+
+    <!-- Panel de filtres -->
+    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+           CornerRadius="15"
+           HasShadow="True"
+           Padding="15"
+           VerticalOptions="Start"
+           HorizontalOptions="Start"
+           Margin="0,120,0,0"
+           WidthRequest="200"
+           IsVisible="{Binding ShowFilters}"
+           InputTransparent="False">
+        <VerticalStackLayout Spacing="10">
+            <Label Text="Afficher sur la carte" 
+                   FontSize="14" 
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}"/>
             
-            <!-- Barre de recherche en haut -->
-            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                   CornerRadius="25"
-                   HasShadow="True"
-                   Padding="15,10"
-                   VerticalOptions="Start"
-                   HorizontalOptions="Fill"
-                   Margin="0,50,0,0"
-                   InputTransparent="False">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Entry x:Name="SearchEntry"
-                           Grid.Column="0"
-                           Text="{Binding SearchQuery}"
-                           Placeholder="Rechercher une destination..."
-                           BackgroundColor="Transparent"
-                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}"
-                           PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#888888}"
-                           FontSize="16"
-                           ReturnCommand="{Binding SearchCommand}"/>
-                    <Button Grid.Column="1"
-                            Text="🔍"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                            FontSize="18"
-                            Command="{Binding SearchCommand}"
-                            WidthRequest="40"/>
-                </Grid>
-            </Frame>
+            <StackLayout Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ShowAccommodations}" 
+                          Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                <Label Text="🏨 Hébergements" 
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                       VerticalOptions="Center"/>
+            </StackLayout>
+            
+            <StackLayout Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ShowActivities}" 
+                          Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                <Label Text="🎯 Activités" 
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                       VerticalOptions="Center"/>
+            </StackLayout>
+            
+            <StackLayout Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ShowRestaurants}" 
+                          Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                <Label Text="🍽️ Restaurants" 
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                       VerticalOptions="Center"/>
+            </StackLayout>
+            
+            <StackLayout Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ShowTransport}" 
+                          Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
+                <Label Text="🚇 Transports" 
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                       VerticalOptions="Center"/>
+            </StackLayout>
+        </VerticalStackLayout>
+    </Frame>
 
-            <!-- Boutons de contrôle à droite -->
-            <VerticalStackLayout Spacing="10" 
-                               HorizontalOptions="End" 
-                               VerticalOptions="Center"
-                               InputTransparent="False">
-                
-                <!-- Bouton Style de carte -->
-                <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                       CornerRadius="20"
-                       HasShadow="True"
-                       Padding="0"
-                       WidthRequest="50"
-                       HeightRequest="50">
-                    <Button Text="{Binding MapStyleIcon}"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                            FontSize="20"
-                            Command="{Binding ToggleMapStyleCommand}"/>
-                </Frame>
-
-                <!-- Bouton Type de vue -->
-                <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                       CornerRadius="20"
-                       HasShadow="True"
-                       Padding="0"
-                       WidthRequest="50"
-                       HeightRequest="50">
-                    <Button Text="{Binding ViewModeIcon}"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                            FontSize="20"
-                            Command="{Binding ToggleViewModeCommand}"/>
-                </Frame>
-
-                <!-- Bouton Ma position -->
-                <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                       CornerRadius="20"
-                       HasShadow="True"
-                       Padding="0"
-                       WidthRequest="50"
-                       HeightRequest="50">
-                    <Button Text="📍"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                            FontSize="20"
-                            Command="{Binding GoToMyLocationCommand}"/>
-                </Frame>
-
-                <!-- Bouton Filtres -->
-                <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                       CornerRadius="20"
-                       HasShadow="True"
-                       Padding="0"
-                       WidthRequest="50"
-                       HeightRequest="50">
-                    <Button Text="🎯"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                            FontSize="20"
-                            Command="{Binding ToggleFiltersCommand}"/>
-                </Frame>
-
-            </VerticalStackLayout>
-
-            <!-- Panel de filtres -->
-            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                   CornerRadius="15"
-                   HasShadow="True"
-                   Padding="15"
-                   VerticalOptions="Start"
-                   HorizontalOptions="Start"
-                   Margin="0,120,0,0"
-                   WidthRequest="200"
-                   IsVisible="{Binding ShowFilters}"
-                   InputTransparent="False">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Afficher sur la carte" 
-                           FontSize="14" 
+    <!-- Panel d'informations en bas -->
+    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+           CornerRadius="15"
+           HasShadow="True"
+           Padding="20"
+           VerticalOptions="End"
+           HorizontalOptions="Fill"
+           IsVisible="{Binding ShowLocationInfo}"
+           InputTransparent="False">
+        <VerticalStackLayout Spacing="10">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="{Binding SelectedLocationName}" 
+                           FontSize="18" 
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}"/>
-                    
-                    <StackLayout Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding ShowAccommodations}" 
-                                  Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
-                        <Label Text="🏨 Hébergements" 
-                               FontSize="12"
-                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
-                               VerticalOptions="Center"/>
-                    </StackLayout>
-                    
-                    <StackLayout Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding ShowActivities}" 
-                                  Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
-                        <Label Text="🎯 Activités" 
-                               FontSize="12"
-                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
-                               VerticalOptions="Center"/>
-                    </StackLayout>
-                    
-                    <StackLayout Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding ShowRestaurants}" 
-                                  Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
-                        <Label Text="🍽️ Restaurants" 
-                               FontSize="12"
-                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
-                               VerticalOptions="Center"/>
-                    </StackLayout>
-                    
-                    <StackLayout Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding ShowTransport}" 
-                                  Color="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
-                        <Label Text="🚇 Transports" 
-                               FontSize="12"
-                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
-                               VerticalOptions="Center"/>
-                    </StackLayout>
+                    <Label Text="{Binding SelectedLocationAddress}" 
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                    <Label Text="{Binding SelectedLocationDistance}" 
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
                 </VerticalStackLayout>
-            </Frame>
+                
+                <Button Grid.Column="1"
+                        Text="✕"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                        FontSize="16"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        Command="{Binding CloseLocationInfoCommand}"/>
+            </Grid>
+            
+            <ScrollView Orientation="Horizontal">
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Button Text="🏨 Hébergements"
+                            BackgroundColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            TextColor="White"
+                            FontSize="12"
+                            CornerRadius="15"
+                            Padding="15,8"
+                            Command="{Binding ShowAccommodationsCommand}"/>
+                    <Button Text="🎯 Activités"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            BorderColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            BorderWidth="1"
+                            FontSize="12"
+                            CornerRadius="15"
+                            Padding="15,8"
+                            Command="{Binding ShowActivitiesCommand}"/>
+                    <Button Text="🍽️ Restaurants"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            BorderColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            BorderWidth="1"
+                            FontSize="12"
+                            CornerRadius="15"
+                            Padding="15,8"
+                            Command="{Binding ShowRestaurantsCommand}"/>
+                    <Button Text="🧭 Itinéraire"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            BorderColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                            BorderWidth="1"
+                            FontSize="12"
+                            CornerRadius="15"
+                            Padding="15,8"
+                            Command="{Binding ShowDirectionsCommand}"/>
+                </StackLayout>
+            </ScrollView>
+        </VerticalStackLayout>
+    </Frame>
 
-            <!-- Panel d'informations en bas -->
-            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                   CornerRadius="15"
-                   HasShadow="True"
-                   Padding="20"
-                   VerticalOptions="End"
-                   HorizontalOptions="Fill"
-                   IsVisible="{Binding ShowLocationInfo}"
-                   InputTransparent="False">
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <VerticalStackLayout Grid.Column="0">
-                            <Label Text="{Binding SelectedLocationName}" 
-                                   FontSize="18" 
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}"/>
-                            <Label Text="{Binding SelectedLocationAddress}" 
-                                   FontSize="14"
-                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
-                            <Label Text="{Binding SelectedLocationDistance}" 
-                                   FontSize="12"
-                                   TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
-                        </VerticalStackLayout>
-                        
-                        <Button Grid.Column="1"
-                                Text="✕"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
-                                FontSize="16"
-                                WidthRequest="30"
-                                HeightRequest="30"
-                                Command="{Binding CloseLocationInfoCommand}"/>
-                    </Grid>
-                    
-                    <ScrollView Orientation="Horizontal">
-                        <StackLayout Orientation="Horizontal" Spacing="10">
-                            <Button Text="🏨 Hébergements"
-                                    BackgroundColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    TextColor="White"
-                                    FontSize="12"
-                                    CornerRadius="15"
-                                    Padding="15,8"
-                                    Command="{Binding ShowAccommodationsCommand}"/>
-                            <Button Text="🎯 Activités"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    BorderColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    BorderWidth="1"
-                                    FontSize="12"
-                                    CornerRadius="15"
-                                    Padding="15,8"
-                                    Command="{Binding ShowActivitiesCommand}"/>
-                            <Button Text="🍽️ Restaurants"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    BorderColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    BorderWidth="1"
-                                    FontSize="12"
-                                    CornerRadius="15"
-                                    Padding="15,8"
-                                    Command="{Binding ShowRestaurantsCommand}"/>
-                            <Button Text="🧭 Itinéraire"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    BorderColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                    BorderWidth="1"
-                                    FontSize="12"
-                                    CornerRadius="15"
-                                    Padding="15,8"
-                                    Command="{Binding ShowDirectionsCommand}"/>
-                        </StackLayout>
-                    </ScrollView>
-                </VerticalStackLayout>
-            </Frame>
-
-        </Grid>
+</Grid>
 
         <!-- Indicateur de chargement -->
         <ActivityIndicator IsVisible="{Binding IsLoading}"

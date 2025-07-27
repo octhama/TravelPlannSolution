@@ -17,36 +17,36 @@ namespace TravelPlannMauiApp.Pages
             BindingContext = _viewModel;
         }
 
-        protected override async void OnAppearing()
-{
-    base.OnAppearing();
-    
-    try
-    {
-        System.Diagnostics.Debug.WriteLine("=== MapPage OnAppearing ===");
-        
-        // Configurer le contrôle Map dans le ViewModel
-        _viewModel.SetMapControl(MapControl);
-        
-        // Initialiser la carte avec la position par défaut (Paris)
-        await InitializeMapAsync();
-        
-        // Configurer les événements de la carte
-        SetupMapEvents();
-        
-        // Rafraîchir les données utilisateur - IMPORTANT: Attendre que ce soit terminé
-        System.Diagnostics.Debug.WriteLine("Début du rafraîchissement des données...");
-        await _viewModel.RefreshDataAsync();
-        System.Diagnostics.Debug.WriteLine("Rafraîchissement des données terminé");
-        
-        // Log de l'état final
-        _viewModel.LogCurrentState();
-        
-        System.Diagnostics.Debug.WriteLine("MapPage initialisée avec succès");
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
+       protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("=== MapPage OnAppearing ===");
+                
+                // Configurer le contrôle Map dans le ViewModel
+                _viewModel.SetMapControl(MapControl);
+                
+                // Initialiser la carte avec la position par défaut (Paris)
+                await InitializeMapAsync();
+                
+                // Configurer les événements de la carte
+                SetupMapEvents();
+                
+                // Rafraîchir les données utilisateur
+                System.Diagnostics.Debug.WriteLine("Début du rafraîchissement des données...");
+                await _viewModel.RefreshDataAsync();
+                System.Diagnostics.Debug.WriteLine("Rafraîchissement des données terminé");
+                
+                // Log de l'état final
+                _viewModel.LogCurrentState();
+                
+                System.Diagnostics.Debug.WriteLine("MapPage initialisée avec succès");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
         await DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
     }
 }
@@ -62,48 +62,10 @@ namespace TravelPlannMauiApp.Pages
                 
                 MapControl.MoveToRegion(mapSpan);
                 
-                // Demander la permission de géolocalisation
-                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-                if (status != PermissionStatus.Granted)
-                {
-                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-                }
-
-                if (status == PermissionStatus.Granted)
-                {
-                    MapControl.IsShowingUser = true;
-                    
-                    // Essayer d'obtenir la position actuelle
-                    try
-                    {
-                        var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest
-                        {
-                            DesiredAccuracy = GeolocationAccuracy.Medium,
-                            Timeout = TimeSpan.FromSeconds(10)
-                        });
-
-                        if (location != null)
-                        {
-                            // Informer le ViewModel de la position utilisateur
-                            _viewModel.UpdateUserLocation(location);
-                            
-                            var userMapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(5));
-                            MapControl.MoveToRegion(userMapSpan);
-                            
-                            System.Diagnostics.Debug.WriteLine($"Position utilisateur obtenue: {location.Latitude}, {location.Longitude}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Impossible d'obtenir la position actuelle: {ex.Message}");
-                        // Rester sur Paris si la géolocalisation échoue
-                    }
-                }
-                else
-                {
-                    MapControl.IsShowingUser = false;
-                    System.Diagnostics.Debug.WriteLine("Permission de géolocalisation refusée");
-                }
+                // DÉSACTIVER COMPLÈTEMENT LA GÉOLOCALISATION
+                MapControl.IsShowingUser = false;
+                
+                System.Diagnostics.Debug.WriteLine("Carte initialisée sans géolocalisation");
             }
             catch (Exception ex)
             {

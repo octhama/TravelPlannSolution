@@ -492,6 +492,11 @@ private async Task ExecuteToggleMapStyleCommand()
 
 private async Task ExecuteGoToMyLocationCommand()
 {
+    await ShowTemporaryMessageAsync("Fonction de géolocalisation désactivée");
+    return;
+    
+    // Ancien code commenté pour référence future
+    /*
     if (!_isMapInitialized)
     {
         await ShowTemporaryMessageAsync("Carte non initialisée");
@@ -501,59 +506,18 @@ private async Task ExecuteGoToMyLocationCommand()
     IsLoading = true;
     try
     {
-        System.Diagnostics.Debug.WriteLine("Demande de géolocalisation...");
-        
-        // Vérifier d'abord les permissions
-        var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-        if (status != PermissionStatus.Granted)
-        {
-            status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-        }
-
-        if (status != PermissionStatus.Granted)
-        {
-            await ShowTemporaryMessageAsync("Permission de localisation requise");
-            return;
-        }
-
-        // Obtenir la position actuelle
-        var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest
-        {
-            DesiredAccuracy = GeolocationAccuracy.Medium,
-            Timeout = TimeSpan.FromSeconds(10)
-        });
-
-        if (location != null)
-        {
-            System.Diagnostics.Debug.WriteLine($"Position obtenue: {location.Latitude:F4}, {location.Longitude:F4}");
-            
-            UpdateUserLocation(location);
-            
-            // Centrer la carte sur la position utilisateur
-            var userMapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(2));
-            
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                _mapControl?.MoveToRegion(userMapSpan);
-            });
-            
-            await ShowTemporaryMessageAsync("Position actuelle localisée");
-        }
-        else
-        {
-            System.Diagnostics.Debug.WriteLine("Position nulle reçue");
-            await ShowTemporaryMessageAsync("Impossible d'obtenir votre position");
-        }
+        // Code de géolocalisation désactivé
     }
     catch (Exception ex)
     {
         System.Diagnostics.Debug.WriteLine($"Erreur géolocalisation: {ex.Message}");
-        await ShowTemporaryMessageAsync("Erreur lors de la localisation");
+        await ShowTemporaryMessageAsync("Erreur lors de la localisation"); 
     }
     finally
     {
         IsLoading = false;
     }
+    */
 }
 
     private void ExecuteToggleFiltersCommand()
@@ -797,84 +761,89 @@ private async Task ExecuteGoToMyLocationCommand()
 
     #region Map Pins Management
 
+    private void ShowTemporaryMessage(string message, int durationMs = 3000)
+    {
+        _ = ShowTemporaryMessageAsync(message, durationMs);
+    }
+
     private async Task UpdateMapPins()
-{
-    if (!_isMapInitialized || _mapControl == null)
     {
-        System.Diagnostics.Debug.WriteLine("Carte non initialisée, impossible de mettre à jour les pins");
-        return;
-    }
-
-    try
-    {
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        if (!_isMapInitialized || _mapControl == null)
         {
-            System.Diagnostics.Debug.WriteLine("Début de la mise à jour des pins...");
-            
-            // Supprimer tous les pins existants sauf les pins de recherche et utilisateur
-            var pinsToRemove = _mapControl.Pins
-                .Where(p => p.Type != PinType.SearchResult && p.Type != PinType.Generic && p.Label != "Lieu sélectionné")
-                .ToList();
-            
-            System.Diagnostics.Debug.WriteLine($"Suppression de {pinsToRemove.Count} pins existants");
-            
-            foreach (var pin in pinsToRemove)
-            {
-                _mapControl.Pins.Remove(pin);
-            }
+            System.Diagnostics.Debug.WriteLine("Carte non initialisée, impossible de mettre à jour les pins");
+            return;
+        }
 
-            var pinsAdded = 0;
-
-            // Ajouter les pins selon les filtres actifs
-            if (ShowAccommodations)
+        try
+        {
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                foreach (var pin in _accommodationPins)
+                System.Diagnostics.Debug.WriteLine("Début de la mise à jour des pins...");
+
+                // Supprimer tous les pins existants sauf les pins de recherche et utilisateur
+                var pinsToRemove = _mapControl.Pins
+                    .Where(p => p.Type != PinType.SearchResult && p.Type != PinType.Generic && p.Label != "Lieu sélectionné")
+                    .ToList();
+
+                System.Diagnostics.Debug.WriteLine($"Suppression de {pinsToRemove.Count} pins existants");
+
+                foreach (var pin in pinsToRemove)
                 {
-                    _mapControl.Pins.Add(pin);
-                    pinsAdded++;
+                    _mapControl.Pins.Remove(pin);
                 }
-                System.Diagnostics.Debug.WriteLine($"Ajouté {_accommodationPins.Count} pins d'hébergements");
-            }
 
-            if (ShowActivities)
-            {
-                foreach (var pin in _activityPins)
+                var pinsAdded = 0;
+
+                // Ajouter les pins selon les filtres actifs
+                if (ShowAccommodations)
                 {
-                    _mapControl.Pins.Add(pin);
-                    pinsAdded++;
+                    foreach (var pin in _accommodationPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                        pinsAdded++;
+                    }
+                    System.Diagnostics.Debug.WriteLine($"Ajouté {_accommodationPins.Count} pins d'hébergements");
                 }
-                System.Diagnostics.Debug.WriteLine($"Ajouté {_activityPins.Count} pins d'activités");
-            }
 
-            if (ShowRestaurants)
-            {
-                foreach (var pin in _restaurantPins)
+                if (ShowActivities)
                 {
-                    _mapControl.Pins.Add(pin);
-                    pinsAdded++;
+                    foreach (var pin in _activityPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                        pinsAdded++;
+                    }
+                    System.Diagnostics.Debug.WriteLine($"Ajouté {_activityPins.Count} pins d'activités");
                 }
-                System.Diagnostics.Debug.WriteLine($"Ajouté {_restaurantPins.Count} pins de restaurants");
-            }
 
-            if (ShowTransport)
-            {
-                foreach (var pin in _transportPins)
+                if (ShowRestaurants)
                 {
-                    _mapControl.Pins.Add(pin);
-                    pinsAdded++;
+                    foreach (var pin in _restaurantPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                        pinsAdded++;
+                    }
+                    System.Diagnostics.Debug.WriteLine($"Ajouté {_restaurantPins.Count} pins de restaurants");
                 }
-                System.Diagnostics.Debug.WriteLine($"Ajouté {_transportPins.Count} pins de transport");
-            }
 
-            var totalPins = _mapControl.Pins.Count;
-            System.Diagnostics.Debug.WriteLine($"Mise à jour des pins terminée - {pinsAdded} pins ajoutés, {totalPins} total visible");
-        });
+                if (ShowTransport)
+                {
+                    foreach (var pin in _transportPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                        pinsAdded++;
+                    }
+                    System.Diagnostics.Debug.WriteLine($"Ajouté {_transportPins.Count} pins de transport");
+                }
+
+                var totalPins = _mapControl.Pins.Count;
+                System.Diagnostics.Debug.WriteLine($"Mise à jour des pins terminée - {pinsAdded} pins ajoutés, {totalPins} total visible");
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la mise à jour des pins: {ex.Message}");
+        }
     }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"Erreur lors de la mise à jour des pins: {ex.Message}");
-    }
-}
 
     #endregion
 
