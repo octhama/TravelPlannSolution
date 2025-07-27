@@ -385,7 +385,7 @@ namespace TravelPlannMauiApp.Pages
                 if (region == null || location == null)
                     return false;
 
-                var distance = Location.CalculateDistance(region.Center, location, DistanceUnits.Meters);
+                var distance = Location.CalculateDistance(region.Center, location, DistanceUnits.Kilometers) * 1000; // Convert kilometers to meters
                 return distance <= region.Radius.Meters;
             }
             catch (Exception ex)
