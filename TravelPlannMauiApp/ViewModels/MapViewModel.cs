@@ -258,6 +258,10 @@ public class MapViewModel : INotifyPropertyChanged
         // Configurer les événements de la carte
         if (_mapControl != null)
         {
+            // Activer les interactions utilisateur pour le zoom et le déplacement
+            _mapControl.IsZoomEnabled = true;
+            _mapControl.IsScrollEnabled = true;
+            
             // S'abonner aux événements nécessaires
             SetupMapEvents();
         }
@@ -268,8 +272,24 @@ public class MapViewModel : INotifyPropertyChanged
     private void SetupMapEvents()
     {
         // Événement pour détecter quand un pin est tapé
-        // Note: Cet événement n'existe pas directement sur Map, 
-        // il devra être géré dans le code-behind de la page
+        // Note: Dans MAUI, l'événement PinClicked n'existe pas directement sur Map
+        // Nous utiliserons une approche via les pins individuels dans le code-behind
+        
+        // Configuration pour permettre les interactions tactiles/souris
+        if (_mapControl != null)
+        {
+            _mapControl.PropertyChanged += OnMapPropertyChanged;
+        }
+    }
+    
+    private void OnMapPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Gérer les changements de propriétés de la carte si nécessaire
+        if (e.PropertyName == nameof(Microsoft.Maui.Controls.Maps.Map.VisibleRegion))
+        {
+            // La région visible a changé (zoom ou déplacement)
+            System.Diagnostics.Debug.WriteLine("Région de la carte mise à jour");
+        }
     }
 
     #region Command Implementations
@@ -282,19 +302,17 @@ public class MapViewModel : INotifyPropertyChanged
         IsLoading = true;
         try
         {
-            // Simuler une recherche géocodée
-            await Task.Delay(1000); // Simulation d'API call
-            
+            // Recherche géocodée
             var searchResult = await GeocodeLocationAsync(SearchQuery);
             
             if (searchResult != null)
             {
-                // Centrer la carte sur le résultat
+                // Centrer la carte sur le résultat avec un zoom approprié
                 var mapSpan = MapSpan.FromCenterAndRadius(searchResult, Distance.FromKilometers(5));
                 _mapControl.MoveToRegion(mapSpan);
                 
-                // Ajouter un pin pour le résultat
-                var pin = new Pin
+                // Ajouter un pin temporaire pour le résultat de recherche
+                var searchPin = new Pin
                 {
                     Location = searchResult,
                     Label = SearchQuery,
@@ -302,9 +320,18 @@ public class MapViewModel : INotifyPropertyChanged
                     Type = PinType.SearchResult
                 };
                 
-                _mapControl.Pins.Add(pin);
+                // Supprimer les anciens pins de recherche
+                var existingSearchPins = _mapControl.Pins.Where(p => p.Type == PinType.SearchResult).ToList();
+                foreach (var pin in existingSearchPins)
+                {
+                    _mapControl.Pins.Remove(pin);
+                }
                 
+                _mapControl.Pins.Add(searchPin);
                 ShowTemporaryMessage($"Lieu trouvé: {SearchQuery}");
+                
+                // Afficher les détails du lieu trouvé
+                ShowLocationDetails(searchPin);
             }
             else
             {
@@ -334,7 +361,7 @@ public class MapViewModel : INotifyPropertyChanged
                 break;
             case MapType.Satellite:
                 _mapControl.MapType = MapType.Hybrid;
-                ViewModeIcon = "🗺️";
+                ViewModeIcon = "🌍";
                 break;
             case MapType.Hybrid:
                 _mapControl.MapType = MapType.Street;
@@ -381,10 +408,28 @@ public class MapViewModel : INotifyPropertyChanged
             if (location != null)
             {
                 _userLocation = location;
-                var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(2));
+                
+                // Centrer la carte sur la position utilisateur avec un zoom proche
+                var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(1));
                 _mapControl.MoveToRegion(mapSpan);
                 
-                ShowTemporaryMessage("Position actuelle");
+                // Ajouter ou mettre à jour le pin de position utilisateur
+                var userPin = _mapControl.Pins.FirstOrDefault(p => p.Label == "Ma position");
+                if (userPin != null)
+                {
+                    _mapControl.Pins.Remove(userPin);
+                }
+                
+                var newUserPin = new Pin
+                {
+                    Location = location,
+                    Label = "Ma position",
+                    Address = "Position actuelle",
+                    Type = PinType.Generic
+                };
+                
+                _mapControl.Pins.Add(newUserPin);
+                ShowTemporaryMessage("Position actuelle localisée");
             }
             else
             {
@@ -405,6 +450,14 @@ public class MapViewModel : INotifyPropertyChanged
     private void ExecuteToggleFiltersCommand()
     {
         ShowFilters = !ShowFilters;
+        if (ShowFilters)
+        {
+            ShowTemporaryMessage("Filtres ouverts");
+        }
+        else
+        {
+            ShowTemporaryMessage("Filtres fermés");
+        }
     }
 
     private void ExecuteCloseLocationInfoCommand()
@@ -445,8 +498,9 @@ public class MapViewModel : INotifyPropertyChanged
     private void ExecuteShowDirectionsCommand()
     {
         ShowLocationInfo = false;
-        ShowTemporaryMessage("Itinéraire calculé");
+        ShowTemporaryMessage("Calcul d'itinéraire...");
         // Ici vous pouvez implémenter la logique d'itinéraire
+        // Par exemple, ouvrir l'app de navigation par défaut
     }
 
     #endregion
@@ -457,43 +511,45 @@ public class MapViewModel : INotifyPropertyChanged
     {
         try
         {
-            // Fix: Use GetCurrentUserIdAsync instead of GetCurrentUserAsync
             var currentUserId = await _sessionService.GetCurrentUserIdAsync();
             if (currentUserId.HasValue)
             {
-                // Assuming IVoyageService has a method to get voyages by user ID
-                // You may need to add this method to IVoyageService if it doesn't exist
+                // Essayer de charger les voyages de l'utilisateur si la méthode existe
                 if (_voyageService != null)
                 {
-                    // Note: This assumes GetVoyagesByUtilisateurAsync exists in IVoyageService
-                    // If it doesn't exist, you'll need to add it or modify this approach
                     try 
                     {
-                        // Try to call the method if it exists
                         var getUserVoyagesMethod = _voyageService.GetType().GetMethod("GetVoyagesByUtilisateurAsync");
                         if (getUserVoyagesMethod != null)
                         {
                             var task = (Task<List<Voyage>>)getUserVoyagesMethod.Invoke(_voyageService, new object[] { currentUserId.Value });
-                            _userVoyages = await task;
+                            _userVoyages = await task ?? new List<Voyage>();
                         }
                         else
                         {
-                            // Fallback: Initialize empty list
                             _userVoyages = new List<Voyage>();
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des voyages: {ex.Message}");
                         _userVoyages = new List<Voyage>();
                     }
                 }
                 
                 await LoadPinsFromUserDataAsync();
             }
+            else
+            {
+                // Charger des données par défaut si aucun utilisateur connecté
+                await LoadPinsFromUserDataAsync();
+            }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des données utilisateur: {ex.Message}");
+            // Charger quand même les données par défaut
+            await LoadPinsFromUserDataAsync();
         }
     }
 
@@ -504,53 +560,73 @@ public class MapViewModel : INotifyPropertyChanged
             _accommodationPins.Clear();
             _activityPins.Clear();
 
-            // Fix: Since Hebergement and Activite don't have address/location properties,
-            // we'll create sample pins with their names and use default locations
-            // In a real application, you would need to add address/location fields to your entities
-            
-            // Load all hébergements
+            // Charger les hébergements depuis la base de données
             var hebergements = await _hebergementService.GetAllHebergementsAsync(); 
             foreach (var hebergement in hebergements)
             {
-                // Since there's no address property, we'll use the name to try geocoding
-                // or create a default location. In a real app, you'd need to add address fields.
-                var location = await GeocodeLocationAsync(hebergement.Nom);
+                Location location = null;
+                
+                // Essayer d'abord avec l'adresse si elle existe (après migration)
+                if (!string.IsNullOrEmpty(hebergement.Adresse))
+                {
+                    location = await GeocodeLocationAsync(hebergement.Adresse);
+                }
+                
+                // Fallback: utiliser le nom pour le géocodage
+                if (location == null && !string.IsNullOrEmpty(hebergement.Nom))
+                {
+                    location = await GeocodeLocationAsync(hebergement.Nom);
+                }
+                
+                // Dernière option: position par défaut
                 if (location == null)
                 {
-                    // Fallback to a default location (e.g., Paris center) if geocoding fails
-                    location = new Location(48.8566, 2.3522); // Paris coordinates
+                    location = GetRandomLocationAroundParis();
                 }
                 
                 var pin = new Pin
                 {
                     Location = location,
                     Label = hebergement.Nom,
-                    Address = hebergement.TypeHebergement ?? "Hébergement",
+                    Address = hebergement.Adresse ?? hebergement.TypeHebergement ?? "Hébergement",
                     Type = PinType.Place
                 };
+                
                 _accommodationPins.Add(pin);
             }
 
-            // Load all activités
+            // Charger les activités depuis la base de données
             var activites = await _activiteService.GetAllActivitesAsync();
             foreach (var activite in activites)
             {
-                // Since there's no location property, we'll use the name to try geocoding
-                // or create a default location. In a real app, you'd need to add location fields.
-                var location = await GeocodeLocationAsync(activite.Nom);
+                Location location = null;
+                
+                // Essayer d'abord avec la localisation si elle existe (après migration)
+                if (!string.IsNullOrEmpty(activite.Localisation))
+                {
+                    location = await GeocodeLocationAsync(activite.Localisation);
+                }
+                
+                // Fallback: utiliser le nom pour le géocodage
+                if (location == null && !string.IsNullOrEmpty(activite.Nom))
+                {
+                    location = await GeocodeLocationAsync(activite.Nom);
+                }
+                
+                // Dernière option: position par défaut
                 if (location == null)
                 {
-                    // Fallback to a default location (e.g., Paris center) if geocoding fails
-                    location = new Location(48.8566, 2.3522); // Paris coordinates
+                    location = GetRandomLocationAroundParis();
                 }
                 
                 var pin = new Pin
                 {
                     Location = location,
                     Label = activite.Nom,
-                    Address = activite.Description ?? "Activité",
+                    Address = activite.Localisation ?? activite.Description ?? "Activité",
                     Type = PinType.Place
                 };
+                
                 _activityPins.Add(pin);
             }
 
@@ -562,26 +638,58 @@ public class MapViewModel : INotifyPropertyChanged
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des pins: {ex.Message}");
+            
+            // En cas d'erreur, charger au moins les données d'exemple
+            LoadSampleRestaurantAndTransportPins();
+            UpdateMapPins();
         }
+    }
+
+    private Location GetRandomLocationAroundParis()
+    {
+        // Génère une position aléatoire autour de Paris (dans un rayon de 20km)
+        var random = new Random();
+        var parisLat = 48.8566;
+        var parisLon = 2.3522;
+        
+        // Décalage aléatoire (approximativement 20km de rayon)
+        var latOffset = (random.NextDouble() - 0.5) * 0.4; // ±0.2 degrés
+        var lonOffset = (random.NextDouble() - 0.5) * 0.4; // ±0.2 degrés
+        
+        return new Location(parisLat + latOffset, parisLon + lonOffset);
     }
 
     private void LoadSampleRestaurantAndTransportPins()
     {
-        // Données de démonstration pour les restaurants
+        // Données de démonstration pour les restaurants avec plus de variété
         _restaurantPins = new List<Pin>
         {
             new Pin
             {
-                Location = new Location(48.8566, 2.3522), // Paris
+                Location = new Location(48.8566, 2.3522), // Paris Centre
                 Label = "Le Grand Véfour",
                 Address = "17 Rue de Beaujolais, Paris",
                 Type = PinType.Place
             },
             new Pin
             {
-                Location = new Location(48.8606, 2.3376), // Paris
+                Location = new Location(48.8606, 2.3376), // Paris 7e
                 Label = "L'Ami Jean",
                 Address = "27 Rue Malar, Paris",
+                Type = PinType.Place
+            },
+            new Pin
+            {
+                Location = new Location(48.8584, 2.2945), // Paris 16e
+                Label = "Le Jules Verne",
+                Address = "Tour Eiffel, Paris",
+                Type = PinType.Place
+            },
+            new Pin
+            {
+                Location = new Location(48.8738, 2.3522), // Paris 10e
+                Label = "Chez Prune",
+                Address = "36 Rue Beaurepaire, Paris",
                 Type = PinType.Place
             }
         };
@@ -591,16 +699,30 @@ public class MapViewModel : INotifyPropertyChanged
         {
             new Pin
             {
-                Location = new Location(48.8738, 2.2950), // Gare du Nord
+                Location = new Location(48.8798, 2.3554), // Gare du Nord
                 Label = "Gare du Nord",
                 Address = "18 Rue de Dunkerque, Paris",
                 Type = PinType.Place
             },
             new Pin
             {
-                Location = new Location(48.844, 2.3737), // Gare de Lyon
+                Location = new Location(48.8449, 2.3738), // Gare de Lyon
                 Label = "Gare de Lyon",
                 Address = "20 Boulevard Diderot, Paris",
+                Type = PinType.Place
+            },
+            new Pin
+            {
+                Location = new Location(48.8424, 2.3226), // Gare Montparnasse
+                Label = "Gare Montparnasse",
+                Address = "17 Boulevard de Vaugirard, Paris",
+                Type = PinType.Place
+            },
+            new Pin
+            {
+                Location = new Location(48.8768, 2.2584), // Arc de Triomphe
+                Label = "Métro Charles de Gaulle",
+                Address = "Place Charles de Gaulle, Paris",
                 Type = PinType.Place
             }
         };
@@ -610,38 +732,60 @@ public class MapViewModel : INotifyPropertyChanged
     {
         if (_mapControl == null) return;
 
-        _mapControl.Pins.Clear();
-
-        if (ShowAccommodations)
+        try
         {
-            foreach (var pin in _accommodationPins)
+            // Conserver les pins spéciaux (recherche, position utilisateur)
+            var specialPins = _mapControl.Pins.Where(p => 
+                p.Type == PinType.SearchResult || 
+                p.Label == "Ma position").ToList();
+
+            // Nettoyer la carte
+            _mapControl.Pins.Clear();
+
+            // Rétablir les pins spéciaux
+            foreach (var pin in specialPins)
             {
                 _mapControl.Pins.Add(pin);
             }
+
+            // Ajouter les pins selon les filtres actifs
+            if (ShowAccommodations)
+            {
+                foreach (var pin in _accommodationPins)
+                {
+                    _mapControl.Pins.Add(pin);
+                }
+            }
+
+            if (ShowActivities)
+            {
+                foreach (var pin in _activityPins)
+                {
+                    _mapControl.Pins.Add(pin);
+                }
+            }
+
+            if (ShowRestaurants)
+            {
+                foreach (var pin in _restaurantPins)
+                {
+                    _mapControl.Pins.Add(pin);
+                }
+            }
+
+            if (ShowTransport)
+            {
+                foreach (var pin in _transportPins)
+                {
+                    _mapControl.Pins.Add(pin);
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"Carte mise à jour avec {_mapControl.Pins.Count} pins");
         }
-
-        if (ShowActivities)
+        catch (Exception ex)
         {
-            foreach (var pin in _activityPins)
-            {
-                _mapControl.Pins.Add(pin);
-            }
-        }
-
-        if (ShowRestaurants)
-        {
-            foreach (var pin in _restaurantPins)
-            {
-                _mapControl.Pins.Add(pin);
-            }
-        }
-
-        if (ShowTransport)
-        {
-            foreach (var pin in _transportPins)
-            {
-                _mapControl.Pins.Add(pin);
-            }
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la mise à jour des pins: {ex.Message}");
         }
     }
 
@@ -649,8 +793,18 @@ public class MapViewModel : INotifyPropertyChanged
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(address))
+                return null;
+
             var locations = await Geocoding.Default.GetLocationsAsync(address);
-            return locations?.FirstOrDefault();
+            var location = locations?.FirstOrDefault();
+            
+            if (location != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Géocodage réussi pour '{address}': {location.Latitude}, {location.Longitude}");
+            }
+            
+            return location;
         }
         catch (Exception ex)
         {
@@ -663,6 +817,18 @@ public class MapViewModel : INotifyPropertyChanged
     {
         try
         {
+            var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+            }
+
+            if (status != PermissionStatus.Granted)
+            {
+                System.Diagnostics.Debug.WriteLine("Permission de géolocalisation refusée");
+                return null;
+            }
+
             var request = new GeolocationRequest
             {
                 DesiredAccuracy = GeolocationAccuracy.Medium,
@@ -670,6 +836,12 @@ public class MapViewModel : INotifyPropertyChanged
             };
 
             var location = await Geolocation.Default.GetLocationAsync(request);
+            
+            if (location != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Position obtenue: {location.Latitude}, {location.Longitude}");
+            }
+            
             return location;
         }
         catch (Exception ex)
@@ -681,12 +853,24 @@ public class MapViewModel : INotifyPropertyChanged
 
     private async void ShowTemporaryMessage(string message)
     {
-        MessageText = message;
-        ShowMessage = true;
+        try
+        {
+            MessageText = message;
+            ShowMessage = true;
 
-        // Masquer le message après 3 secondes
-        await Task.Delay(3000);
-        ShowMessage = false;
+            // Masquer le message après 3 secondes
+            await Task.Delay(3000);
+            
+            // Vérifier que c'est toujours le même message avant de le masquer
+            if (MessageText == message)
+            {
+                ShowMessage = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'affichage du message: {ex.Message}");
+        }
     }
 
     private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -700,7 +884,21 @@ public class MapViewModel : INotifyPropertyChanged
 
     public async Task RefreshDataAsync()
     {
-        await LoadUserDataAsync();
+        IsLoading = true;
+        try
+        {
+            await LoadUserDataAsync();
+            ShowTemporaryMessage("Données actualisées");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'actualisation: {ex.Message}");
+            ShowTemporaryMessage("Erreur lors de l'actualisation");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     public void ShowLocationDetails(Pin pin)
@@ -722,6 +920,7 @@ public class MapViewModel : INotifyPropertyChanged
             }
 
             ShowLocationInfo = true;
+            System.Diagnostics.Debug.WriteLine($"Affichage des détails pour: {pin.Label}");
         }
     }
 
@@ -729,8 +928,16 @@ public class MapViewModel : INotifyPropertyChanged
     {
         if (_mapControl != null && location != null)
         {
-            var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(radiusKm));
-            _mapControl.MoveToRegion(mapSpan);
+            try
+            {
+                var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(radiusKm));
+                _mapControl.MoveToRegion(mapSpan);
+                System.Diagnostics.Debug.WriteLine($"Carte centrée sur: {location.Latitude}, {location.Longitude}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du centrage: {ex.Message}");
+            }
         }
     }
 
@@ -739,7 +946,41 @@ public class MapViewModel : INotifyPropertyChanged
         if (tappedPin != null)
         {
             ShowLocationDetails(tappedPin);
+            
+            // Optionnel: centrer légèrement la carte sur le pin sélectionné
+            CenterMapOnLocation(tappedPin.Location, 2);
         }
+    }
+
+    // Méthodes utilitaires pour les interactions avec la carte
+    public void ZoomIn()
+    {
+        if (_mapControl?.VisibleRegion != null)
+        {
+            var region = _mapControl.VisibleRegion;
+            var newRadius = Distance.FromKilometers(region.Radius.Kilometers * 0.5);
+            var newSpan = MapSpan.FromCenterAndRadius(region.Center, newRadius);
+            _mapControl.MoveToRegion(newSpan);
+        }
+    }
+
+    public void ZoomOut()
+    {
+        if (_mapControl?.VisibleRegion != null)
+        {
+            var region = _mapControl.VisibleRegion;
+            var newRadius = Distance.FromKilometers(region.Radius.Kilometers * 2.0);
+            var newSpan = MapSpan.FromCenterAndRadius(region.Center, newRadius);
+            _mapControl.MoveToRegion(newSpan);
+        }
+    }
+
+    public void ResetMapView()
+    {
+        // Retourner à la vue par défaut (Paris)
+        var parisLocation = new Location(48.8566, 2.3522);
+        CenterMapOnLocation(parisLocation, 10);
+        ShowTemporaryMessage("Vue par défaut");
     }
 
     #endregion

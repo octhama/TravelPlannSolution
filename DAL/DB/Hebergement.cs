@@ -16,6 +16,7 @@ public partial class Hebergement
     public DateOnly? DateDebut { get; set; }
 
     public DateOnly? DateFin { get; set; }
+    public string? Adresse { get; set; }
 
     public virtual ICollection<ReservationHebergement> ReservationHebergements { get; set; } = new List<ReservationHebergement>();
 

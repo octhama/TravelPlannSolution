@@ -77,6 +77,8 @@ public partial class TravelPlannDbContext : DbContext
 
             entity.Property(e => e.ActiviteId).HasColumnName("ActiviteID");
             entity.Property(e => e.Nom).HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500); // Optionnel: définir une longueur max
+            entity.Property(e => e.Localisation).HasMaxLength(255); // Nouvelle propriété
 
             entity.HasMany(d => d.Voyages).WithMany(p => p.Activites)
                 .UsingEntity<Dictionary<string, object>>(
@@ -135,6 +137,7 @@ public partial class TravelPlannDbContext : DbContext
             entity.Property(e => e.Cout).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Nom).HasMaxLength(100);
             entity.Property(e => e.TypeHebergement).HasMaxLength(50);
+            entity.Property(e => e.Adresse).HasMaxLength(255); // Nouvelle propriété
         });
 
         modelBuilder.Entity<MembreGroupe>(entity =>
