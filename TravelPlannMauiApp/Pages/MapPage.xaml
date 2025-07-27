@@ -119,62 +119,6 @@
                             Command="{Binding ToggleFiltersCommand}"/>
                 </Frame>
 
-                <!-- Boutons de navigation clavier -->
-                <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                       CornerRadius="20"
-                       HasShadow="True"
-                       Padding="5"
-                       WidthRequest="120"
-                       HeightRequest="120">
-                    <Grid RowDefinitions="30,30,30" ColumnDefinitions="30,30,30">
-                        <!-- Bouton Haut -->
-                        <Button Grid.Row="0" Grid.Column="1"
-                                Text="⬆️"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="16"
-                                Command="{Binding MoveUpCommand}"
-                                WidthRequest="30"
-                                HeightRequest="30"/>
-                        <!-- Bouton Gauche -->
-                        <Button Grid.Row="1" Grid.Column="0"
-                                Text="⬅️"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="16"
-                                Command="{Binding MoveLeftCommand}"
-                                WidthRequest="30"
-                                HeightRequest="30"/>
-                        <!-- Bouton Centre/Reset -->
-                        <Button Grid.Row="1" Grid.Column="1"
-                                Text="🎯"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="16"
-                                Command="{Binding ResetViewCommand}"
-                                WidthRequest="30"
-                                HeightRequest="30"/>
-                        <!-- Bouton Droite -->
-                        <Button Grid.Row="1" Grid.Column="2"
-                                Text="➡️"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="16"
-                                Command="{Binding MoveRightCommand}"
-                                WidthRequest="30"
-                                HeightRequest="30"/>
-                        <!-- Bouton Bas -->
-                        <Button Grid.Row="2" Grid.Column="1"
-                                Text="⬇️"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="16"
-                                Command="{Binding MoveDownCommand}"
-                                WidthRequest="30"
-                                HeightRequest="30"/>
-                    </Grid>
-                </Frame>
-
                 <!-- Boutons de zoom -->
                 <VerticalStackLayout Spacing="5">
                     <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
