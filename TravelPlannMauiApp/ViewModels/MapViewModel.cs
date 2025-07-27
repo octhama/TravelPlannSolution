@@ -592,11 +592,11 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     {
         try
         {
-            var currentUser = _sessionService.GetCurrentUser();
-            if (currentUser != null)
+            var currentUserId = await _sessionService.GetCurrentUserIdAsync();
+            if (currentUserId.HasValue)
             {
                 // Charger les voyages de l'utilisateur
-                var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUser.Id);
+                var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUserId.Value);
                 _userVoyages = voyages?.ToList() ?? new List<Voyage>();
                 
                 System.Diagnostics.Debug.WriteLine($"Chargé {_userVoyages.Count} voyages pour l'utilisateur");
@@ -629,42 +629,50 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
             foreach (var voyage in _userVoyages)
             {
-                // Charger les hébergements
-                var hebergements = await _hebergementService.GetHebergementsByVoyageAsync(voyage.Id);
-                if (hebergements != null)
+                // Charger les hébergements si la méthode existe
+                if (voyage.Hebergements != null)
                 {
-                    foreach (var hebergement in hebergements)
+                    foreach (var hebergement in voyage.Hebergements)
                     {
-                        if (hebergement.Latitude.HasValue && hebergement.Longitude.HasValue)
+                        // Utiliser l'adresse pour le géocodage si les coordonnées ne sont pas disponibles
+                        if (!string.IsNullOrEmpty(hebergement.Adresse))
                         {
-                            var pin = new Pin
+                            var location = await GeocodeLocationAsync(hebergement.Adresse);
+                            if (location != null)
                             {
-                                Location = new Location(hebergement.Latitude.Value, hebergement.Longitude.Value),
-                                Label = hebergement.Nom,
-                                Address = hebergement.Adresse ?? "",
-                                Type = PinType.Place
-                            };
-                            _accommodationPins.Add(pin);
+                                var pin = new Pin
+                                {
+                                    Location = location,
+                                    Label = hebergement.Nom,
+                                    Address = hebergement.Adresse,
+                                    Type = PinType.Place
+                                };
+                                _accommodationPins.Add(pin);
+                            }
                         }
                     }
                 }
 
-                // Charger les activités
-                var activites = await _activiteService.GetActivitesByVoyageAsync(voyage.Id);
-                if (activites != null)
+                // Charger les activités si la méthode existe
+                if (voyage.Activites != null)
                 {
-                    foreach (var activite in activites)
+                    foreach (var activite in voyage.Activites)
                     {
-                        if (activite.Latitude.HasValue && activite.Longitude.HasValue)
+                        // Utiliser la localisation pour le géocodage
+                        if (!string.IsNullOrEmpty(activite.Localisation))
                         {
-                            var pin = new Pin
+                            var location = await GeocodeLocationAsync(activite.Localisation);
+                            if (location != null)
                             {
-                                Location = new Location(activite.Latitude.Value, activite.Longitude.Value),
-                                Label = activite.Nom,
-                                Address = activite.Lieu ?? "",
-                                Type = PinType.Place
-                            };
-                            _activityPins.Add(pin);
+                                var pin = new Pin
+                                {
+                                    Location = location,
+                                    Label = activite.Nom,
+                                    Address = activite.Localisation,
+                                    Type = PinType.Place
+                                };
+                                _activityPins.Add(pin);
+                            }
                         }
                     }
                 }
@@ -935,15 +943,37 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     {
         try
         {
-            var voyage = _userVoyages.FirstOrDefault(v => v.Id == voyageId);
-            if (voyage != null && !string.IsNullOrEmpty(voyage.Destination))
+            var voyage = _userVoyages.FirstOrDefault(v => v.VoyageId == voyageId);
+            if (voyage != null && !string.IsNullOrEmpty(voyage.NomVoyage))
             {
-                var location = await GeocodeLocationAsync(voyage.Destination);
+                // Essayer d'utiliser le nom du voyage ou la première destination disponible
+                string destinationToGeocode = voyage.NomVoyage;
+                
+                // Si on a des hébergements, utiliser la première adresse
+                if (voyage.Hebergements?.Any() == true)
+                {
+                    var firstAccommodation = voyage.Hebergements.FirstOrDefault(h => !string.IsNullOrEmpty(h.Adresse));
+                    if (firstAccommodation != null)
+                    {
+                        destinationToGeocode = firstAccommodation.Adresse;
+                    }
+                }
+                // Sinon si on a des activités, utiliser la première localisation
+                else if (voyage.Activites?.Any() == true)
+                {
+                    var firstActivity = voyage.Activites.FirstOrDefault(a => !string.IsNullOrEmpty(a.Localisation));
+                    if (firstActivity != null)
+                    {
+                        destinationToGeocode = firstActivity.Localisation;
+                    }
+                }
+                
+                var location = await GeocodeLocationAsync(destinationToGeocode);
                 if (location != null && _mapControl != null)
                 {
                     var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(10));
                     _mapControl.MoveToRegion(mapSpan);
-                    ShowTemporaryMessage($"Centré sur {voyage.Destination}");
+                    ShowTemporaryMessage($"Centré sur {voyage.NomVoyage}");
                 }
             }
         }

@@ -119,36 +119,6 @@
                             Command="{Binding ToggleFiltersCommand}"/>
                 </Frame>
 
-                <!-- Boutons de zoom -->
-                <VerticalStackLayout Spacing="5">
-                    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                           CornerRadius="20"
-                           HasShadow="True"
-                           Padding="0"
-                           WidthRequest="50"
-                           HeightRequest="40">
-                        <Button Text="+"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="20"
-                                FontAttributes="Bold"
-                                Command="{Binding ZoomInCommand}"/>
-                    </Frame>
-                    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                           CornerRadius="20"
-                           HasShadow="True"
-                           Padding="0"
-                           WidthRequest="50"
-                           HeightRequest="40">
-                        <Button Text="-"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                FontSize="20"
-                                FontAttributes="Bold"
-                                Command="{Binding ZoomOutCommand}"/>
-                    </Frame>
-                </VerticalStackLayout>
-
             </VerticalStackLayout>
 
             <!-- Panel de filtres -->
