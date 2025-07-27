@@ -1129,7 +1129,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         {
             if (!_isMapInitialized) return;
 
-            var voyage = _userVoyages.FirstOrDefault(v => v.Id == voyageId);
+            var voyage = _userVoyages.FirstOrDefault(v => v.VoyageId == voyageId);
             if (voyage == null) return;
 
             var relevantPins = new List<Pin>();
@@ -1150,7 +1150,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             if (relevantPins.Any())
             {
                 await CenterOnPinsAsync(relevantPins);
-                ShowTemporaryMessage($"Centré sur le voyage: {voyage.Nom}");
+                ShowTemporaryMessage($"Centré sur le voyage: {voyage.NomVoyage}");
             }
         }
         catch (Exception ex)
