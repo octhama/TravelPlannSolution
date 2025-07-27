@@ -14,10 +14,7 @@
                   MapType="Street"
                   IsZoomEnabled="True"
                   IsScrollEnabled="True"
-                  HasZoomEnabled="True"
-                  HasScrollEnabled="True"
-                  InputTransparent="False"
-                  CascadeInputTransparent="False">
+                  InputTransparent="False">
             <maps:Map.ItemTemplate>
                 <DataTemplate>
                     <maps:Pin Location="{Binding Location}" 
