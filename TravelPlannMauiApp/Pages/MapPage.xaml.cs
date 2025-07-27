@@ -21,11 +21,33 @@ namespace TravelPlannMauiApp.Pages
         {
             base.OnAppearing();
             
-            // Initialiser la carte sur Namur après l'apparition de la page
-            if (BindingContext is MapViewModel viewModel)
+            try
             {
-                await Task.Delay(500); // Laisser le temps à la carte de se charger
-                await viewModel.InitializeMapOnNamurAsync();
+                System.Diagnostics.Debug.WriteLine("=== MapPage OnAppearing ===");
+                
+                // Configurer le contrôle Map dans le ViewModel
+                _viewModel.SetMapControl(MapControl);
+                
+                // Initialiser la carte avec la position par défaut (Namur, Belgique)
+                await InitializeMapAsync();
+                
+                // Configurer les événements de la carte
+                SetupMapEvents();
+                
+                // Rafraîchir les données utilisateur - IMPORTANT: Attendre que ce soit terminé
+                System.Diagnostics.Debug.WriteLine("Début du rafraîchissement des données...");
+                await _viewModel.RefreshDataAsync();
+                System.Diagnostics.Debug.WriteLine("Rafraîchissement des données terminé");
+                
+                // Log de l'état final
+                _viewModel.LogCurrentState();
+                
+                System.Diagnostics.Debug.WriteLine("MapPage initialisée avec succès");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
+                await DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
             }
         }
 
@@ -34,10 +56,10 @@ namespace TravelPlannMauiApp.Pages
         {
             try
             {
-                // Position par défaut : Paris, France
-                var parisLocation = new Location(48.8566, 2.3522);
-                var mapSpan = MapSpan.FromCenterAndRadius(parisLocation, Distance.FromKilometers(10));
-                
+                // Position par défaut : Namur, Belgique
+                var namurLocation = new Location(50.4674, 4.8719);
+                var mapSpan = MapSpan.FromCenterAndRadius(namurLocation, Distance.FromKilometers(10));
+
                 MapControl.MoveToRegion(mapSpan);
                 
                 // DÉSACTIVER COMPLÈTEMENT LA GÉOLOCALISATION

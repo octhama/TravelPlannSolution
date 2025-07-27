@@ -218,7 +218,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     }
 
     // Coordonnées par défaut pour Namur, Belgique
-    private static readonly Location DefaultLocation = new Location(50.4669, 4.86746); // Namur
+    private static readonly Location DefaultLocation = new Location(50.4674, 4.8719); // Namur
     private static readonly MapSpan DefaultRegion = MapSpan.FromCenterAndRadius(DefaultLocation, Distance.FromKilometers(10));
 
     #endregion
@@ -275,6 +275,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         // Charger les données utilisateur de manière asynchrone
         _ = LoadUserDataAsync();
     }
+
 
     #region Map Control Management
 
