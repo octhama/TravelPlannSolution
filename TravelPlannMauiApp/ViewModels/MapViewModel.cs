@@ -258,13 +258,11 @@ public class MapViewModel : INotifyPropertyChanged
         // Configurer les événements de la carte
         if (_mapControl != null)
         {
-            // CORRECTION: Activer toutes les interactions utilisateur
+            // CORRECTION: Supprimer les propriétés inexistantes et activer les interactions de base
             _mapControl.IsZoomEnabled = true;
             _mapControl.IsScrollEnabled = true;
-            _mapControl.HasZoomEnabled = true;
-            _mapControl.HasScrollEnabled = true;
             
-            // S'assurer que le contrôle peut recevoir le focus pour les interactions clavier
+            // S'assurer que le contrôle peut recevoir le focus pour les interactions
             _mapControl.InputTransparent = false;
             
             // S'abonner aux événements nécessaires
