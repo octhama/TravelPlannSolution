@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BU.Entities;
+using System.Linq;
 
 namespace BU.Services
 {
@@ -35,9 +36,9 @@ namespace BU.Services
             {
                 System.Diagnostics.Debug.WriteLine($"Recherche des hébergements pour le voyage {voyageId}");
                 
-            
+                // Utiliser la relation many-to-many via la table HebergementVoyage
                 var hebergements = await _context.Hebergements
-                    .Where(h => h.VoyageId == voyageId)
+                    .Where(h => h.Voyages.Any(v => v.VoyageId == voyageId))
                     .ToListAsync();
 
                 System.Diagnostics.Debug.WriteLine($"Trouvé {hebergements?.Count() ?? 0} hébergements pour le voyage {voyageId}");
@@ -50,6 +51,7 @@ namespace BU.Services
                 return new List<Hebergement>();
             }
         }
+
         public async Task DeleteHebergementAsync(int hebergementId)
         {
             try

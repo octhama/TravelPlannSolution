@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BU.Entities;
+using System.Linq;
 
 namespace BU.Services
 {
@@ -35,7 +36,7 @@ namespace BU.Services
             {
                 System.Diagnostics.Debug.WriteLine($"Recherche des activités pour le voyage {voyageId}");
                 
-                // Assurez-vous que votre DAL a une méthode pour récupérer les activités par voyage
+                // Utiliser la relation many-to-many via la table ActiviteVoyage
                 var activites = await _context.Activites
                     .Where(a => a.Voyages.Any(v => v.VoyageId == voyageId))
                     .ToListAsync();
