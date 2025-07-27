@@ -913,18 +913,483 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
     #region UI Helpers
 
-    private async void ShowTemporaryMessage(string message, int durationMs = 3000)
+    // Continuation de ShowTemporaryMessage
+        private async void ShowTemporaryMessage(string message, int durationMs = 3000)
+        {
+            try
+            {
+                // Annuler le message précédent s'il existe
+                _messagesCancellationTokenSource?.Cancel();
+                _messagesCancellationTokenSource = new CancellationTokenSource();
+                
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MessageText = message;
+                    ShowMessage = true;
+                });
+                
+                // Masquer le message après le délai spécifié
+                await Task.Delay(durationMs, _messagesCancellationTokenSource.Token);
+                
+                if (!_messagesCancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        ShowMessage = false;
+                        MessageText = "";
+                    });
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Message annulé par un nouveau message - comportement normal
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'affichage du message: {ex.Message}");
+            }
+        }
+
+    #endregion
+
+    #region Distance and Utility Methods
+
+    /// <summary>
+    /// Calcule la distance entre deux locations
+    /// </summary>
+    public double CalculateDistance(Location location1, Location location2, DistanceUnits units = DistanceUnits.Kilometers)
     {
         try
         {
-            // Annuler le message précédent s'il existe
-            _messagesCancellationTokenSource?.Cancel();
-            _messagesCancellationTokenSource = new CancellationTokenSource();
+            if (location1 == null || location2 == null)
+                return 0;
+
+            return Location.CalculateDistance(location1, location2, units);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du calcul de distance: {ex.Message}");
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Vérifie si une location est dans un rayon donné par rapport à un centre
+    /// </summary>
+    public bool IsLocationWithinRadius(Location center, Location target, double radiusKm)
+    {
+        try
+        {
+            if (center == null || target == null)
+                return false;
+
+            var distance = CalculateDistance(center, target, DistanceUnits.Kilometers);
+            return distance <= radiusKm;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la vérification du rayon: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Formate une distance pour l'affichage
+    /// </summary>
+    public string FormatDistance(double distanceKm)
+    {
+        try
+        {
+            if (distanceKm < 0.1)
+                return $"{distanceKm * 1000:F0}m";
+            else if (distanceKm < 1)
+                return $"{distanceKm * 1000:F0}m";
+            else if (distanceKm < 10)
+                return $"{distanceKm:F1}km";
+            else
+                return $"{distanceKm:F0}km";
+        }
+        catch
+        {
+            return "Distance inconnue";
+        }
+    }
+
+    #endregion
+
+    #region Pin Management Helpers
+
+    /// <summary>
+    /// Trouve un pin par son label
+    /// </summary>
+    public Pin FindPinByLabel(string label)
+    {
+        try
+        {
+            if (!_isMapInitialized || string.IsNullOrEmpty(label))
+                return null;
+
+            return _mapControl?.Pins.FirstOrDefault(p => p.Label == label);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la recherche de pin: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Supprime un pin spécifique
+    /// </summary>
+    public bool RemovePin(Pin pin)
+    {
+        try
+        {
+            if (!_isMapInitialized || pin == null)
+                return false;
+
+            return MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                return _mapControl?.Pins.Remove(pin) ?? false;
+            }).Result;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression du pin: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Supprime tous les pins de recherche
+    /// </summary>
+    public void ClearSearchPins()
+    {
+        try
+        {
+            if (!_isMapInitialized) return;
+
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                var searchPins = _mapControl?.Pins
+                    .Where(p => p.Type == PinType.SearchResult)
+                    .ToList();
+
+                if (searchPins != null)
+                {
+                    foreach (var pin in searchPins)
+                    {
+                        _mapControl.Pins.Remove(pin);
+                    }
+                    System.Diagnostics.Debug.WriteLine($"{searchPins.Count} pins de recherche supprimés");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du nettoyage des pins de recherche: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Compte les pins par type
+    /// </summary>
+    public Dictionary<string, int> GetPinCounts()
+    {
+        try
+        {
+            var counts = new Dictionary<string, int>
+            {
+                ["Hébergements"] = _accommodationPins.Count,
+                ["Activités"] = _activityPins.Count,
+                ["Restaurants"] = _restaurantPins.Count,
+                ["Transports"] = _transportPins.Count,
+                ["Total Visible"] = _isMapInitialized ? _mapControl?.Pins.Count ?? 0 : 0
+            };
+
+            return counts;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du comptage des pins: {ex.Message}");
+            return new Dictionary<string, int>();
+        }
+    }
+
+    #endregion
+
+    #region Map Navigation Helpers
+
+    /// <summary>
+    /// Centre la carte sur les pins d'un voyage spécifique
+    /// </summary>
+    public async Task CenterOnVoyageAsync(int voyageId)
+    {
+        try
+        {
+            if (!_isMapInitialized) return;
+
+            var voyage = _userVoyages.FirstOrDefault(v => v.Id == voyageId);
+            if (voyage == null) return;
+
+            var relevantPins = new List<Pin>();
             
+            // Collecter tous les pins liés à ce voyage
+            if (voyage.Hebergements != null)
+            {
+                relevantPins.AddRange(_accommodationPins.Where(p => 
+                    voyage.Hebergements.Any(h => p.Label.Contains(h.Nom))));
+            }
+            
+            if (voyage.Activites != null)
+            {
+                relevantPins.AddRange(_activityPins.Where(p => 
+                    voyage.Activites.Any(a => p.Label.Contains(a.Nom))));
+            }
+
+            if (relevantPins.Any())
+            {
+                await CenterOnPinsAsync(relevantPins);
+                ShowTemporaryMessage($"Centré sur le voyage: {voyage.Nom}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du centrage sur voyage: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Centre la carte sur une liste de pins
+    /// </summary>
+    public async Task CenterOnPinsAsync(List<Pin> pins, double paddingKm = 2)
+    {
+        try
+        {
+            if (!_isMapInitialized || pins == null || !pins.Any()) return;
+
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                MessageText = message;
-                ShowMessage = true;
+                var minLat = pins.Min(p => p.Location.Latitude);
+                var maxLat = pins.Max(p => p.Location.Latitude);
+                var minLon = pins.Min(p => p.Location.Longitude);
+                var maxLon = pins.Max(p => p.Location.Longitude);
+
+                var centerLat = (minLat + maxLat) / 2;
+                var centerLon = (minLon + maxLon) / 2;
+                var center = new Location(centerLat, centerLon);
+
+                // Calculer le rayon nécessaire
+                var maxDistance = pins.Max(p => CalculateDistance(center, p.Location));
+                var radius = Math.Max(maxDistance + paddingKm, 1); // Minimum 1km
+
+                var region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
+                _mapControl?.MoveToRegion(region);
+
+                System.Diagnostics.Debug.WriteLine($"Carte centrée sur {pins.Count} pins - Rayon: {radius:F1}km");
             });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du centrage sur pins: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Anime vers une location avec un zoom adaptatif
+    /// </summary>
+    public async Task AnimateToLocationAsync(Location location, double? radiusKm = null)
+    {
+        try
+        {
+            if (!_isMapInitialized || location == null) return;
+
+            // Déterminer le rayon selon le contexte
+            var radius = radiusKm ?? (_currentRegion != null ? 
+                _currentRegion.Radius.Kilometers : 2.0);
+
+            var region = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(radius));
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                _mapControl?.MoveToRegion(region);
+            });
+
+            // Simuler une animation avec un délai
+            await Task.Delay(500);
+
+            System.Diagnostics.Debug.WriteLine($"Animation vers: {location.Latitude:F4}, {location.Longitude:F4}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'animation: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Export and Share Methods
+
+    /// <summary>
+    /// Exporte les informations de la carte actuelle
+    /// </summary>
+    public Dictionary<string, object> ExportMapState()
+    {
+        try
+        {
+            var mapState = new Dictionary<string, object>
+            {
+                ["CurrentRegion"] = _currentRegion != null ? new
+                {
+                    Center = new { _currentRegion.Center.Latitude, _currentRegion.Center.Longitude },
+                    RadiusKm = _currentRegion.Radius.Kilometers
+                } : null,
+                ["UserLocation"] = _userLocation != null ? new
+                {
+                    _userLocation.Latitude,
+                    _userLocation.Longitude
+                } : null,
+                ["FilterSettings"] = new
+                {
+                    ShowAccommodations,
+                    ShowActivities,
+                    ShowRestaurants,
+                    ShowTransport
+                },
+                ["PinCounts"] = GetPinCounts(),
+                ["MapType"] = _isMapInitialized ? _mapControl?.MapType.ToString() : "Unknown",
+                ["ExportTime"] = DateTime.Now
+            };
+
+            return mapState;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'export de l'état: {ex.Message}");
+            return new Dictionary<string, object>();
+        }
+    }
+
+    #endregion
+
+    #region INotifyPropertyChanged Implementation
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetProperty<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(backingField, value))
+            return false;
+
+        backingField = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
+
+    #endregion
+
+    #region IDisposable Implementation
+
+    private bool _disposed = false;
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    // Nettoyer les événements
+                    if (_mapControl != null)
+                    {
+                        _mapControl.PropertyChanged -= OnMapPropertyChanged;
+                    }
+
+                    // Annuler les tâches en cours
+                    _messagesCancellationTokenSource?.Cancel();
+                    _messagesCancellationTokenSource?.Dispose();
+
+                    // Nettoyer les collections
+                    _accommodationPins?.Clear();
+                    _activityPins?.Clear();
+                    _restaurantPins?.Clear();
+                    _transportPins?.Clear();
+                    _userVoyages?.Clear();
+
+                    System.Diagnostics.Debug.WriteLine("MapViewModel dispose() terminé");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Erreur lors du dispose: {ex.Message}");
+                }
+            }
+
+            _disposed = true;
+        }
+    }
+
+    ~MapViewModel()
+    {
+        Dispose(false);
+    }
+
+    #endregion
+
+    #region Debug and Logging Methods
+
+    /// <summary>
+    /// Affiche l'état actuel du ViewModel pour debug
+    /// </summary>
+    public void LogCurrentState()
+    {
+        try
+        {
+            var state = new
+            {
+                IsMapInitialized = _isMapInitialized,
+                IsLoading,
+                ShowLocationInfo,
+                ShowFilters,
+                UserVoyagesCount = _userVoyages?.Count ?? 0,
+                AccommodationPinsCount = _accommodationPins?.Count ?? 0,
+                ActivityPinsCount = _activityPins?.Count ?? 0,
+                CurrentRegion = _currentRegion != null ? 
+                    $"{_currentRegion.Center.Latitude:F4},{_currentRegion.Center.Longitude:F4} ({_currentRegion.Radius.Kilometers:F1}km)" : 
+                    "Non définie",
+                UserLocation = _userLocation != null ? 
+                    $"{_userLocation.Latitude:F4},{_userLocation.Longitude:F4}" : 
+                    "Non définie",
+                MapPinsCount = _isMapInitialized ? _mapControl?.Pins.Count ?? 0 : 0
+            };
+
+            System.Diagnostics.Debug.WriteLine($"=== État MapViewModel ===");
+            System.Diagnostics.Debug.WriteLine($"Carte initialisée: {state.IsMapInitialized}");
+            System.Diagnostics.Debug.WriteLine($"Chargement: {state.IsLoading}");
+            System.Diagnostics.Debug.WriteLine($"Voyages utilisateur: {state.UserVoyagesCount}");
+            System.Diagnostics.Debug.WriteLine($"Pins hébergements: {state.AccommodationPinsCount}");
+            System.Diagnostics.Debug.WriteLine($"Pins activités: {state.ActivityPinsCount}");
+            System.Diagnostics.Debug.WriteLine($"Région actuelle: {state.CurrentRegion}");
+            System.Diagnostics.Debug.WriteLine($"Position utilisateur: {state.UserLocation}");
+            System.Diagnostics.Debug.WriteLine($"Pins sur carte: {state.MapPinsCount}");
+            System.Diagnostics.Debug.WriteLine($"=========================");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du logging: {ex.Message}");
+        }
+    }
+
+    #endregion
+}
             
             // Masquer le message après le délai spécif
