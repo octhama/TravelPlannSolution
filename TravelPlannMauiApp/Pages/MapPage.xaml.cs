@@ -17,39 +17,17 @@ namespace TravelPlannMauiApp.Pages
             BindingContext = _viewModel;
         }
 
-       protected override async void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
             
-            try
+            // Initialiser la carte sur Namur après l'apparition de la page
+            if (BindingContext is MapViewModel viewModel)
             {
-                System.Diagnostics.Debug.WriteLine("=== MapPage OnAppearing ===");
-                
-                // Configurer le contrôle Map dans le ViewModel
-                _viewModel.SetMapControl(MapControl);
-                
-                // Initialiser la carte avec la position par défaut (Paris)
-                await InitializeMapAsync();
-                
-                // Configurer les événements de la carte
-                SetupMapEvents();
-                
-                // Rafraîchir les données utilisateur
-                System.Diagnostics.Debug.WriteLine("Début du rafraîchissement des données...");
-                await _viewModel.RefreshDataAsync();
-                System.Diagnostics.Debug.WriteLine("Rafraîchissement des données terminé");
-                
-                // Log de l'état final
-                _viewModel.LogCurrentState();
-                
-                System.Diagnostics.Debug.WriteLine("MapPage initialisée avec succès");
+                await Task.Delay(500); // Laisser le temps à la carte de se charger
+                await viewModel.InitializeMapOnNamurAsync();
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation de la carte: {ex}");
-        await DisplayAlert("Erreur", $"Impossible d'initialiser la carte: {ex.Message}", "OK");
-    }
-}
+        }
 
 
         private async Task InitializeMapAsync()

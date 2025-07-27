@@ -217,6 +217,10 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
+    // Coordonnées par défaut pour Namur, Belgique
+    private static readonly Location DefaultLocation = new Location(50.4674, 4.8719); // Namur
+    private static readonly MapSpan DefaultRegion = MapSpan.FromCenterAndRadius(DefaultLocation, Distance.FromKilometers(10));
+
     #endregion
 
     #region Commands
@@ -248,7 +252,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         _hebergementService = hebergementService ?? throw new ArgumentNullException(nameof(hebergementService));
         _sessionService = sessionService ?? throw new ArgumentNullException(nameof(sessionService));
 
-        // Initialiser les commandes
+        // Initialiser les commandes (code existant)
         SearchCommand = new Command(async () => await ExecuteSearchCommand());
         ToggleViewModeCommand = new Command(async () => await ExecuteToggleViewModeCommand());
         ToggleMapStyleCommand = new Command(async () => await ExecuteToggleMapStyleCommand());
@@ -259,13 +263,14 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         ShowActivitiesCommand = new Command(() => ExecuteShowActivitiesCommand());
         ShowRestaurantsCommand = new Command(() => ExecuteShowRestaurantsCommand());
         ShowDirectionsCommand = new Command(() => ExecuteShowDirectionsCommand());
-        
-        // Commandes de zoom uniquement
         ZoomInCommand = new Command(() => ExecuteZoomInCommand());
         ZoomOutCommand = new Command(() => ExecuteZoomOutCommand());
         
         // Initialiser le cancellation token pour les messages
         _messagesCancellationTokenSource = new CancellationTokenSource();
+        
+        // Définir la région par défaut sur Namur
+        _currentRegion = DefaultRegion;
         
         // Charger les données utilisateur de manière asynchrone
         _ = LoadUserDataAsync();
@@ -285,13 +290,17 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             _mapControl.IsScrollEnabled = true;
             _mapControl.InputTransparent = false;
             
+            // NOUVEAU: Centrer immédiatement sur Namur
+            _mapControl.MoveToRegion(DefaultRegion);
+            _currentRegion = DefaultRegion;
+            
             // Configurer les événements
             SetupMapEvents();
             
             // Mettre à jour les pins avec les données déjà chargées
             _ = Task.Run(UpdateMapPins);
             
-            System.Diagnostics.Debug.WriteLine("Contrôle de carte configuré avec succès");
+            System.Diagnostics.Debug.WriteLine("Contrôle de carte configuré avec succès - Centré sur Namur");
         }
     }
     
@@ -422,7 +431,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     }
 }
 
-private async Task ExecuteToggleViewModeCommand()
+    private async Task ExecuteToggleViewModeCommand()
 {
     if (!_isMapInitialized)
     {
@@ -464,7 +473,7 @@ private async Task ExecuteToggleViewModeCommand()
     }
 }
 
-private async Task ExecuteToggleMapStyleCommand()
+    private async Task ExecuteToggleMapStyleCommand()
 {
     try
     {
@@ -490,35 +499,31 @@ private async Task ExecuteToggleMapStyleCommand()
     }
 }
 
-private async Task ExecuteGoToMyLocationCommand()
-{
-    await ShowTemporaryMessageAsync("Fonction de géolocalisation désactivée");
-    return;
-    
-    // Ancien code commenté pour référence future
-    /*
-    if (!_isMapInitialized)
+    private async Task ExecuteGoToMyLocationCommand()
     {
-        await ShowTemporaryMessageAsync("Carte non initialisée");
-        return;
-    }
+        if (!_isMapInitialized)
+        {
+            await ShowTemporaryMessageAsync("Carte non initialisée");
+            return;
+        }
 
-    IsLoading = true;
-    try
-    {
-        // Code de géolocalisation désactivé
+        try
+        {
+            // Au lieu de la géolocalisation, centrer sur Namur
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                _mapControl?.MoveToRegion(DefaultRegion);
+                _currentRegion = DefaultRegion;
+            });
+            
+            await ShowTemporaryMessageAsync("Centré sur Namur, Belgique");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du centrage sur Namur: {ex.Message}");
+            await ShowTemporaryMessageAsync("Erreur lors du centrage");
+        }
     }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"Erreur géolocalisation: {ex.Message}");
-        await ShowTemporaryMessageAsync("Erreur lors de la localisation"); 
-    }
-    finally
-    {
-        IsLoading = false;
-    }
-    */
-}
 
     private void ExecuteToggleFiltersCommand()
     {
@@ -803,6 +808,46 @@ private async Task ExecuteGoToMyLocationCommand()
 
     #region Map Pins Management
 
+    public async Task InitializeMapOnNamurAsync()
+    {
+        try
+        {
+            if (!_isMapInitialized)
+            {
+                System.Diagnostics.Debug.WriteLine("Carte non initialisée pour le centrage sur Namur");
+                return;
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                // Centrer sur Namur avec un zoom approprié
+                _mapControl?.MoveToRegion(DefaultRegion);
+                _currentRegion = DefaultRegion;
+                
+                System.Diagnostics.Debug.WriteLine($"Carte centrée sur Namur: {DefaultLocation.Latitude:F4}, {DefaultLocation.Longitude:F4}");
+            });
+            
+            // Optionnel: Ajouter un pin pour marquer Namur
+            var namurPin = new Pin
+            {
+                Location = DefaultLocation,
+                Label = "📍 Namur",
+                Address = "Namur, Belgique",
+                Type = PinType.Generic
+            };
+            
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                _mapControl?.Pins.Add(namurPin);
+            });
+            
+            await ShowTemporaryMessageAsync("Bienvenue à Namur!");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'initialisation sur Namur: {ex.Message}");
+        }
+    }
     private void ShowTemporaryMessage(string message, int durationMs = 3000)
     {
         _ = ShowTemporaryMessageAsync(message, durationMs);

@@ -351,9 +351,6 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/TravelPlannMauiApp.genruntimeconfig.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/ref/TravelPlannMauiApp.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/BU.stamp
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/Common.stamp
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/DAL.stamp
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/Azure.Core.stamp
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/Azure.Identity.stamp
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/obj/Debug/net8.0-maccatalyst/maccatalyst-x64/resourcestamps/Castle.Core.stamp
