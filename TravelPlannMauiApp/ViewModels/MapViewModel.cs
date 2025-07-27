@@ -504,47 +504,54 @@ public class MapViewModel : INotifyPropertyChanged
             _accommodationPins.Clear();
             _activityPins.Clear();
 
-            // Fix: Use the correct method names from the service interfaces
+            // Fix: Since Hebergement and Activite don't have address/location properties,
+            // we'll create sample pins with their names and use default locations
+            // In a real application, you would need to add address/location fields to your entities
+            
             // Load all hébergements
             var hebergements = await _hebergementService.GetAllHebergementsAsync(); 
             foreach (var hebergement in hebergements)
             {
-                if (!string.IsNullOrEmpty(hebergement.Adresse))
+                // Since there's no address property, we'll use the name to try geocoding
+                // or create a default location. In a real app, you'd need to add address fields.
+                var location = await GeocodeLocationAsync(hebergement.Nom);
+                if (location == null)
                 {
-                    var location = await GeocodeLocationAsync(hebergement.Adresse);
-                    if (location != null)
-                    {
-                        var pin = new Pin
-                        {
-                            Location = location,
-                            Label = hebergement.Nom,
-                            Address = hebergement.Adresse,
-                            Type = PinType.Place
-                        };
-                        _accommodationPins.Add(pin);
-                    }
+                    // Fallback to a default location (e.g., Paris center) if geocoding fails
+                    location = new Location(48.8566, 2.3522); // Paris coordinates
                 }
+                
+                var pin = new Pin
+                {
+                    Location = location,
+                    Label = hebergement.Nom,
+                    Address = hebergement.TypeHebergement ?? "Hébergement",
+                    Type = PinType.Place
+                };
+                _accommodationPins.Add(pin);
             }
 
             // Load all activités
             var activites = await _activiteService.GetAllActivitesAsync();
             foreach (var activite in activites)
             {
-                if (!string.IsNullOrEmpty(activite.Localisation))
+                // Since there's no location property, we'll use the name to try geocoding
+                // or create a default location. In a real app, you'd need to add location fields.
+                var location = await GeocodeLocationAsync(activite.Nom);
+                if (location == null)
                 {
-                    var location = await GeocodeLocationAsync(activite.Localisation);
-                    if (location != null)
-                    {
-                        var pin = new Pin
-                        {
-                            Location = location,
-                            Label = activite.Nom,
-                            Address = activite.Localisation,
-                            Type = PinType.Place
-                        };
-                        _activityPins.Add(pin);
-                    }
+                    // Fallback to a default location (e.g., Paris center) if geocoding fails
+                    location = new Location(48.8566, 2.3522); // Paris coordinates
                 }
+                
+                var pin = new Pin
+                {
+                    Location = location,
+                    Label = activite.Nom,
+                    Address = activite.Description ?? "Activité",
+                    Type = PinType.Place
+                };
+                _activityPins.Add(pin);
             }
 
             // Charger des données de démonstration pour les restaurants et transports
