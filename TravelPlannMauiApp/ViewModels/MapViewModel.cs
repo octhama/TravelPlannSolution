@@ -992,4 +992,337 @@ public class MapViewModel : INotifyPropertyChanged
 
     public void ZoomIn()
     {
-        if (_mapControl?.VisibleRegion !=
+        if (_mapControl?.VisibleRegion != null)
+        {
+            try
+            {
+                var currentRegion = _mapControl.VisibleRegion;
+                var center = currentRegion.Center;
+                var newRadius = Distance.FromMeters(currentRegion.Radius.Meters * 0.5); // Zoom x2
+                
+                var newSpan = MapSpan.FromCenterAndRadius(center, newRadius);
+                _mapControl.MoveToRegion(newSpan);
+                
+                System.Diagnostics.Debug.WriteLine($"Zoom avant effectué - Nouveau rayon: {newRadius.Meters}m");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du zoom avant: {ex.Message}");
+            }
+        }
+    }
+
+    public void ZoomOut()
+    {
+        if (_mapControl?.VisibleRegion != null)
+        {
+            try
+            {
+                var currentRegion = _mapControl.VisibleRegion;
+                var center = currentRegion.Center;
+                var newRadius = Distance.FromMeters(currentRegion.Radius.Meters * 2.0); // Zoom /2
+                
+                var newSpan = MapSpan.FromCenterAndRadius(center, newRadius);
+                _mapControl.MoveToRegion(newSpan);
+                
+                System.Diagnostics.Debug.WriteLine($"Zoom arrière effectué - Nouveau rayon: {newRadius.Meters}m");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du zoom arrière: {ex.Message}");
+            }
+        }
+    }
+
+    public async Task<bool> AddCustomLocationAsync(string locationName, string address)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(locationName) || string.IsNullOrWhiteSpace(address))
+                return false;
+
+            var location = await GeocodeLocationAsync(address);
+            if (location == null)
+                return false;
+
+            var customPin = new Pin
+            {
+                Location = location,
+                Label = locationName,
+                Address = address,
+                Type = PinType.Generic
+            };
+
+            _mapControl?.Pins.Add(customPin);
+            ShowLocationDetails(customPin);
+            CenterMapOnLocation(location, 2);
+            ShowTemporaryMessage($"Lieu ajouté: {locationName}");
+            
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'ajout du lieu personnalisé: {ex.Message}");
+            ShowTemporaryMessage("Erreur lors de l'ajout du lieu");
+            return false;
+        }
+    }
+
+    public void RemoveCustomPins()
+    {
+        if (_mapControl == null) return;
+
+        try
+        {
+            var customPins = _mapControl.Pins
+                .Where(p => p.Type == PinType.Generic && p.Label != "Ma position")
+                .ToList();
+
+            foreach (var pin in customPins)
+            {
+                _mapControl.Pins.Remove(pin);
+            }
+
+            if (customPins.Count > 0)
+            {
+                ShowTemporaryMessage($"{customPins.Count} lieu(x) personnalisé(s) supprimé(s)");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression des lieux personnalisés: {ex.Message}");
+        }
+    }
+
+    public async Task<List<Pin>> GetNearbyPinsAsync(Location center, double radiusKm = 5)
+    {
+        try
+        {
+            if (center == null || _mapControl == null)
+                return new List<Pin>();
+
+            var nearbyPins = new List<Pin>();
+
+            foreach (var pin in _mapControl.Pins)
+            {
+                var distance = Location.CalculateDistance(center, pin.Location, DistanceUnits.Kilometers);
+                if (distance <= radiusKm)
+                {
+                    nearbyPins.Add(pin);
+                }
+            }
+
+            return nearbyPins.OrderBy(p => Location.CalculateDistance(center, p.Location, DistanceUnits.Kilometers)).ToList();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la recherche de lieux proches: {ex.Message}");
+            return new List<Pin>();
+        }
+    }
+
+    public async Task ExportMapDataAsync()
+    {
+        try
+        {
+            if (_mapControl?.Pins == null || !_mapControl.Pins.Any())
+            {
+                ShowTemporaryMessage("Aucune donnée à exporter");
+                return;
+            }
+
+            var exportData = new
+            {
+                ExportDate = DateTime.Now,
+                UserLocation = _userLocation != null ? new { _userLocation.Latitude, _userLocation.Longitude } : null,
+                TotalPins = _mapControl.Pins.Count,
+                Pins = _mapControl.Pins.Select(p => new
+                {
+                    p.Label,
+                    p.Address,
+                    Location = new { p.Location.Latitude, p.Location.Longitude },
+                    Type = p.Type.ToString()
+                }).ToList(),
+                Filters = new
+                {
+                    ShowAccommodations,
+                    ShowActivities,
+                    ShowRestaurants,
+                    ShowTransport
+                }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(exportData, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            System.Diagnostics.Debug.WriteLine($"Données exportées: {json}");
+            ShowTemporaryMessage("Données exportées avec succès");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'export: {ex.Message}");
+            ShowTemporaryMessage("Erreur lors de l'export");
+        }
+    }
+
+    public void ResetMapToDefault()
+    {
+        try
+        {
+            // Position par défaut : Paris
+            var defaultLocation = new Location(48.8566, 2.3522);
+            var defaultSpan = MapSpan.FromCenterAndRadius(defaultLocation, Distance.FromKilometers(10));
+            
+            _mapControl?.MoveToRegion(defaultSpan);
+            
+            // Réinitialiser les filtres
+            ShowAccommodations = true;
+            ShowActivities = true;
+            ShowRestaurants = false;
+            ShowTransport = false;
+            
+            // Fermer les panneaux
+            ShowLocationInfo = false;
+            ShowFilters = false;
+            
+            // Nettoyer les pins de recherche et personnalisés
+            if (_mapControl != null)
+            {
+                var pinsToRemove = _mapControl.Pins
+                    .Where(p => p.Type == PinType.SearchResult || 
+                               (p.Type == PinType.Generic && p.Label != "Ma position"))
+                    .ToList();
+                
+                foreach (var pin in pinsToRemove)
+                {
+                    _mapControl.Pins.Remove(pin);
+                }
+            }
+            
+            // Réinitialiser le style de carte
+            if (_mapControl != null)
+            {
+                _mapControl.MapType = MapType.Street;
+                ViewModeIcon = "🗺️";
+            }
+            
+            ShowTemporaryMessage("Carte réinitialisée");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la réinitialisation: {ex.Message}");
+            ShowTemporaryMessage("Erreur lors de la réinitialisation");
+        }
+    }
+
+    public void UpdateMapRegion(MapSpan newRegion)
+    {
+        try
+        {
+            if (_mapControl != null && newRegion != null)
+            {
+                _mapControl.MoveToRegion(newRegion);
+                System.Diagnostics.Debug.WriteLine($"Région mise à jour - Centre: {newRegion.Center.Latitude}, {newRegion.Center.Longitude}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la mise à jour de la région: {ex.Message}");
+        }
+    }
+
+    public async Task<string> GetAddressFromLocationAsync(Location location)
+    {
+        try
+        {
+            if (location == null)
+                return "Adresse inconnue";
+
+            var placemarks = await Geocoding.Default.GetPlacemarksAsync(location);
+            var placemark = placemarks?.FirstOrDefault();
+            
+            if (placemark != null)
+            {
+                var addressParts = new List<string>();
+                
+                if (!string.IsNullOrEmpty(placemark.Thoroughfare))
+                    addressParts.Add(placemark.Thoroughfare);
+                if (!string.IsNullOrEmpty(placemark.Locality))
+                    addressParts.Add(placemark.Locality);
+                if (!string.IsNullOrEmpty(placemark.AdminArea))
+                    addressParts.Add(placemark.AdminArea);
+                if (!string.IsNullOrEmpty(placemark.CountryName))
+                    addressParts.Add(placemark.CountryName);
+                
+                return addressParts.Count > 0 ? string.Join(", ", addressParts) : "Adresse inconnue";
+            }
+            
+            return $"{location.Latitude:F4}, {location.Longitude:F4}";
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du géocodage inverse: {ex.Message}");
+            return $"{location.Latitude:F4}, {location.Longitude:F4}";
+        }
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            // Nettoyer les événements
+            if (_mapControl != null)
+            {
+                _mapControl.PropertyChanged -= OnMapPropertyChanged;
+            }
+            
+            // Nettoyer les collections
+            _accommodationPins?.Clear();
+            _activityPins?.Clear();
+            _restaurantPins?.Clear();
+            _transportPins?.Clear();
+            _userVoyages?.Clear();
+            
+            System.Diagnostics.Debug.WriteLine("MapViewModel nettoyé");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du nettoyage du MapViewModel: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Event Handlers
+
+    private void OnLocationChanged(object sender, LocationEventArgs e)
+    {
+        try
+        {
+            if (e.Location != null)
+            {
+                _userLocation = e.Location;
+                System.Diagnostics.Debug.WriteLine($"Position utilisateur mise à jour: {e.Location.Latitude}, {e.Location.Longitude}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la mise à jour de la position: {ex.Message}");
+        }
+    }
+
+    #endregion
+}
+
+// Classe d'arguments pour les événements de localisation
+public class LocationEventArgs : EventArgs
+{
+    public Location Location { get; }
+    
+    public LocationEventArgs(Location location)
+    {
+        Location = location;
+    }
+}
