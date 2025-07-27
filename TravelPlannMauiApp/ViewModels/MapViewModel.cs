@@ -180,7 +180,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         {
             _showAccommodations = value;
             OnPropertyChanged();
-            UpdateMapPins();
+            _ = Task.Run(UpdateMapPins); // Exécuter de manière asynchrone
         }
     }
 
@@ -191,7 +191,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         {
             _showActivities = value;
             OnPropertyChanged();
-            UpdateMapPins();
+            _ = Task.Run(UpdateMapPins); // Exécuter de manière asynchrone
         }
     }
 
@@ -202,7 +202,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         {
             _showRestaurants = value;
             OnPropertyChanged();
-            UpdateMapPins();
+            _ = Task.Run(UpdateMapPins); // Exécuter de manière asynchrone
         }
     }
 
@@ -213,7 +213,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         {
             _showTransport = value;
             OnPropertyChanged();
-            UpdateMapPins();
+            _ = Task.Run(UpdateMapPins); // Exécuter de manière asynchrone
         }
     }
 
@@ -250,8 +250,8 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
         // Initialiser les commandes
         SearchCommand = new Command(async () => await ExecuteSearchCommand());
-        ToggleViewModeCommand = new Command(() => ExecuteToggleViewModeCommand());
-        ToggleMapStyleCommand = new Command(() => ExecuteToggleMapStyleCommand());
+        ToggleViewModeCommand = new Command(async () => await ExecuteToggleViewModeCommand());
+        ToggleMapStyleCommand = new Command(async () => await ExecuteToggleMapStyleCommand());
         GoToMyLocationCommand = new Command(async () => await ExecuteGoToMyLocationCommand());
         ToggleFiltersCommand = new Command(() => ExecuteToggleFiltersCommand());
         CloseLocationInfoCommand = new Command(() => ExecuteCloseLocationInfoCommand());
@@ -289,7 +289,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             SetupMapEvents();
             
             // Mettre à jour les pins avec les données déjà chargées
-            UpdateMapPins();
+            _ = Task.Run(UpdateMapPins);
             
             System.Diagnostics.Debug.WriteLine("Contrôle de carte configuré avec succès");
         }
@@ -356,14 +356,21 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             {
                 // Centrer la carte sur le résultat
                 var mapSpan = MapSpan.FromCenterAndRadius(searchResult, Distance.FromKilometers(2));
-                _mapControl.MoveToRegion(mapSpan);
+                
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    _mapControl.MoveToRegion(mapSpan);
+                });
                 
                 // Supprimer les anciens pins de recherche
-                var existingSearchPins = _mapControl.Pins.Where(p => p.Type == PinType.SearchResult).ToList();
-                foreach (var pin in existingSearchPins)
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    _mapControl.Pins.Remove(pin);
-                }
+                    var existingSearchPins = _mapControl.Pins.Where(p => p.Type == PinType.SearchResult).ToList();
+                    foreach (var pin in existingSearchPins)
+                    {
+                        _mapControl.Pins.Remove(pin);
+                    }
+                });
                 
                 // Ajouter un nouveau pin de recherche
                 var searchPin = new Pin
@@ -374,7 +381,11 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                     Type = PinType.SearchResult
                 };
                 
-                _mapControl.Pins.Add(searchPin);
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    _mapControl.Pins.Add(searchPin);
+                });
+                
                 ShowLocationDetails(searchPin);
                 ShowTemporaryMessage($"Lieu trouvé: {SearchQuery}");
                 
@@ -397,30 +408,33 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
-    private void ExecuteToggleViewModeCommand()
+    private async Task ExecuteToggleViewModeCommand()
     {
         if (!_isMapInitialized) return;
 
         try
         {
-            switch (_mapControl.MapType)
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                case MapType.Street:
-                    _mapControl.MapType = MapType.Satellite;
-                    ViewModeIcon = "🛰️";
-                    ShowTemporaryMessage("Mode satellite");
-                    break;
-                case MapType.Satellite:
-                    _mapControl.MapType = MapType.Hybrid;
-                    ViewModeIcon = "🌍";
-                    ShowTemporaryMessage("Mode hybride");
-                    break;
-                case MapType.Hybrid:
-                    _mapControl.MapType = MapType.Street;
-                    ViewModeIcon = "🗺️";
-                    ShowTemporaryMessage("Mode plan");
-                    break;
-            }
+                switch (_mapControl.MapType)
+                {
+                    case MapType.Street:
+                        _mapControl.MapType = MapType.Satellite;
+                        ViewModeIcon = "🛰️";
+                        ShowTemporaryMessage("Mode satellite");
+                        break;
+                    case MapType.Satellite:
+                        _mapControl.MapType = MapType.Hybrid;
+                        ViewModeIcon = "🌍";
+                        ShowTemporaryMessage("Mode hybride");
+                        break;
+                    case MapType.Hybrid:
+                        _mapControl.MapType = MapType.Street;
+                        ViewModeIcon = "🗺️";
+                        ShowTemporaryMessage("Mode plan");
+                        break;
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -428,22 +442,25 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
-    private void ExecuteToggleMapStyleCommand()
+    private async Task ExecuteToggleMapStyleCommand()
     {
         try
         {
-            // Cette fonctionnalité dépendrait du thème de l'application
-            // Pour l'instant, on change juste l'icône
-            if (MapStyleIcon == "🌙")
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                MapStyleIcon = "☀️";
-                ShowTemporaryMessage("Thème sombre activé");
-            }
-            else
-            {
-                MapStyleIcon = "🌙";
-                ShowTemporaryMessage("Thème clair activé");
-            }
+                // Cette fonctionnalité dépendrait du thème de l'application
+                // Pour l'instant, on change juste l'icône
+                if (MapStyleIcon == "🌙")
+                {
+                    MapStyleIcon = "☀️";
+                    ShowTemporaryMessage("Thème sombre activé");
+                }
+                else
+                {
+                    MapStyleIcon = "🌙";
+                    ShowTemporaryMessage("Thème clair activé");
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -484,7 +501,11 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                 
                 // Centrer la carte sur la position utilisateur
                 var userMapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(2));
-                _mapControl.MoveToRegion(userMapSpan);
+                
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    _mapControl.MoveToRegion(userMapSpan);
+                });
                 
                 ShowTemporaryMessage("Position actuelle localisée");
                 System.Diagnostics.Debug.WriteLine($"Centré sur position utilisateur: {location.Latitude:F4}, {location.Longitude:F4}");
@@ -552,12 +573,15 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
         try
         {
-            // Réduire le rayon de moitié pour zoomer
-            var newRadius = _currentRegion.Radius.Meters * 0.5;
-            var newMapSpan = MapSpan.FromCenterAndRadius(_currentRegion.Center, Distance.FromMeters(Math.Max(newRadius, 100)));
-            _mapControl.MoveToRegion(newMapSpan);
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                // Réduire le rayon de moitié pour zoomer
+                var newRadius = _currentRegion.Radius.Meters * 0.5;
+                var newMapSpan = MapSpan.FromCenterAndRadius(_currentRegion.Center, Distance.FromMeters(Math.Max(newRadius, 100)));
+                _mapControl.MoveToRegion(newMapSpan);
+            });
             
-            System.Diagnostics.Debug.WriteLine($"Zoom avant - Nouveau rayon: {newRadius:F0}m");
+            System.Diagnostics.Debug.WriteLine($"Zoom avant - Nouveau rayon: {_currentRegion.Radius.Meters * 0.5:F0}m");
         }
         catch (Exception ex)
         {
@@ -571,12 +595,15 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
         try
         {
-            // Doubler le rayon pour dézoomer
-            var newRadius = _currentRegion.Radius.Meters * 2.0;
-            var newMapSpan = MapSpan.FromCenterAndRadius(_currentRegion.Center, Distance.FromMeters(Math.Min(newRadius, 100000))); // Max 100km
-            _mapControl.MoveToRegion(newMapSpan);
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                // Doubler le rayon pour dézoomer
+                var newRadius = _currentRegion.Radius.Meters * 2.0;
+                var newMapSpan = MapSpan.FromCenterAndRadius(_currentRegion.Center, Distance.FromMeters(Math.Min(newRadius, 100000))); // Max 100km
+                _mapControl.MoveToRegion(newMapSpan);
+            });
             
-            System.Diagnostics.Debug.WriteLine($"Zoom arrière - Nouveau rayon: {newRadius:F0}m");
+            System.Diagnostics.Debug.WriteLine($"Zoom arrière - Nouveau rayon: {_currentRegion.Radius.Meters * 2.0:F0}m");
         }
         catch (Exception ex)
         {
@@ -637,18 +664,27 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                         // Utiliser l'adresse pour le géocodage si les coordonnées ne sont pas disponibles
                         if (!string.IsNullOrEmpty(hebergement.Adresse))
                         {
+                            System.Diagnostics.Debug.WriteLine($"Géocodage hébergement: {hebergement.Nom} - {hebergement.Adresse}");
                             var location = await GeocodeLocationAsync(hebergement.Adresse);
                             if (location != null)
                             {
                                 var pin = new Pin
                                 {
                                     Location = location,
-                                    Label = hebergement.Nom,
+                                    Label = $"🏨 {hebergement.Nom}",
                                     Address = hebergement.Adresse,
                                     Type = PinType.Place
                                 };
                                 _accommodationPins.Add(pin);
+                                System.Diagnostics.Debug.WriteLine($"Pin hébergement ajouté: {hebergement.Nom} à {location.Latitude:F4}, {location.Longitude:F4}");
                             }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Échec géocodage hébergement: {hebergement.Adresse}");
+                            }
+
+                            // Petit délai pour éviter de surcharger l'API de géocodage
+                            await Task.Delay(500);
                         }
                     }
                 }
@@ -661,18 +697,27 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                         // Utiliser la localisation pour le géocodage
                         if (!string.IsNullOrEmpty(activite.Localisation))
                         {
+                            System.Diagnostics.Debug.WriteLine($"Géocodage activité: {activite.Nom} - {activite.Localisation}");
                             var location = await GeocodeLocationAsync(activite.Localisation);
                             if (location != null)
                             {
                                 var pin = new Pin
                                 {
                                     Location = location,
-                                    Label = activite.Nom,
+                                    Label = $"🎯 {activite.Nom}",
                                     Address = activite.Localisation,
                                     Type = PinType.Place
                                 };
                                 _activityPins.Add(pin);
+                                System.Diagnostics.Debug.WriteLine($"Pin activité ajouté: {activite.Nom} à {location.Latitude:F4}, {location.Longitude:F4}");
                             }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Échec géocodage activité: {activite.Localisation}");
+                            }
+
+                            // Petit délai pour éviter de surcharger l'API de géocodage
+                            await Task.Delay(500);
                         }
                     }
                 }
@@ -683,7 +728,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             // Mettre à jour la carte si elle est initialisée
             if (_isMapInitialized)
             {
-                UpdateMapPins();
+                await UpdateMapPins();
             }
         }
         catch (Exception ex)
@@ -717,57 +762,60 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
     #region Map Pins Management
 
-    private void UpdateMapPins()
+    private async Task UpdateMapPins()
     {
         if (!_isMapInitialized) return;
 
         try
         {
-            // Supprimer tous les pins existants sauf les pins de recherche et utilisateur
-            var pinsToRemove = _mapControl.Pins
-                .Where(p => p.Type != PinType.SearchResult && p.Type != PinType.Generic)
-                .ToList();
-            
-            foreach (var pin in pinsToRemove)
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                _mapControl.Pins.Remove(pin);
-            }
-
-            // Ajouter les pins selon les filtres actifs
-            if (ShowAccommodations)
-            {
-                foreach (var pin in _accommodationPins)
+                // Supprimer tous les pins existants sauf les pins de recherche et utilisateur
+                var pinsToRemove = _mapControl.Pins
+                    .Where(p => p.Type != PinType.SearchResult && p.Type != PinType.Generic)
+                    .ToList();
+                
+                foreach (var pin in pinsToRemove)
                 {
-                    _mapControl.Pins.Add(pin);
+                    _mapControl.Pins.Remove(pin);
                 }
-            }
 
-            if (ShowActivities)
-            {
-                foreach (var pin in _activityPins)
+                // Ajouter les pins selon les filtres actifs
+                if (ShowAccommodations)
                 {
-                    _mapControl.Pins.Add(pin);
+                    foreach (var pin in _accommodationPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                    }
                 }
-            }
 
-            if (ShowRestaurants)
-            {
-                foreach (var pin in _restaurantPins)
+                if (ShowActivities)
                 {
-                    _mapControl.Pins.Add(pin);
+                    foreach (var pin in _activityPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                    }
                 }
-            }
 
-            if (ShowTransport)
-            {
-                foreach (var pin in _transportPins)
+                if (ShowRestaurants)
                 {
-                    _mapControl.Pins.Add(pin);
+                    foreach (var pin in _restaurantPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                    }
                 }
-            }
 
-            var totalPins = _mapControl.Pins.Count;
-            System.Diagnostics.Debug.WriteLine($"Pins mis à jour - Total visible: {totalPins}");
+                if (ShowTransport)
+                {
+                    foreach (var pin in _transportPins)
+                    {
+                        _mapControl.Pins.Add(pin);
+                    }
+                }
+
+                var totalPins = _mapControl.Pins.Count;
+                System.Diagnostics.Debug.WriteLine($"Pins mis à jour - Total visible: {totalPins}");
+            });
         }
         catch (Exception ex)
         {
@@ -783,6 +831,11 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(address))
+                return null;
+
+            System.Diagnostics.Debug.WriteLine($"Tentative de géocodage: {address}");
+            
             var locations = await Geocoding.Default.GetLocationsAsync(address);
             var location = locations?.FirstOrDefault();
             
@@ -868,199 +921,10 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             _messagesCancellationTokenSource?.Cancel();
             _messagesCancellationTokenSource = new CancellationTokenSource();
             
-            MessageText = message;
-            ShowMessage = true;
-            
-            // Masquer le message après le délai spécifié
-            await Task.Delay(durationMs, _messagesCancellationTokenSource.Token);
-            
-            if (!_messagesCancellationTokenSource.Token.IsCancellationRequested)
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                ShowMessage = false;
-                MessageText = "";
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            // Message annulé par un nouveau message
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'affichage du message: {ex.Message}");
-        }
-    }
-
-    #endregion
-
-    #region INotifyPropertyChanged Implementation
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    #endregion
-
-    #region IDisposable Implementation
-
-    public void Dispose()
-    {
-        try
-        {
-            // Nettoyer les événements
-            if (_mapControl != null)
-            {
-                _mapControl.PropertyChanged -= OnMapPropertyChanged;
-            }
+                MessageText = message;
+                ShowMessage = true;
+            });
             
-            // Annuler les tokens de cancellation
-            _messagesCancellationTokenSource?.Cancel();
-            _messagesCancellationTokenSource?.Dispose();
-            
-            // Nettoyer les collections
-            _accommodationPins?.Clear();
-            _activityPins?.Clear();
-            _restaurantPins?.Clear();
-            _transportPins?.Clear();
-            _userVoyages?.Clear();
-            
-            System.Diagnostics.Debug.WriteLine("MapViewModel dispose() completed");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors du dispose: {ex.Message}");
-        }
-    }
-
-    #endregion
-
-    #region Public Helper Methods
-
-    /// <summary>
-    /// Centre la carte sur un voyage spécifique
-    /// </summary>
-    public async Task CenterOnVoyageAsync(int voyageId)
-    {
-        try
-        {
-            var voyage = _userVoyages.FirstOrDefault(v => v.VoyageId == voyageId);
-            if (voyage != null && !string.IsNullOrEmpty(voyage.NomVoyage))
-            {
-                // Essayer d'utiliser le nom du voyage ou la première destination disponible
-                string destinationToGeocode = voyage.NomVoyage;
-                
-                // Si on a des hébergements, utiliser la première adresse
-                if (voyage.Hebergements?.Any() == true)
-                {
-                    var firstAccommodation = voyage.Hebergements.FirstOrDefault(h => !string.IsNullOrEmpty(h.Adresse));
-                    if (firstAccommodation != null)
-                    {
-                        destinationToGeocode = firstAccommodation.Adresse;
-                    }
-                }
-                // Sinon si on a des activités, utiliser la première localisation
-                else if (voyage.Activites?.Any() == true)
-                {
-                    var firstActivity = voyage.Activites.FirstOrDefault(a => !string.IsNullOrEmpty(a.Localisation));
-                    if (firstActivity != null)
-                    {
-                        destinationToGeocode = firstActivity.Localisation;
-                    }
-                }
-                
-                var location = await GeocodeLocationAsync(destinationToGeocode);
-                if (location != null && _mapControl != null)
-                {
-                    var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(10));
-                    _mapControl.MoveToRegion(mapSpan);
-                    ShowTemporaryMessage($"Centré sur {voyage.NomVoyage}");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors du centrage sur le voyage: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Ajoute un pin personnalisé temporaire
-    /// </summary>
-    public void AddTemporaryPin(Location location, string label, string address = "")
-    {
-        try
-        {
-            if (_mapControl != null && location != null)
-            {
-                var pin = new Pin
-                {
-                    Location = location,
-                    Label = label,
-                    Address = address,
-                    Type = PinType.Generic
-                };
-                
-                _mapControl.Pins.Add(pin);
-                ShowLocationDetails(pin);
-                
-                System.Diagnostics.Debug.WriteLine($"Pin temporaire ajouté: {label}");
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors de l'ajout du pin temporaire: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Supprime tous les pins temporaires
-    /// </summary>
-    public void ClearTemporaryPins()
-    {
-        try
-        {
-            if (_mapControl != null)
-            {
-                var tempPins = _mapControl.Pins
-                    .Where(p => p.Type == PinType.Generic || p.Label == "Lieu sélectionné")
-                    .ToList();
-                
-                foreach (var pin in tempPins)
-                {
-                    _mapControl.Pins.Remove(pin);
-                }
-                
-                System.Diagnostics.Debug.WriteLine($"{tempPins.Count} pins temporaires supprimés");
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression des pins temporaires: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Obtient tous les voyages avec leurs coordonnées
-    /// </summary>
-    public List<(Voyage voyage, Location location)> GetVoyagesWithLocations()
-    {
-        var result = new List<(Voyage, Location)>();
-        
-        foreach (var voyage in _userVoyages)
-        {
-            // Chercher une location depuis les hébergements ou activités
-            var accommodation = _accommodationPins.FirstOrDefault();
-            var activity = _activityPins.FirstOrDefault();
-            
-            var location = accommodation?.Location ?? activity?.Location;
-            if (location != null)
-            {
-                result.Add((voyage, location));
-            }
-        }
-        
-        return result;
-    }
-
-    #endregion
-}
+            // Masquer le message après le délai spécif
