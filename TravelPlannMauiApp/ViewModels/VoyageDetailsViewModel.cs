@@ -233,17 +233,22 @@ namespace TravelPlannMauiApp.ViewModels
                     // Sauvegarder les valeurs originales
                     SaveOriginalValues();
 
-                    // Mise à jour des collections
-                    Activites.Clear();
-                    foreach (var activite in voyageDetails.Activites.OrderBy(a => a.Nom))
+                    // Mise à jour des collections SEULEMENT si elles sont vides
+                    // Cela évite de perdre les données lors des changements d'état
+                    if (Activites.Count == 0)
                     {
-                        Activites.Add(activite);
+                        foreach (var activite in voyageDetails.Activites.OrderBy(a => a.Nom))
+                        {
+                            Activites.Add(activite);
+                        }
                     }
 
-                    Hebergements.Clear();
-                    foreach (var hebergement in voyageDetails.Hebergements.OrderBy(h => h.Nom))
+                    if (Hebergements.Count == 0)
                     {
-                        Hebergements.Add(hebergement);
+                        foreach (var hebergement in voyageDetails.Hebergements.OrderBy(h => h.Nom))
+                        {
+                            Hebergements.Add(hebergement);
+                        }
                     }
 
                     Debug.WriteLine($"Collections mises à jour: {Activites.Count} activités, {Hebergements.Count} hébergements");
@@ -283,15 +288,21 @@ namespace TravelPlannMauiApp.ViewModels
             DateFin = _originalDateFin;
             
             Activites.Clear();
-            foreach (var activite in _originalActivites)
+            if (_originalActivites != null)
             {
-                Activites.Add(activite);
+                foreach (var activite in _originalActivites)
+                {
+                    Activites.Add(activite);
+                }
             }
             
             Hebergements.Clear();
-            foreach (var hebergement in _originalHebergements)
+            if (_originalHebergements != null)
             {
-                Hebergements.Add(hebergement);
+                foreach (var hebergement in _originalHebergements)
+                {
+                    Hebergements.Add(hebergement);
+                }
             }
         }
 
@@ -578,7 +589,6 @@ namespace TravelPlannMauiApp.ViewModels
                     {
                         Activites.Remove(activite);
                     });
-
                     Debug.WriteLine($"Activité supprimée: {activite.Nom}");
                 }
                 catch (Exception ex)

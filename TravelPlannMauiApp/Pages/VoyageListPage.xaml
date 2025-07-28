@@ -50,25 +50,19 @@
 
                             <!-- Contenu principal -->
                             <Frame Padding="0" Margin="10,5" CornerRadius="12" HasShadow="True">
-                                <Grid ColumnDefinitions="5,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                                       Padding="15"
                                       BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
 
-                                    <!-- Indicateur d'état (côté gauche) -->
-                                    <BoxView Grid.RowSpan="5" 
-                                             WidthRequest="5"
-                                             Color="{Binding EstComplete, Converter={StaticResource StatusToColor}}"
-                                             IsVisible="{Binding EstComplete}"/>
-
                                     <!-- Nom du voyage -->
-                                    <Label Grid.Row="0" Grid.Column="1"
+                                    <Label Grid.Row="0" Grid.Column="0"
                                            Text="{Binding NomVoyage}"
                                            FontSize="18"
                                            FontAttributes="Bold"
                                            TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
 
                                     <!-- Description -->
-                                    <Label Grid.Row="1" Grid.Column="1"
+                                    <Label Grid.Row="1" Grid.Column="0"
                                            Text="{Binding Description}"
                                            FontSize="14"
                                            TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
@@ -76,7 +70,7 @@
                                            LineBreakMode="TailTruncation"/>
 
                                     <!-- Dates -->
-                                    <StackLayout Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="15">
+                                    <StackLayout Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Spacing="15">
                                         <Label Text="{Binding DateDebut, StringFormat='{0:dd MMM yyyy}'}"
                                                FontSize="12"
                                                TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
@@ -85,28 +79,43 @@
                                                TextColor="{AppThemeBinding Light=#888888, Dark=#AAAAAA}"/>
                                         <Label Text="{Binding DateFin, StringFormat='{0:dd MMM yyyy}'}"
                                                FontSize="12"
-                                               TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
-                                               HorizontalOptions="End"/>
+                                               TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
                                     </StackLayout>
 
-                                    <!-- Indicateur d'état avec point coloré -->
-                                    <StackLayout Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
-                    
+                                    <!-- Indicateurs d'état avec points colorés (côté droit) -->
+                                    <StackLayout Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" 
+                                                 Orientation="Vertical" 
+                                                 Spacing="5" 
+                                                 VerticalOptions="Center"
+                                                 HorizontalOptions="End">
+                                        
+                                        <!-- Point pour voyage complet -->
+                                        <StackLayout Orientation="Horizontal" Spacing="5" IsVisible="{Binding EstComplete}">
+                                            <Label Text="Complet"
+                                                   FontSize="10"
+                                                   TextColor="#4CAF50"
+                                                   VerticalOptions="Center"/>
+                                            <Ellipse Fill="#4CAF50"
+                                                     WidthRequest="10"
+                                                     HeightRequest="10"
+                                                     VerticalOptions="Center"/>
+                                        </StackLayout>
+                                        
                                         <!-- Point pour voyage archivé -->
-                                        <Ellipse IsVisible="{Binding EstArchive}"
-                                                 Fill="#FF9800"
-                                                 WidthRequest="10"
-                                                 HeightRequest="10"
-                                                 VerticalOptions="Center"/>
-                                        <Label IsVisible="{Binding EstArchive}"
-                                               Text="Archivé"
-                                               FontSize="10"
-                                               TextColor="#FF9800"
-                                               VerticalOptions="Center"/>
+                                        <StackLayout Orientation="Horizontal" Spacing="5" IsVisible="{Binding EstArchive}">
+                                            <Label Text="Archivé"
+                                                   FontSize="10"
+                                                   TextColor="#FF9800"
+                                                   VerticalOptions="Center"/>
+                                            <Ellipse Fill="#FF9800"
+                                                     WidthRequest="10"
+                                                     HeightRequest="10"
+                                                     VerticalOptions="Center"/>
+                                        </StackLayout>
                                     </StackLayout>
 
                                     <!-- Bouton détails -->
-                                    <Button Grid.Row="4" Grid.Column="1"
+                                    <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
                                             Text="Voir détails"
                                             BackgroundColor="Transparent"
                                             TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
@@ -114,6 +123,7 @@
                                             FontAttributes="Bold"
                                             HorizontalOptions="End"
                                             Padding="0"
+                                            Margin="0,5,0,0"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VoyageViewModel}}, Path=ViewVoyageDetailsCommand}"
                                             CommandParameter="{Binding}">
                                         <VisualStateManager.VisualStateGroups>
