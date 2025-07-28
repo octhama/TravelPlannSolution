@@ -397,111 +397,42 @@ namespace TravelPlannMauiApp.ViewModels
                 });
             }
         }
-
+        // Méthode pour forcer la mise à jour de l'affichage
+        public void ForceUIUpdate()
+        {
+            try
+            {
+                Debug.WriteLine("=== ForceUIUpdate appelé ===");
+                
+                // Déclencher une notification sur la collection
+                OnPropertyChanged(nameof(Voyages));
+                
+                // Forcer la mise à jour de chaque élément
+                foreach (var voyage in Voyages)
+                {
+                    voyage.ForceUpdate();
+                }
+                
+                Debug.WriteLine($"Mise à jour forcée pour {Voyages.Count} voyages");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur ForceUIUpdate: {ex}");
+            }
+        }
         public async Task RefreshVoyagesAsync()
         {
             await LoadVoyagesAsync();
         }
-        
+        public new void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
+        }
         public async Task AddVoyageAsync()
         {
             await Shell.Current.GoToAsync(nameof(AddVoyagePage));
         }
     }
-
-    // VoyageItemViewModel amélioré avec meilleure gestion des notifications
-    public class VoyageItemViewModel : INotifyPropertyChanged
-    {
-        private Voyage _voyage;
-        private bool _estComplete;
-        private bool _estArchive;
-
-        public VoyageItemViewModel(Voyage voyage)
-        {
-            _voyage = voyage ?? throw new ArgumentNullException(nameof(voyage));
-            _estComplete = voyage.EstComplete;
-            _estArchive = voyage.EstArchive;
-        }
-
-        public Voyage Voyage => _voyage;
-
-        public int VoyageId => _voyage.VoyageId;
-        public string NomVoyage => _voyage.NomVoyage;
-        public string Description => _voyage.Description;
-        public DateOnly DateDebut => _voyage.DateDebut;
-        public DateOnly DateFin => _voyage.DateFin;
-        public int UtilisateurId => _voyage.UtilisateurId;
-
-        public bool EstComplete 
-        { 
-            get => _estComplete;
-            private set
-            {
-                if (_estComplete != value)
-                {
-                    _estComplete = value;
-                    _voyage.EstComplete = value;
-                    OnPropertyChanged();
-                    
-                    // Déclencher les mises à jour des propriétés liées
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        OnPropertyChanged(nameof(EstArchive));
-                    });
-                }
-            }
-        }
-
-        public bool EstArchive 
-        { 
-            get => _estArchive;
-            private set
-            {
-                if (_estArchive != value)
-                {
-                    _estArchive = value;
-                    _voyage.EstArchive = value;
-                    OnPropertyChanged();
-                    
-                    // Déclencher les mises à jour des propriétés liées
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        OnPropertyChanged(nameof(EstComplete));
-                    });
-                }
-            }
-        }
-
-        public void UpdateFromVoyage(Voyage updatedVoyage)
-        {
-            if (updatedVoyage == null) return;
-            
-            // Mise à jour avec notification des changements
-            var oldComplete = _estComplete;
-            var oldArchive = _estArchive;
-            
-            EstComplete = updatedVoyage.EstComplete;
-            EstArchive = updatedVoyage.EstArchive;
-            
-            // Si les valeurs ont changé, forcer une mise à jour complète de l'UI
-            if (oldComplete != _estComplete || oldArchive != _estArchive)
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    // Déclencher une mise à jour de toutes les propriétés
-                    OnPropertyChanged(string.Empty);
-                });
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-    
     // DTOs sans cycles de référence pour la sérialisation
     public class VoyageDetailsDTO
     {

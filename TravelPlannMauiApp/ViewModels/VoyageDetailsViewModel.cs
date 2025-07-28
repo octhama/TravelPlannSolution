@@ -325,6 +325,27 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
+        private async Task NotifyVoyageListToRefresh()
+        {
+            try
+            {
+                Debug.WriteLine("=== Notification de rafraîchissement à la liste des voyages ===");
+                
+                // Stocker un flag pour indiquer qu'un rafraîchissement est nécessaire
+                await SecureStorage.SetAsync("needs_voyage_list_refresh", "true");
+                
+                // Alternative: Utiliser Preferences si SecureStorage pose problème
+                Preferences.Set("needs_voyage_list_refresh", true);
+                
+                Debug.WriteLine("Flag de rafraîchissement défini");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur lors de la notification de rafraîchissement: {ex}");
+                // Ne pas faire échouer la sauvegarde pour cette erreur
+            }
+        }
+
         private void RefreshCommandStates()
         {
             ((Command)ToggleEditCommand).ChangeCanExecute();
@@ -400,7 +421,7 @@ namespace TravelPlannMauiApp.ViewModels
                         ActiviteId = a.ActiviteId,
                         Nom = a.Nom,
                         Description = a.Description,
-                        Localisation = a.Localisation // NOUVEAU
+                        Localisation = a.Localisation
                     }).ToList(),
                     Hebergements = Hebergements.Select(h => new Hebergement 
                     { 
@@ -410,7 +431,7 @@ namespace TravelPlannMauiApp.ViewModels
                         Cout = h.Cout,
                         DateDebut = h.DateDebut,
                         DateFin = h.DateFin,
-                        Adresse = h.Adresse // NOUVEAU
+                        Adresse = h.Adresse
                     }).ToList()
                 };
 
@@ -428,6 +449,9 @@ namespace TravelPlannMauiApp.ViewModels
                     // Sauvegarder les nouvelles valeurs comme originales
                     SaveOriginalValues();
                 });
+                
+                // NOUVEAU: Notifier qu'une modification a été faite
+                await NotifyVoyageListToRefresh();
                 
                 await Shell.Current.DisplayAlert("Succès", "Voyage mis à jour avec succès", "OK");
             }
@@ -461,6 +485,10 @@ namespace TravelPlannMauiApp.ViewModels
                     IsBusy = true;
 
                     await _voyageService.DeleteVoyageAsync(VoyageId);
+                    
+                    // NOUVEAU: Notifier qu'une modification a été faite
+                    await NotifyVoyageListToRefresh();
+                    
                     await Shell.Current.GoToAsync("..");
                 }
                 catch (Exception ex)
