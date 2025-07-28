@@ -95,19 +95,25 @@
                 </Grid>
             </Frame>
 
-            <!-- Section Activités -->
+            <!-- Section Activités AMÉLIORÉE -->
             <Frame Grid.Row="4"
                    Padding="15"
                    CornerRadius="10"
                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
                    HasShadow="True">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Activités (optionnel)"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Activités (optionnel)"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Label Grid.Column="1" 
+                               Text="📍"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                    </Grid>
 
-                    <!-- Formulaire d'ajout d'activité -->
+                    <!-- Formulaire d'ajout d'activité AMÉLIORÉ -->
                     <Frame IsVisible="{Binding ShowActiviteForm}"
                            Padding="10"
                            BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#252525}"
@@ -118,9 +124,14 @@
                                    TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                    
                             <Editor Text="{Binding NouvelleActiviteDescription}"
-                                    Placeholder="Description"
+                                    Placeholder="Description de l'activité"
                                     HeightRequest="80"
                                     TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+
+                            <!-- NOUVEAU : Champ Localisation -->
+                            <Entry Text="{Binding NouvelleActiviteLocalisation}"
+                                   Placeholder="📍 Localisation (ex: Tour Eiffel, Paris)"
+                                   TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                     
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                 <Button Text="Annuler" 
@@ -144,19 +155,37 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
 
-                    <!-- Liste des activités avec bouton de suppression -->
+                    <!-- Liste des activités AMÉLIORÉE avec localisation -->
                     <CollectionView ItemsSource="{Binding NouvellesActivites}"
-                                   HeightRequest="150">
+                                   HeightRequest="180">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid Padding="10" ColumnDefinitions="*,Auto,Auto">
+                                <Grid Padding="10" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                    <!-- Nom de l'activité -->
                                     <Label Text="{Binding Nom}"
-                                           VerticalOptions="Center"/>
-                                    <Label Grid.Column="1" 
+                                           FontAttributes="Bold"
+                                           FontSize="14"
+                                           VerticalOptions="Start"/>
+                                    
+                                    <!-- Description -->
+                                    <Label Grid.Row="1"
                                            Text="{Binding Description}"
                                            FontAttributes="Italic"
-                                           VerticalOptions="Center"/>
-                                    <Button Grid.Column="2" 
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                                           VerticalOptions="Start"/>
+                                    
+                                    <!-- NOUVEAU : Localisation -->
+                                    <Label Grid.Row="2"
+                                           Text="{Binding Localisation, StringFormat='📍 {0}'}"
+                                           FontSize="11"
+                                           TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                                           VerticalOptions="Start"
+                                           IsVisible="{Binding Localisation, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                                    
+                                    <!-- Bouton supprimer -->
+                                    <Button Grid.Column="1" 
+                                            Grid.RowSpan="3"
                                             Text="×"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddVoyageViewModel}}, Path=SupprimerActiviteCommand}"
                                             CommandParameter="{Binding}"
@@ -173,19 +202,25 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Section Hébergements -->
+            <!-- Section Hébergements AMÉLIORÉE -->
             <Frame Grid.Row="5"
                    Padding="15"
                    CornerRadius="10"
                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
                    HasShadow="True">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Hébergements (optionnel)"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Hébergements (optionnel)"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                        <Label Grid.Column="1" 
+                               Text="🏠"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
+                    </Grid>
 
-                    <!-- Formulaire d'ajout d'hébergement -->
+                    <!-- Formulaire d'ajout d'hébergement AMÉLIORÉ -->
                     <Frame IsVisible="{Binding ShowHebergementForm}"
                            Padding="10"
                            BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#252525}"
@@ -196,11 +231,16 @@
                                    TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                    
                             <Entry Text="{Binding NouvelHebergementType}"
-                                   Placeholder="Type (Hôtel, Airbnb...)"
+                                   Placeholder="Type (Hôtel, Airbnb, Camping...)"
+                                   TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+
+                            <!-- NOUVEAU : Champ Adresse -->
+                            <Entry Text="{Binding NouvelHebergementAdresse}"
+                                   Placeholder="🏠 Adresse complète"
                                    TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                    
                             <Entry Text="{Binding NouvelHebergementCout}"
-                                   Placeholder="Coût par nuit"
+                                   Placeholder="Coût par nuit (€)"
                                    Keyboard="Numeric"
                                    TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                                     
@@ -226,25 +266,45 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
 
-                    <!-- Liste des hébergements avec bouton de suppression -->
+                    <!-- Liste des hébergements AMÉLIORÉE avec adresse -->
                     <CollectionView ItemsSource="{Binding NouveauxHebergements}"
-                                   HeightRequest="150"
+                                   HeightRequest="180"
                                    Margin="0,10,0,0">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid Padding="10" ColumnDefinitions="*,*,*,Auto">
+                                <Grid Padding="10" ColumnDefinitions="2*,*,*,Auto" RowDefinitions="Auto,Auto">
+                                    <!-- Nom et type -->
                                     <Label Text="{Binding Nom}"
-                                           VerticalOptions="Center"/>
+                                           FontAttributes="Bold"
+                                           FontSize="14"
+                                           VerticalOptions="Start"/>
+                                    
                                     <Label Grid.Column="1" 
                                            Text="{Binding TypeHebergement}"
                                            FontAttributes="Italic"
-                                           VerticalOptions="Center"/>
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                                           VerticalOptions="Start"/>
+                                    
                                     <Label Grid.Column="2" 
                                            Text="{Binding Cout, Converter={StaticResource DecimalToEuro}}"
                                            TextColor="Green"
                                            FontAttributes="Bold"
-                                           VerticalOptions="Center"/>
+                                           FontSize="14"
+                                           VerticalOptions="Start"/>
+
+                                    <!-- NOUVEAU : Adresse -->
+                                    <Label Grid.Row="1"
+                                           Grid.ColumnSpan="3"
+                                           Text="{Binding Adresse, StringFormat='🏠 {0}'}"
+                                           FontSize="11"
+                                           TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
+                                           VerticalOptions="Start"
+                                           IsVisible="{Binding Adresse, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                                    
+                                    <!-- Bouton supprimer -->
                                     <Button Grid.Column="3" 
+                                            Grid.RowSpan="2"
                                             Text="×"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddVoyageViewModel}}, Path=SupprimerHebergementCommand}"
                                             CommandParameter="{Binding}"
