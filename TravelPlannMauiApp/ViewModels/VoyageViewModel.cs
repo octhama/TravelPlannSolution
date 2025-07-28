@@ -117,12 +117,16 @@ namespace TravelPlannMauiApp.ViewModels
      
         public async Task LoadVoyagesAsync()
         {
-            if (IsLoading) return;
+            if (IsLoading) 
+            {
+                Debug.WriteLine("Chargement déjà en cours - ignoré");
+                return;
+            }
 
             IsLoading = true;
             try
             {
-                Debug.WriteLine("=== DÉBUT CHARGEMENT VOYAGES ===");
+                Debug.WriteLine("=== DÉBUT RECHARGEMENT COMPLET VOYAGES ===");
                 
                 _currentUserId = await GetCurrentUserIdAsync();
                 if (_currentUserId == 0) 
@@ -131,49 +135,54 @@ namespace TravelPlannMauiApp.ViewModels
                     return;
                 }
 
-                Debug.WriteLine($"Chargement des voyages pour l'utilisateur ID: {_currentUserId}");
+                Debug.WriteLine($"Rechargement des voyages pour l'utilisateur ID: {_currentUserId}");
                 
+                // ÉTAPE 1 : Récupérer les données fraîches de la DB
                 var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                 
-                Debug.WriteLine($"Nombre de voyages trouvés: {voyages?.Count ?? 0}");
+                Debug.WriteLine($"Nombre de voyages récupérés de la DB: {voyages?.Count ?? 0}");
                 
+                // ÉTAPE 2 : Mettre à jour l'UI sur le thread principal
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    // Nettoyer la collection existante
+                    Debug.WriteLine("Nettoyage de la collection existante...");
                     Voyages.Clear();
                     
                     if (voyages != null && voyages.Any())
                     {
-                        foreach (var v in voyages)
+                        Debug.WriteLine("Ajout des voyages à la collection...");
+                        foreach (var v in voyages.OrderBy(x => x.DateDebut))
                         {
-                            Debug.WriteLine($"Ajout du voyage: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
+                            Debug.WriteLine($"Ajout: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
                             var voyageItemViewModel = new VoyageItemViewModel(v);
                             Voyages.Add(voyageItemViewModel);
                         }
                     }
                     
-                    // Déclencher une notification de changement pour forcer le rafraîchissement de l'UI
+                    Debug.WriteLine($"Collection mise à jour - {Voyages.Count} voyages dans la liste");
+                    
+                    // ÉTAPE 3 : Forcer la notification de changement
                     OnPropertyChanged(nameof(Voyages));
                 });
                 
-                Debug.WriteLine($"Total voyages dans la collection: {Voyages.Count}");
+                Debug.WriteLine($"=== RECHARGEMENT TERMINÉ - {Voyages.Count} voyages affichés ===");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"=== ERREUR CHARGEMENT VOYAGES ===");
-                Debug.WriteLine($"Exception: {ex}");
+                Debug.WriteLine($"=== ERREUR RECHARGEMENT VOYAGES ===");
+                Debug.WriteLine($"Exception: {ex.Message}");
                 Debug.WriteLine($"StackTrace: {ex.StackTrace}");
                 
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     await Shell.Current.DisplayAlert("Erreur", 
-                        $"Erreur lors du chargement des voyages: {ex.Message}", "OK");
+                        $"Erreur lors du rechargement des voyages: {ex.Message}", "OK");
                 });
             }
             finally
             {
                 IsLoading = false;
-                Debug.WriteLine("=== FIN CHARGEMENT VOYAGES ===");
+                Debug.WriteLine("=== FIN RECHARGEMENT VOYAGES ===");
             }
         }
 
@@ -216,6 +225,8 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
       
+        // Dans VoyageViewModel - Versions simplifiées des méthodes Toggle
+
         private async Task ToggleCompleteVoyage(VoyageItemViewModel voyageViewModel)
         {
             if (voyageViewModel == null) return;
@@ -229,6 +240,8 @@ namespace TravelPlannMauiApp.ViewModels
                     await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à modifier ce voyage", "OK");
                     return;
                 }
+
+                Debug.WriteLine($"Toggle Complete pour voyage {voyage.NomVoyage} - Ancien statut: {voyage.EstComplete}");
 
                 // Récupérer le voyage complet avec ses relations
                 var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
@@ -248,14 +261,11 @@ namespace TravelPlannMauiApp.ViewModels
 
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // Mise à jour immédiate et forcée de l'UI
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    voyageViewModel.UpdateFromVoyage(voyageToUpdate);
-                    OnPropertyChanged(nameof(Voyages));
-                });
+                Debug.WriteLine($"Voyage {voyage.NomVoyage} mis à jour - Nouveau statut Complete: {voyageToUpdate.EstComplete}");
                 
-                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyageToUpdate.EstComplete}, EstArchive: {voyageToUpdate.EstArchive}");
+                // SIMPLE : Recharger toute la liste pour être sûr que tout est à jour
+                await LoadVoyagesAsync();
+                
             }
             catch (Exception ex)
             {
@@ -267,7 +277,7 @@ namespace TravelPlannMauiApp.ViewModels
                 });
             }
         }
-       
+
         private async Task ToggleArchiveVoyage(VoyageItemViewModel voyageViewModel)
         {
             if (voyageViewModel == null) return;
@@ -291,6 +301,8 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
+                Debug.WriteLine($"Toggle Archive pour voyage {voyage.NomVoyage} - Ancien statut: {voyage.EstArchive}");
+
                 // Récupérer le voyage complet avec ses relations
                 var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
                 if (voyageDetails?.Voyage == null)
@@ -304,14 +316,11 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // Mise à jour immédiate et forcée de l'UI
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    voyageViewModel.UpdateFromVoyage(voyageToUpdate);
-                    OnPropertyChanged(nameof(Voyages));
-                });
+                Debug.WriteLine($"Voyage {voyage.NomVoyage} mis à jour - Nouveau statut Archive: {voyageToUpdate.EstArchive}");
                 
-                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyageToUpdate.EstComplete}, EstArchive: {voyageToUpdate.EstArchive}");
+                // SIMPLE : Recharger toute la liste pour être sûr que tout est à jour
+                await LoadVoyagesAsync();
+                
             }
             catch (Exception ex)
             {

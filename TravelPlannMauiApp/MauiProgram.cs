@@ -60,6 +60,7 @@ public static class MauiProgram
 #endif
         });
 
+
         // Services - IMPORTANT: Tous utilisant IDbContextFactory
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
