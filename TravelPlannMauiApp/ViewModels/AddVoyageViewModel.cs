@@ -394,32 +394,78 @@ namespace TravelPlannMauiApp.ViewModels
             ResetHebergementForm();
         }
 
-        // MÉTHODE À IMPLÉMENTER selon votre système d'authentification
+        // Version asynchrone pour une meilleure gestion
+        private async Task<int> GetCurrentUserIdAsync()
+        {
+            try
+            {
+                // Essayer d'abord SecureStorage
+                var userIdString = await SecureStorage.GetAsync("current_user_id");
+                if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int userId))
+                {
+                    Debug.WriteLine($"UserId récupéré depuis SecureStorage: {userId}");
+                    return userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur SecureStorage dans GetCurrentUserIdAsync: {ex.Message}");
+            }
+
+            try
+            {
+                // Fallback vers Preferences
+                var userIdString = Preferences.Get("current_user_id", null);
+                if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int userId))
+                {
+                    Debug.WriteLine($"UserId récupéré depuis Preferences: {userId}");
+                    return userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur Preferences dans GetCurrentUserIdAsync: {ex.Message}");
+            }
+
+            Debug.WriteLine("ERREUR: Impossible de récupérer l'ID utilisateur - aucune session trouvée");
+            return 0;
+        }
+
+        // Récupération de l'ID de l'utilisateur connecté (version synchrone)
         private int GetCurrentUserId()
         {
-            // Exemple d'implémentation - À adapter selon votre logique
-            // Cela pourrait venir de :
-            // - Un service d'authentification
-            // - Les préférences locales
-            // - Un singleton d'utilisateur connecté
-            // - etc.
-            
-            // Pour l'instant, retourner une valeur par défaut
-            // VOUS DEVEZ REMPLACER CETTE LOGIQUE
-            return 1; // Remplacer par la vraie logique d'obtention de l'utilisateur connecté
-            
-            /* Exemples d'implémentation possibles :
-            
-            // Si vous avez un service d'authentification
-            // return _authService.CurrentUser?.Id ?? 0;
-            
-            // Si vous stockez l'ID dans les préférences
-            // return Preferences.Get("CurrentUserId", 0);
-            
-            // Si vous avez un singleton UserManager
-            // return UserManager.Instance.CurrentUserId;
-            
-            */
+            try
+            {
+                // Essayer d'abord SecureStorage
+                var userIdString = SecureStorage.GetAsync("current_user_id").GetAwaiter().GetResult();
+                if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int userId))
+                {
+                    Debug.WriteLine($"UserId récupéré depuis SecureStorage: {userId}");
+                    return userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur SecureStorage dans GetCurrentUserId: {ex.Message}");
+            }
+
+            try
+            {
+                // Fallback vers Preferences
+                var userIdString = Preferences.Get("current_user_id", null);
+                if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int userId))
+                {
+                    Debug.WriteLine($"UserId récupéré depuis Preferences: {userId}");
+                    return userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur Preferences dans GetCurrentUserId: {ex.Message}");
+            }
+
+            Debug.WriteLine("ERREUR: Impossible de récupérer l'ID utilisateur - aucune session trouvée");
+            return 0; // Retourner 0 pour indiquer qu'aucun utilisateur n'est connecté
         }
         
         protected override void OnDisappearing()
