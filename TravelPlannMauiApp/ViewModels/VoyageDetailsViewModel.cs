@@ -23,14 +23,17 @@ namespace TravelPlannMauiApp.ViewModels
         // Propriétés du voyage
         private string _nomVoyage;
         private string _description;
-        private DateTime _dateDebut = DateTime.Today;
-        private DateTime _dateFin = DateTime.Today;
+        private DateOnly _dateDebut = DateOnly.FromDateTime(DateTime.Today);
+        private DateOnly _dateFin = DateOnly.FromDateTime(DateTime.Today);
+        private bool _estComplete;
+        private bool _estArchive;
+        private int _utilisateurId;
         
         // Propriétés originales pour annulation
         private string _originalNomVoyage;
         private string _originalDescription;
-        private DateTime _originalDateDebut;
-        private DateTime _originalDateFin;
+        private DateOnly _originalDateDebut;
+        private DateOnly _originalDateFin;
         private List<Activite> _originalActivites;
         private List<Hebergement> _originalHebergements;
         
@@ -91,7 +94,7 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _description, value);
         }
 
-        public DateTime DateDebut
+        public DateOnly DateDebut
         {
             get => _dateDebut;
             set
@@ -103,10 +106,28 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        public DateTime DateFin
+        public DateOnly DateFin
         {
             get => _dateFin;
             set => SetProperty(ref _dateFin, value);
+        }
+
+        public bool EstComplete
+        {
+            get => _estComplete;
+            set => SetProperty(ref _estComplete, value);
+        }
+
+        public bool EstArchive
+        {
+            get => _estArchive;
+            set => SetProperty(ref _estArchive, value);
+        }
+
+        public int UtilisateurId
+        {
+            get => _utilisateurId;
+            set => SetProperty(ref _utilisateurId, value);
         }
 
         public bool ShowActiviteForm
@@ -199,13 +220,15 @@ namespace TravelPlannMauiApp.ViewModels
                 // Mise à jour des propriétés de base sur le thread UI
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    // Conversion correcte des DateOnly vers DateTime
                     var voyage = voyageDetails.Voyage;
                     
                     NomVoyage = voyage.NomVoyage;
                     Description = voyage.Description;
-                    DateDebut = voyage.DateDebut.ToDateTime(TimeOnly.MinValue);
-                    DateFin = voyage.DateFin.ToDateTime(TimeOnly.MinValue);
+                    DateDebut = voyage.DateDebut;
+                    DateFin = voyage.DateFin;
+                    EstComplete = voyage.EstComplete;
+                    EstArchive = voyage.EstArchive;
+                    UtilisateurId = voyage.UtilisateurId;
 
                     // Sauvegarder les valeurs originales
                     SaveOriginalValues();
@@ -336,21 +359,28 @@ namespace TravelPlannMauiApp.ViewModels
                     VoyageId = VoyageId,
                     NomVoyage = NomVoyage?.Trim(),
                     Description = Description?.Trim(),
-                    DateDebut = DateOnly.FromDateTime(DateDebut),
-                    DateFin = DateOnly.FromDateTime(DateFin),
+                    DateDebut = DateDebut,
+                    DateFin = DateFin,
+                    EstComplete = EstComplete,
+                    EstArchive = EstArchive,
+                    UtilisateurId = UtilisateurId,
                     // Créer de nouveaux objets pour éviter les problèmes de tracking
                     Activites = Activites.Select(a => new Activite 
                     { 
                         ActiviteId = a.ActiviteId,
                         Nom = a.Nom,
-                        Description = a.Description 
+                        Description = a.Description,
+                        Localisation = a.Localisation
                     }).ToList(),
                     Hebergements = Hebergements.Select(h => new Hebergement 
                     { 
                         HebergementId = h.HebergementId,
                         Nom = h.Nom,
                         TypeHebergement = h.TypeHebergement,
-                        Cout = h.Cout 
+                        Cout = h.Cout,
+                        DateDebut = h.DateDebut,
+                        DateFin = h.DateFin,
+                        Adresse = h.Adresse
                     }).ToList()
                 };
 

@@ -194,15 +194,31 @@ namespace TravelPlannMauiApp.ViewModels
                     return;
                 }
 
-                // CORRECTION : Modifier directement l'objet existant au lieu de le recharger
-                voyage.EstComplete = !voyage.EstComplete;
-                if (voyage.EstComplete) 
+                // Créer une copie propre du voyage pour la mise à jour
+                var voyageToUpdate = new Voyage
                 {
-                    voyage.EstArchive = false; // Si on marque comme complet, on désarchive
+                    VoyageId = voyage.VoyageId,
+                    NomVoyage = voyage.NomVoyage,
+                    Description = voyage.Description,
+                    DateDebut = voyage.DateDebut,
+                    DateFin = voyage.DateFin,
+                    UtilisateurId = voyage.UtilisateurId,
+                    EstComplete = !voyage.EstComplete, // Inverser l'état
+                    EstArchive = voyage.EstArchive
+                };
+
+                // Si on marque comme complet, on désarchive automatiquement
+                if (voyageToUpdate.EstComplete) 
+                {
+                    voyageToUpdate.EstArchive = false;
                 }
 
                 // Sauvegarder les changements
-                await _voyageService.UpdateVoyageAsync(voyage);
+                await _voyageService.UpdateVoyageAsync(voyageToUpdate);
+                
+                // Mettre à jour l'objet dans la collection ObservableCollection
+                voyage.EstComplete = voyageToUpdate.EstComplete;
+                voyage.EstArchive = voyageToUpdate.EstArchive;
                 
                 Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyage.EstComplete}, EstArchive: {voyage.EstArchive}");
 
@@ -238,11 +254,24 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
-                // CORRECTION : Modifier directement l'objet existant au lieu de le recharger
-                voyage.EstArchive = !voyage.EstArchive;
+                // Créer une copie propre du voyage pour la mise à jour
+                var voyageToUpdate = new Voyage
+                {
+                    VoyageId = voyage.VoyageId,
+                    NomVoyage = voyage.NomVoyage,
+                    Description = voyage.Description,
+                    DateDebut = voyage.DateDebut,
+                    DateFin = voyage.DateFin,
+                    UtilisateurId = voyage.UtilisateurId,
+                    EstComplete = voyage.EstComplete,
+                    EstArchive = !voyage.EstArchive // Inverser l'état
+                };
                 
                 // Sauvegarder les changements
-                await _voyageService.UpdateVoyageAsync(voyage);
+                await _voyageService.UpdateVoyageAsync(voyageToUpdate);
+                
+                // Mettre à jour l'objet dans la collection ObservableCollection
+                voyage.EstArchive = voyageToUpdate.EstArchive;
                 
                 Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyage.EstComplete}, EstArchive: {voyage.EstArchive}");
 
@@ -271,7 +300,7 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Navigation vers détails du voyage ID: {voyage.VoyageId}");
                 
-                // CORRECTION : Utiliser GetVoyageDetailsAsync pour avoir toutes les données
+                // Récupérer les détails complets du voyage
                 var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
                 if (voyageDetails?.Voyage == null)
                 {
@@ -280,6 +309,27 @@ namespace TravelPlannMauiApp.ViewModels
                 }
                 
                 var voyageComplet = voyageDetails.Voyage;
+                
+                // CORRECTION: Créer des DTOs sans cycles de référence
+                var activitesDto = voyageDetails.Activites?.Select(a => new ActiviteDTO
+                {
+                    ActiviteId = a.ActiviteId,
+                    Nom = a.Nom,
+                    Description = a.Description,
+                    Localisation = a.Localisation
+                }).ToList() ?? new List<ActiviteDTO>();
+                
+                var hebergementsDto = voyageDetails.Hebergements?.Select(h => new HebergementDTO
+                {
+                    HebergementId = h.HebergementId,
+                    Nom = h.Nom,
+                    TypeHebergement = h.TypeHebergement,
+                    Cout = h.Cout,
+                    DateDebut = h.DateDebut,
+                    DateFin = h.DateFin,
+                    Adresse = h.Adresse
+                }).ToList() ?? new List<HebergementDTO>();
+
                 var dto = new VoyageDetailsDTO
                 {
                     VoyageID = voyageComplet.VoyageId,
@@ -289,9 +339,10 @@ namespace TravelPlannMauiApp.ViewModels
                     DateFin = voyageComplet.DateFin.ToDateTime(TimeOnly.MinValue),
                     EstComplete = voyageComplet.EstComplete,
                     EstArchive = voyageComplet.EstArchive,
-                    // Inclure les activités et hébergements dans le DTO
-                    Activites = voyageDetails.Activites ?? new List<Activite>(),
-                    Hebergements = voyageDetails.Hebergements ?? new List<Hebergement>()
+                    UtilisateurId = voyageComplet.UtilisateurId,
+                    // Utiliser les DTOs sans cycles de référence
+                    Activites = activitesDto,
+                    Hebergements = hebergementsDto
                 };
 
                 var serialized = JsonSerializer.Serialize(dto);
@@ -317,6 +368,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
     }
     
+    // DTOs sans cycles de référence pour la sérialisation
     public class VoyageDetailsDTO
     {
         public int VoyageID { get; set; }
@@ -326,7 +378,27 @@ namespace TravelPlannMauiApp.ViewModels
         public DateTime DateFin { get; set; }
         public bool EstComplete { get; set; }
         public bool EstArchive { get; set; }
-        public List<Activite> Activites { get; set; } = new();
-        public List<Hebergement> Hebergements { get; set; } = new();
+        public int UtilisateurId { get; set; }
+        public List<ActiviteDTO> Activites { get; set; } = new();
+        public List<HebergementDTO> Hebergements { get; set; } = new();
+    }
+    
+    public class ActiviteDTO
+    {
+        public int ActiviteId { get; set; }
+        public string Nom { get; set; }
+        public string Description { get; set; }
+        public string Localisation { get; set; }
+    }
+    
+    public class HebergementDTO
+    {
+        public int HebergementId { get; set; }
+        public string Nom { get; set; }
+        public string TypeHebergement { get; set; }
+        public decimal? Cout { get; set; }
+        public DateOnly? DateDebut { get; set; }
+        public DateOnly? DateFin { get; set; }
+        public string Adresse { get; set; }
     }
 }
