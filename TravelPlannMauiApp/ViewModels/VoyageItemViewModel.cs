@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace TravelPlannMauiApp.ViewModels
 {
-    // VoyageItemViewModel amélioré avec meilleure gestion des notifications
+    // VoyageItemViewModel corrigé avec accès public aux méthodes de notification
     public class VoyageItemViewModel : INotifyPropertyChanged
     {
         private Voyage _voyage;
@@ -39,12 +39,13 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 if (_estComplete != value)
                 {
+                    Debug.WriteLine($"EstComplete changé pour {NomVoyage}: {_estComplete} -> {value}");
                     _estComplete = value;
                     _voyage.EstComplete = value;
                     OnPropertyChanged();
 
                     // Déclencher les mises à jour des propriétés liées
-                    Device.BeginInvokeOnMainThread(() =>
+                    MainThread.BeginInvokeOnMainThread(() =>
                     {
                         OnPropertyChanged(nameof(EstArchive));
                     });
@@ -59,12 +60,13 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 if (_estArchive != value)
                 {
+                    Debug.WriteLine($"EstArchive changé pour {NomVoyage}: {_estArchive} -> {value}");
                     _estArchive = value;
                     _voyage.EstArchive = value;
                     OnPropertyChanged();
 
                     // Déclencher les mises à jour des propriétés liées
-                    Device.BeginInvokeOnMainThread(() =>
+                    MainThread.BeginInvokeOnMainThread(() =>
                     {
                         OnPropertyChanged(nameof(EstComplete));
                     });
@@ -72,24 +74,34 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
+        // MÉTHODE PUBLIQUE pour forcer une mise à jour complète
         public void ForceUpdate()
         {
             try
             {
                 Debug.WriteLine($"ForceUpdate pour voyage: {NomVoyage} - Complete: {EstComplete}, Archive: {EstArchive}");
                 
-                // Déclencher une mise à jour de toutes les propriétés
-                OnPropertyChanged(string.Empty);
-                
-                // Déclencher spécifiquement les propriétés d'état
-                OnPropertyChanged(nameof(EstComplete));
-                OnPropertyChanged(nameof(EstArchive));
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    // Déclencher une mise à jour de toutes les propriétés
+                    OnPropertyChanged(string.Empty);
+                    
+                    // Déclencher spécifiquement les propriétés d'état
+                    OnPropertyChanged(nameof(EstComplete));
+                    OnPropertyChanged(nameof(EstArchive));
+                    OnPropertyChanged(nameof(NomVoyage));
+                    OnPropertyChanged(nameof(Description));
+                    OnPropertyChanged(nameof(DateDebut));
+                    OnPropertyChanged(nameof(DateFin));
+                });
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur ForceUpdate: {ex}");
             }
         }
+
+        // MÉTHODE PUBLIQUE pour mettre à jour depuis un voyage modifié
         public void UpdateFromVoyage(Voyage updatedVoyage)
         {
             if (updatedVoyage == null) return;
@@ -100,20 +112,30 @@ namespace TravelPlannMauiApp.ViewModels
             var oldComplete = _estComplete;
             var oldArchive = _estArchive;
             
-            // Mettre à jour les propriétés internes directement
+            // Mettre à jour les propriétés directement (sans passer par les setters pour éviter les boucles)
             _estComplete = updatedVoyage.EstComplete;
             _estArchive = updatedVoyage.EstArchive;
             _voyage.EstComplete = updatedVoyage.EstComplete;
             _voyage.EstArchive = updatedVoyage.EstArchive;
             
+            // Mettre à jour les autres propriétés si nécessaire
+            _voyage.NomVoyage = updatedVoyage.NomVoyage;
+            _voyage.Description = updatedVoyage.Description;
+            _voyage.DateDebut = updatedVoyage.DateDebut;
+            _voyage.DateFin = updatedVoyage.DateFin;
+            
             // Déclencher les notifications de changement sur le thread principal
-            Device.BeginInvokeOnMainThread(() =>
+            MainThread.BeginInvokeOnMainThread(() =>
             {
                 try
                 {
-                    // Notifier tous les changements
+                    // Notifier TOUS les changements possibles
                     OnPropertyChanged(nameof(EstComplete));
                     OnPropertyChanged(nameof(EstArchive));
+                    OnPropertyChanged(nameof(NomVoyage));
+                    OnPropertyChanged(nameof(Description));
+                    OnPropertyChanged(nameof(DateDebut));
+                    OnPropertyChanged(nameof(DateFin));
                     
                     // Si des changements significatifs ont eu lieu, forcer une mise à jour complète
                     if (oldComplete != _estComplete || oldArchive != _estArchive)
@@ -130,9 +152,19 @@ namespace TravelPlannMauiApp.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public new void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+
+        // MÉTHODE PUBLIQUE pour les notifications de propriétés
+        public void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            try
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                Debug.WriteLine($"PropertyChanged notifié pour {propertyName} sur voyage {NomVoyage}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur OnPropertyChanged: {ex}");
+            }
         }
     }
 }

@@ -329,15 +329,22 @@ namespace TravelPlannMauiApp.ViewModels
         {
             try
             {
-                Debug.WriteLine("=== Notification de rafraîchissement à la liste des voyages ===");
+                Debug.WriteLine("=== Notification AGRESSIVE de rafraîchissement à la liste des voyages ===");
                 
-                // Stocker un flag pour indiquer qu'un rafraîchissement est nécessaire
+                // Méthode 1: Flags de stockage
                 await SecureStorage.SetAsync("needs_voyage_list_refresh", "true");
-                
-                // Alternative: Utiliser Preferences si SecureStorage pose problème
                 Preferences.Set("needs_voyage_list_refresh", true);
                 
-                Debug.WriteLine("Flag de rafraîchissement défini");
+                // Méthode 2: Timestamp pour forcer le rafraîchissement
+                var timestamp = DateTime.Now.Ticks.ToString();
+                await SecureStorage.SetAsync("last_voyage_modification", timestamp);
+                Preferences.Set("last_voyage_modification", timestamp);
+                
+                // Méthode 3: Flag spécifique au voyage modifié
+                await SecureStorage.SetAsync($"voyage_modified_{VoyageId}", "true");
+                Preferences.Set($"voyage_modified_{VoyageId}", true);
+                
+                Debug.WriteLine($"Flags de rafraîchissement définis - Voyage ID: {VoyageId}, Timestamp: {timestamp}");
             }
             catch (Exception ex)
             {

@@ -397,23 +397,39 @@ namespace TravelPlannMauiApp.ViewModels
                 });
             }
         }
-        // Méthode pour forcer la mise à jour de l'affichage
+
+        // Méthode pour recharger COMPLÈTEMENT la liste depuis la base de données
+        public async Task ForceReloadAsync()
+        {
+            try
+            {
+                Debug.WriteLine("=== ForceReloadAsync appelé - rechargement complet ===");
+                await LoadVoyagesAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur ForceReloadAsync: {ex}");
+            }
+        }
         public void ForceUIUpdate()
         {
             try
             {
-                Debug.WriteLine("=== ForceUIUpdate appelé ===");
-                
-                // Déclencher une notification sur la collection
-                OnPropertyChanged(nameof(Voyages));
-                
-                // Forcer la mise à jour de chaque élément
-                foreach (var voyage in Voyages)
+                Debug.WriteLine("=== ForceUIUpdate appelé sur VoyageViewModel ===");
+
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    voyage.ForceUpdate();
-                }
-                
-                Debug.WriteLine($"Mise à jour forcée pour {Voyages.Count} voyages");
+                    // Déclencher une notification sur la collection
+                    OnPropertyChanged(nameof(Voyages));
+
+                    // Forcer la mise à jour de chaque élément
+                    foreach (var voyage in Voyages)
+                    {
+                        voyage.ForceUpdate();
+                    }
+
+                    Debug.WriteLine($"Mise à jour forcée pour {Voyages.Count} voyages");
+                });
             }
             catch (Exception ex)
             {

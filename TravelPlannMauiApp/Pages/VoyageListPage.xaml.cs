@@ -62,40 +62,24 @@ namespace TravelPlannMauiApp.Pages
                 
                 if (BindingContext is VoyageViewModel viewModel)
                 {
-                    // Cas 1: Premier chargement ET aucune donnée
-                    if (_isFirstLoad && viewModel.Voyages.Count == 0)
+                    // STRATÉGIE SIMPLE: Si c'est le premier chargement OU qu'un flag indique un rafraîchissement
+                    if (_isFirstLoad || needsRefresh || _shouldRefreshOnAppearing)
                     {
-                        Debug.WriteLine("Premier chargement - chargement des données");
-                        await viewModel.LoadVoyagesAsync();
-                    }
-                    // Cas 2: Flag de rafraîchissement détecté
-                    else if (needsRefresh)
-                    {
-                        Debug.WriteLine("Flag de rafraîchissement détecté - rechargement des données");
-                        await viewModel.LoadVoyagesAsync();
-                    }
-                    // Cas 3: Retour depuis une page de modification
-                    else if (_shouldRefreshOnAppearing)
-                    {
-                        Debug.WriteLine("Rafraîchissement après modification détectée");
+                        Debug.WriteLine("Rechargement des données depuis la base");
                         await viewModel.LoadVoyagesAsync();
                         _shouldRefreshOnAppearing = false;
                     }
-                    // Cas 4: Rafraîchissement périodique (si les données sont anciennes)
-                    else if (!_isFirstLoad && ShouldRefreshData())
-                    {
-                        Debug.WriteLine("Rafraîchissement périodique des données");
-                        await viewModel.LoadVoyagesAsync();
-                    }
                     else
                     {
-                        Debug.WriteLine("Aucun rafraîchissement nécessaire");
-                        // Forcer une mise à jour de l'affichage sans recharger les données
+                        Debug.WriteLine("Rafraîchissement de l'UI seulement");
+                        // Toujours forcer une mise à jour de l'UI
                         ForceUIRefresh();
                     }
                     
                     _isFirstLoad = false;
                 }
+                
+                Debug.WriteLine($"=== Fin OnAppearing - {_viewModel?.Voyages?.Count ?? 0} voyages affichés ===");
             }
             catch (Exception ex)
             {
@@ -104,18 +88,20 @@ namespace TravelPlannMauiApp.Pages
             }
         }
 
-        // Vérifier et effacer le flag de rafraîchissement
+        // Vérifier et effacer le flag de rafraîchissement - VERSION AGRESSIVE
         private async Task<bool> CheckAndClearRefreshFlag()
         {
             try
             {
+                bool needsRefresh = false;
+                
                 // Vérifier dans SecureStorage d'abord
                 var flagSecure = await SecureStorage.GetAsync("needs_voyage_list_refresh");
                 if (!string.IsNullOrEmpty(flagSecure) && flagSecure == "true")
                 {
                     await SecureStorage.SetAsync("needs_voyage_list_refresh", "false");
                     Debug.WriteLine("Flag de rafraîchissement trouvé dans SecureStorage");
-                    return true;
+                    needsRefresh = true;
                 }
                 
                 // Vérifier dans Preferences comme alternative
@@ -124,15 +110,35 @@ namespace TravelPlannMauiApp.Pages
                 {
                     Preferences.Set("needs_voyage_list_refresh", false);
                     Debug.WriteLine("Flag de rafraîchissement trouvé dans Preferences");
-                    return true;
+                    needsRefresh = true;
                 }
                 
-                return false;
+                // Vérifier les timestamps de modification
+                var lastModificationSecure = await SecureStorage.GetAsync("last_voyage_modification");
+                var lastModificationPrefs = Preferences.Get("last_voyage_modification", string.Empty);
+                
+                if (!string.IsNullOrEmpty(lastModificationSecure) || !string.IsNullOrEmpty(lastModificationPrefs))
+                {
+                    Debug.WriteLine("Timestamp de modification détecté");
+                    needsRefresh = true;
+                    
+                    // Nettoyer les timestamps
+                    await SecureStorage.SetAsync("last_voyage_modification", string.Empty);
+                    Preferences.Set("last_voyage_modification", string.Empty);
+                }
+                
+                if (needsRefresh)
+                {
+                    Debug.WriteLine("=== RAFRAÎCHISSEMENT FORCÉ DÉTECTÉ ===");
+                }
+                
+                return needsRefresh;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur lors de la vérification du flag de rafraîchissement: {ex}");
-                return false;
+                // En cas d'erreur, forcer le rafraîchissement par sécurité
+                return true;
             }
         }
 
@@ -159,14 +165,19 @@ namespace TravelPlannMauiApp.Pages
                 {
                     Debug.WriteLine("Forçage de la mise à jour de l'UI");
                     
-                    // Déclencher une notification de changement sur la collection
-                    _viewModel.OnPropertyChanged(nameof(_viewModel.Voyages));
-                    
-                    // Forcer la mise à jour de chaque élément
-                    foreach (var voyage in _viewModel.Voyages)
+                    MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        voyage.OnPropertyChanged(string.Empty); // Mise à jour de toutes les propriétés
-                    }
+                        // Déclencher une notification de changement sur la collection
+                        _viewModel.OnPropertyChanged(nameof(_viewModel.Voyages));
+                        
+                        // Forcer la mise à jour de chaque élément
+                        foreach (var voyage in _viewModel.Voyages)
+                        {
+                            voyage.ForceUpdate(); // Utiliser la méthode publique ForceUpdate
+                        }
+                        
+                        Debug.WriteLine($"UI rafraîchie pour {_viewModel.Voyages.Count} voyages");
+                    });
                 }
             }
             catch (Exception ex)
