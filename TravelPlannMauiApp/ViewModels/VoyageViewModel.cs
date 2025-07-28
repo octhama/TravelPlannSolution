@@ -184,23 +184,24 @@ namespace TravelPlannMauiApp.ViewModels
                     return;
                 }
 
-                var voyageComplet = await _voyageService.GetVoyageByIdAsync(voyage.VoyageId);
-                if (voyageComplet == null) return;
-
-                voyageComplet.EstComplete = !voyageComplet.EstComplete;
-                if (voyageComplet.EstComplete) voyageComplet.EstArchive = false;
-
-                await _voyageService.UpdateVoyageAsync(voyageComplet);
-                
-                // Mettre à jour l'objet dans la collection locale
-                var index = Voyages.IndexOf(voyage);
-                if (index >= 0)
+                // CORRECTION : Modifier directement l'objet existant au lieu de le recharger
+                voyage.EstComplete = !voyage.EstComplete;
+                if (voyage.EstComplete) 
                 {
-                    Voyages[index] = voyageComplet;
+                    voyage.EstArchive = false; // Si on marque comme complet, on désarchive
                 }
+
+                // Sauvegarder les changements
+                await _voyageService.UpdateVoyageAsync(voyage);
+                
+                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyage.EstComplete}, EstArchive: {voyage.EstArchive}");
+
+                // Forcer la mise à jour de l'interface utilisateur
+                OnPropertyChanged(nameof(Voyages));
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Erreur lors de la modification du statut: {ex}");
                 await HandleError(ex, "Erreur lors de la modification du statut");
             }
         }
@@ -227,21 +228,20 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
-                var voyageComplet = await _voyageService.GetVoyageByIdAsync(voyage.VoyageId);
-                if (voyageComplet == null) return;
-
-                voyageComplet.EstArchive = !voyageComplet.EstArchive;
-                await _voyageService.UpdateVoyageAsync(voyageComplet);
+                // CORRECTION : Modifier directement l'objet existant au lieu de le recharger
+                voyage.EstArchive = !voyage.EstArchive;
                 
-                // Mettre à jour l'objet dans la collection locale
-                var index = Voyages.IndexOf(voyage);
-                if (index >= 0)
-                {
-                    Voyages[index] = voyageComplet;
-                }
+                // Sauvegarder les changements
+                await _voyageService.UpdateVoyageAsync(voyage);
+                
+                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyage.EstComplete}, EstArchive: {voyage.EstArchive}");
+
+                // Forcer la mise à jour de l'interface utilisateur
+                OnPropertyChanged(nameof(Voyages));
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Erreur lors de l'archivage: {ex}");
                 await HandleError(ex, "Erreur lors de l'archivage");
             }
         }
@@ -261,13 +261,15 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Navigation vers détails du voyage ID: {voyage.VoyageId}");
                 
-                var voyageComplet = await _voyageService.GetVoyageByIdAsync(voyage.VoyageId);
-                if (voyageComplet == null)
+                // CORRECTION : Utiliser GetVoyageDetailsAsync pour avoir toutes les données
+                var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
+                if (voyageDetails?.Voyage == null)
                 {
                     await Shell.Current.DisplayAlert("Erreur", "Voyage introuvable", "OK");
                     return;
                 }
                 
+                var voyageComplet = voyageDetails.Voyage;
                 var dto = new VoyageDetailsDTO
                 {
                     VoyageID = voyageComplet.VoyageId,
@@ -277,8 +279,9 @@ namespace TravelPlannMauiApp.ViewModels
                     DateFin = voyageComplet.DateFin.ToDateTime(TimeOnly.MinValue),
                     EstComplete = voyageComplet.EstComplete,
                     EstArchive = voyageComplet.EstArchive,
-                    NombreActivites = voyageComplet.Activites?.Count ?? 0,
-                    NombreHebergements = voyageComplet.Hebergements?.Count ?? 0
+                    // Inclure les activités et hébergements dans le DTO
+                    Activites = voyageDetails.Activites ?? new List<Activite>(),
+                    Hebergements = voyageDetails.Hebergements ?? new List<Hebergement>()
                 };
 
                 var serialized = JsonSerializer.Serialize(dto);
@@ -313,7 +316,7 @@ namespace TravelPlannMauiApp.ViewModels
         public DateTime DateFin { get; set; }
         public bool EstComplete { get; set; }
         public bool EstArchive { get; set; }
-        public int NombreActivites { get; set; }
-        public int NombreHebergements { get; set; }
+        public List<Activite> Activites { get; set; } = new();
+        public List<Hebergement> Hebergements { get; set; } = new();
     }
 }

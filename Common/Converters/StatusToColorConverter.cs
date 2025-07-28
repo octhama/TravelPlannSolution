@@ -1,4 +1,3 @@
-
 using System.Globalization;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
@@ -6,15 +5,23 @@ using Microsoft.Maui.Graphics;
 namespace Common.Converters
 {
     public class StatusToColorConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (bool)value ? 
-            (parameter == null ? Color.FromArgb("#4CAF50") : Color.FromArgb("#FF9800")) :
-            (parameter == null ? Color.FromArgb("#FF9800") : Color.FromArgb("#4CAF50"));
-    }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool status = (bool)value;
+            string param = parameter?.ToString();
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
+            // Si c'est pour l'archivage (parameter = "archive")
+            if (param == "archive")
+            {
+                return status ? Color.FromArgb("#FF9800") : Color.FromArgb("#4CAF50"); // Orange si archivé, Vert sinon
+            }
+            
+            // Pour la complétion (défaut)
+            return status ? Color.FromArgb("#4CAF50") : Color.FromArgb("#FF9800"); // Vert si complet, Orange sinon
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
 }
