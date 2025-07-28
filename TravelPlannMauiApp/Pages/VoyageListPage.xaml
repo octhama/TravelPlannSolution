@@ -42,7 +42,7 @@
                             <SwipeView.LeftItems>
                                 <SwipeItems Mode="Reveal">
                                     <SwipeItem Text="{Binding EstArchive, Converter={StaticResource BoolToArchiveText}}"
-                                               BackgroundColor="{Binding EstArchive, Converter={StaticResource StatusToColor}}"
+                                               BackgroundColor="{Binding EstArchive, Converter={StaticResource StatusToColor}, ConverterParameter=archive}"
                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VoyageViewModel}}, Path=ToggleArchiveVoyageCommand}"
                                                CommandParameter="{Binding}"/>
                                 </SwipeItems>
@@ -50,19 +50,15 @@
 
                             <!-- Contenu principal -->
                             <Frame Padding="0" Margin="10,5" CornerRadius="12" HasShadow="True">
-                                <Grid ColumnDefinitions="5,*" RowDefinitions="Auto,Auto,Auto,Auto"
+                                <Grid ColumnDefinitions="5,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                                       Padding="15"
                                       BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
 
                                     <!-- Indicateur d'état (côté gauche) -->
-                                    <BoxView Grid.RowSpan="4" 
+                                    <BoxView Grid.RowSpan="5" 
                                              WidthRequest="5"
                                              Color="{Binding EstComplete, Converter={StaticResource StatusToColor}}"
                                              IsVisible="{Binding EstComplete}"/>
-                                    <BoxView Grid.RowSpan="4" 
-                                             WidthRequest="5"
-                                             Color="{Binding EstArchive, Converter={StaticResource StatusToColor}}"
-                                             IsVisible="{Binding EstArchive}"/>
 
                                     <!-- Nom du voyage -->
                                     <Label Grid.Row="0" Grid.Column="1"
@@ -93,8 +89,24 @@
                                                HorizontalOptions="End"/>
                                     </StackLayout>
 
+                                    <!-- Indicateur d'état avec point coloré -->
+                                    <StackLayout Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
+                    
+                                        <!-- Point pour voyage archivé -->
+                                        <Ellipse IsVisible="{Binding EstArchive}"
+                                                 Fill="#FF9800"
+                                                 WidthRequest="10"
+                                                 HeightRequest="10"
+                                                 VerticalOptions="Center"/>
+                                        <Label IsVisible="{Binding EstArchive}"
+                                               Text="Archivé"
+                                               FontSize="10"
+                                               TextColor="#FF9800"
+                                               VerticalOptions="Center"/>
+                                    </StackLayout>
+
                                     <!-- Bouton détails -->
-                                    <Button Grid.Row="3" Grid.Column="1"
+                                    <Button Grid.Row="4" Grid.Column="1"
                                             Text="Voir détails"
                                             BackgroundColor="Transparent"
                                             TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
@@ -139,7 +151,6 @@
                 Margin="20">
             <Button.Shadow>
                 <Shadow Brush="#00000000"
-                        
                         Offset="0,5"
                         Radius="10"
                         Opacity="0"/>

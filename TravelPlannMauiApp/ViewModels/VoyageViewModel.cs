@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Windows.Input;
 using TravelPlannMauiApp.Pages;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace TravelPlannMauiApp.ViewModels
 {
@@ -12,20 +13,20 @@ namespace TravelPlannMauiApp.ViewModels
     {
         private readonly IVoyageService _voyageService;
         private readonly ISessionService _sessionService;
-        private bool _isBusy;
+        private bool _isLoading;
         private int _currentUserId;
         
-        public ObservableCollection<Voyage> Voyages { get; } = new();
+        public ObservableCollection<VoyageItemViewModel> Voyages { get; } = new();
         public ICommand LoadVoyagesCommand { get; }
         public ICommand ViewVoyageDetailsCommand { get; }
         public ICommand AddVoyageCommand { get; }
         public ICommand ToggleCompleteVoyageCommand { get; }
         public ICommand ToggleArchiveVoyageCommand { get; }
         
-        public bool IsBusy
+        public bool IsLoading
         {
-            get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
         }
         
         public VoyageViewModel(IVoyageService voyageService, ISessionService sessionService = null)
@@ -34,10 +35,10 @@ namespace TravelPlannMauiApp.ViewModels
             _sessionService = sessionService;
 
             LoadVoyagesCommand = new Command(async () => await LoadVoyagesAsync());
-            ViewVoyageDetailsCommand = new Command<Voyage>(async (v) => await ViewVoyageDetails(v));
+            ViewVoyageDetailsCommand = new Command<VoyageItemViewModel>(async (v) => await ViewVoyageDetails(v));
             AddVoyageCommand = new Command(async () => await AddVoyageAsync());
-            ToggleCompleteVoyageCommand = new Command<Voyage>(async (v) => await ToggleCompleteVoyage(v));
-            ToggleArchiveVoyageCommand = new Command<Voyage>(async (v) => await ToggleArchiveVoyage(v));
+            ToggleCompleteVoyageCommand = new Command<VoyageItemViewModel>(async (v) => await ToggleCompleteVoyage(v));
+            ToggleArchiveVoyageCommand = new Command<VoyageItemViewModel>(async (v) => await ToggleArchiveVoyage(v));
         }
 
         private async Task<int> GetCurrentUserIdAsync()
@@ -48,13 +49,11 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 if (_sessionService != null)
                 {
-                    // Utiliser le service de session si disponible
                     var userIdNullable = await _sessionService.GetCurrentUserIdAsync();
                     userId = userIdNullable ?? 0;
                 }
                 else
                 {
-                    // Fallback direct sur SecureStorage/Preferences
                     userId = await GetCurrentUserIdWithFallback();
                 }
 
@@ -86,7 +85,6 @@ namespace TravelPlannMauiApp.ViewModels
         {
             try
             {
-                // Essayer SecureStorage d'abord
                 var userIdString = await SecureStorage.GetAsync("current_user_id");
                 if (int.TryParse(userIdString, out int userId))
                 {
@@ -101,7 +99,6 @@ namespace TravelPlannMauiApp.ViewModels
 
             try
             {
-                // Fallback vers Preferences
                 var userIdString = Preferences.Get("current_user_id", null);
                 if (int.TryParse(userIdString, out int userId))
                 {
@@ -120,9 +117,9 @@ namespace TravelPlannMauiApp.ViewModels
      
         public async Task LoadVoyagesAsync()
         {
-            if (IsBusy) return;
+            if (IsLoading) return;
 
-            IsBusy = true;
+            IsLoading = true;
             try
             {
                 Debug.WriteLine("=== DÉBUT CHARGEMENT VOYAGES ===");
@@ -136,10 +133,8 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Chargement des voyages pour l'utilisateur ID: {_currentUserId}");
                 
-                // Utiliser Dispatcher pour s'assurer que les modifications UI se font sur le bon thread
                 await MainThread.InvokeOnMainThreadAsync(() => Voyages.Clear());
                 
-                // Charger uniquement les voyages de l'utilisateur connecté
                 var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                 
                 Debug.WriteLine($"Nombre de voyages trouvés: {voyages?.Count ?? 0}");
@@ -151,7 +146,8 @@ namespace TravelPlannMauiApp.ViewModels
                         foreach (var v in voyages)
                         {
                             Debug.WriteLine($"Ajout du voyage: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
-                            Voyages.Add(v);
+                            var voyageItemViewModel = new VoyageItemViewModel(v);
+                            Voyages.Add(voyageItemViewModel);
                         }
                     });
                 }
@@ -176,25 +172,25 @@ namespace TravelPlannMauiApp.ViewModels
             }
             finally
             {
-                IsBusy = false;
+                IsLoading = false;
                 Debug.WriteLine("=== FIN CHARGEMENT VOYAGES ===");
             }
         }
       
-        private async Task ToggleCompleteVoyage(Voyage voyage)
+        private async Task ToggleCompleteVoyage(VoyageItemViewModel voyageViewModel)
         {
-            if (voyage == null) return;
+            if (voyageViewModel == null) return;
 
             try
             {
-                // Vérifier que l'utilisateur est propriétaire du voyage
+                var voyage = voyageViewModel.Voyage;
+                
                 if (voyage.UtilisateurId != _currentUserId)
                 {
                     await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à modifier ce voyage", "OK");
                     return;
                 }
 
-                // Créer une copie propre du voyage pour la mise à jour
                 var voyageToUpdate = new Voyage
                 {
                     VoyageId = voyage.VoyageId,
@@ -203,42 +199,44 @@ namespace TravelPlannMauiApp.ViewModels
                     DateDebut = voyage.DateDebut,
                     DateFin = voyage.DateFin,
                     UtilisateurId = voyage.UtilisateurId,
-                    EstComplete = !voyage.EstComplete, // Inverser l'état
+                    EstComplete = !voyage.EstComplete,
                     EstArchive = voyage.EstArchive
                 };
 
-                // Si on marque comme complet, on désarchive automatiquement
                 if (voyageToUpdate.EstComplete) 
                 {
                     voyageToUpdate.EstArchive = false;
                 }
 
-                // Sauvegarder les changements
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // Mettre à jour l'objet dans la collection ObservableCollection
-                voyage.EstComplete = voyageToUpdate.EstComplete;
-                voyage.EstArchive = voyageToUpdate.EstArchive;
+                // Mise à jour du ViewModel pour déclencher les notifications PropertyChanged
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    voyageViewModel.UpdateFromVoyage(voyageToUpdate);
+                });
                 
-                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyage.EstComplete}, EstArchive: {voyage.EstArchive}");
-
-                // Forcer la mise à jour de l'interface utilisateur
-                OnPropertyChanged(nameof(Voyages));
+                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyageToUpdate.EstComplete}, EstArchive: {voyageToUpdate.EstArchive}");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur lors de la modification du statut: {ex}");
-                await HandleError(ex, "Erreur lors de la modification du statut");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlert("Erreur", 
+                        $"Erreur lors de la modification du statut: {ex.Message}", "OK");
+                });
             }
         }
        
-        private async Task ToggleArchiveVoyage(Voyage voyage)
+        private async Task ToggleArchiveVoyage(VoyageItemViewModel voyageViewModel)
         {
-            if (voyage == null) return;
+            if (voyageViewModel == null) return;
 
             try
             {
-                // Vérifier que l'utilisateur est propriétaire du voyage
+                var voyage = voyageViewModel.Voyage;
+                
                 if (voyage.UtilisateurId != _currentUserId)
                 {
                     await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à modifier ce voyage", "OK");
@@ -254,7 +252,6 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
-                // Créer une copie propre du voyage pour la mise à jour
                 var voyageToUpdate = new Voyage
                 {
                     VoyageId = voyage.VoyageId,
@@ -264,34 +261,38 @@ namespace TravelPlannMauiApp.ViewModels
                     DateFin = voyage.DateFin,
                     UtilisateurId = voyage.UtilisateurId,
                     EstComplete = voyage.EstComplete,
-                    EstArchive = !voyage.EstArchive // Inverser l'état
+                    EstArchive = !voyage.EstArchive
                 };
                 
-                // Sauvegarder les changements
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // Mettre à jour l'objet dans la collection ObservableCollection
-                voyage.EstArchive = voyageToUpdate.EstArchive;
+                // Mise à jour du ViewModel pour déclencher les notifications PropertyChanged
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    voyageViewModel.UpdateFromVoyage(voyageToUpdate);
+                });
                 
-                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyage.EstComplete}, EstArchive: {voyage.EstArchive}");
-
-                // Forcer la mise à jour de l'interface utilisateur
-                OnPropertyChanged(nameof(Voyages));
+                Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyageToUpdate.EstComplete}, EstArchive: {voyageToUpdate.EstArchive}");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur lors de l'archivage: {ex}");
-                await HandleError(ex, "Erreur lors de l'archivage");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlert("Erreur", 
+                        $"Erreur lors de l'archivage: {ex.Message}", "OK");
+                });
             }
         }
         
-        public async Task ViewVoyageDetails(Voyage voyage)
+        public async Task ViewVoyageDetails(VoyageItemViewModel voyageViewModel)
         {
-            if (voyage == null) return;
+            if (voyageViewModel == null) return;
 
             try
             {
-                // Vérifier que l'utilisateur est propriétaire du voyage
+                var voyage = voyageViewModel.Voyage;
+                
                 if (voyage.UtilisateurId != _currentUserId)
                 {
                     await Shell.Current.DisplayAlert("Erreur", "Vous n'êtes pas autorisé à voir ce voyage", "OK");
@@ -300,7 +301,6 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Navigation vers détails du voyage ID: {voyage.VoyageId}");
                 
-                // Récupérer les détails complets du voyage
                 var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
                 if (voyageDetails?.Voyage == null)
                 {
@@ -310,7 +310,6 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 var voyageComplet = voyageDetails.Voyage;
                 
-                // CORRECTION: Créer des DTOs sans cycles de référence
                 var activitesDto = voyageDetails.Activites?.Select(a => new ActiviteDTO
                 {
                     ActiviteId = a.ActiviteId,
@@ -340,7 +339,6 @@ namespace TravelPlannMauiApp.ViewModels
                     EstComplete = voyageComplet.EstComplete,
                     EstArchive = voyageComplet.EstArchive,
                     UtilisateurId = voyageComplet.UtilisateurId,
-                    // Utiliser les DTOs sans cycles de référence
                     Activites = activitesDto,
                     Hebergements = hebergementsDto
                 };
@@ -353,7 +351,11 @@ namespace TravelPlannMauiApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur navigation: {ex}");
-                await HandleError(ex, "Erreur lors de la navigation");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlert("Erreur", 
+                        $"Erreur lors de la navigation: {ex.Message}", "OK");
+                });
             }
         }
 
@@ -365,6 +367,69 @@ namespace TravelPlannMauiApp.ViewModels
         public async Task AddVoyageAsync()
         {
             await Shell.Current.GoToAsync(nameof(AddVoyagePage));
+        }
+    }
+
+    // Nouveau ViewModel pour chaque élément de voyage
+    public class VoyageItemViewModel : INotifyPropertyChanged
+    {
+        private Voyage _voyage;
+
+        public VoyageItemViewModel(Voyage voyage)
+        {
+            _voyage = voyage ?? throw new ArgumentNullException(nameof(voyage));
+        }
+
+        public Voyage Voyage => _voyage;
+
+        public int VoyageId => _voyage.VoyageId;
+        public string NomVoyage => _voyage.NomVoyage;
+        public string Description => _voyage.Description;
+        public DateOnly DateDebut => _voyage.DateDebut;
+        public DateOnly DateFin => _voyage.DateFin;
+        public int UtilisateurId => _voyage.UtilisateurId;
+
+        public bool EstComplete 
+        { 
+            get => _voyage.EstComplete;
+            private set
+            {
+                if (_voyage.EstComplete != value)
+                {
+                    _voyage.EstComplete = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool EstArchive 
+        { 
+            get => _voyage.EstArchive;
+            private set
+            {
+                if (_voyage.EstArchive != value)
+                {
+                    _voyage.EstArchive = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public void UpdateFromVoyage(Voyage updatedVoyage)
+        {
+            EstComplete = updatedVoyage.EstComplete;
+            EstArchive = updatedVoyage.EstArchive;
+            
+            // Mettre à jour l'objet voyage interne
+            _voyage.EstComplete = updatedVoyage.EstComplete;
+            _voyage.EstArchive = updatedVoyage.EstArchive;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
     
