@@ -133,15 +133,16 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Chargement des voyages pour l'utilisateur ID: {_currentUserId}");
                 
-                await MainThread.InvokeOnMainThreadAsync(() => Voyages.Clear());
-                
                 var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                 
                 Debug.WriteLine($"Nombre de voyages trouvés: {voyages?.Count ?? 0}");
                 
-                if (voyages != null && voyages.Any())
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    // Nettoyer la collection existante
+                    Voyages.Clear();
+                    
+                    if (voyages != null && voyages.Any())
                     {
                         foreach (var v in voyages)
                         {
@@ -149,12 +150,11 @@ namespace TravelPlannMauiApp.ViewModels
                             var voyageItemViewModel = new VoyageItemViewModel(v);
                             Voyages.Add(voyageItemViewModel);
                         }
-                    });
-                }
-                else
-                {
-                    Debug.WriteLine("Aucun voyage retourné par le service");
-                }
+                    }
+                    
+                    // Déclencher une notification de changement pour forcer le rafraîchissement de l'UI
+                    OnPropertyChanged(nameof(Voyages));
+                });
                 
                 Debug.WriteLine($"Total voyages dans la collection: {Voyages.Count}");
             }
@@ -176,6 +176,45 @@ namespace TravelPlannMauiApp.ViewModels
                 Debug.WriteLine("=== FIN CHARGEMENT VOYAGES ===");
             }
         }
+
+        // Méthode pour mettre à jour un voyage spécifique dans la liste
+        public async Task RefreshVoyageInListAsync(int voyageId)
+        {
+            try
+            {
+                Debug.WriteLine($"=== RAFRAÎCHISSEMENT VOYAGE ID: {voyageId} ===");
+                
+                var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyageId);
+                if (voyageDetails?.Voyage == null)
+                {
+                    Debug.WriteLine("Voyage non trouvé pour rafraîchissement");
+                    return;
+                }
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    var existingVoyage = Voyages.FirstOrDefault(v => v.VoyageId == voyageId);
+                    if (existingVoyage != null)
+                    {
+                        Debug.WriteLine($"Mise à jour du voyage existant: {voyageDetails.Voyage.NomVoyage}");
+                        existingVoyage.UpdateFromVoyage(voyageDetails.Voyage);
+                        
+                        // Forcer la mise à jour de l'affichage
+                        OnPropertyChanged(nameof(Voyages));
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Voyage non trouvé dans la collection locale - rechargement complet");
+                        // Si le voyage n'est pas trouvé, recharger toute la liste
+                        _ = Task.Run(async () => await LoadVoyagesAsync());
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur lors du rafraîchissement du voyage: {ex}");
+            }
+        }
       
         private async Task ToggleCompleteVoyage(VoyageItemViewModel voyageViewModel)
         {
@@ -191,7 +230,7 @@ namespace TravelPlannMauiApp.ViewModels
                     return;
                 }
 
-                // CORRECTION 1: Récupérer le voyage complet avec ses relations
+                // Récupérer le voyage complet avec ses relations
                 var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
                 if (voyageDetails?.Voyage == null)
                 {
@@ -207,14 +246,12 @@ namespace TravelPlannMauiApp.ViewModels
                     voyageToUpdate.EstArchive = false;
                 }
 
-                // CORRECTION 2: Passer le voyage complet avec ses relations
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // CORRECTION 3: Mise à jour immédiate de l'UI
+                // Mise à jour immédiate et forcée de l'UI
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     voyageViewModel.UpdateFromVoyage(voyageToUpdate);
-                    // Forcer une mise à jour de l'affichage
                     OnPropertyChanged(nameof(Voyages));
                 });
                 
@@ -254,7 +291,7 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
-                // CORRECTION 1: Récupérer le voyage complet avec ses relations
+                // Récupérer le voyage complet avec ses relations
                 var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
                 if (voyageDetails?.Voyage == null)
                 {
@@ -265,14 +302,12 @@ namespace TravelPlannMauiApp.ViewModels
                 var voyageToUpdate = voyageDetails.Voyage;
                 voyageToUpdate.EstArchive = !voyageToUpdate.EstArchive;
                 
-                // CORRECTION 2: Passer le voyage complet avec ses relations
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // CORRECTION 3: Mise à jour immédiate de l'UI
+                // Mise à jour immédiate et forcée de l'UI
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     voyageViewModel.UpdateFromVoyage(voyageToUpdate);
-                    // Forcer une mise à jour de l'affichage
                     OnPropertyChanged(nameof(Voyages));
                 });
                 
@@ -374,7 +409,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
     }
 
-    // CORRECTION 4: Amélioration du VoyageItemViewModel
+    // VoyageItemViewModel amélioré avec meilleure gestion des notifications
     public class VoyageItemViewModel : INotifyPropertyChanged
     {
         private Voyage _voyage;
@@ -407,8 +442,12 @@ namespace TravelPlannMauiApp.ViewModels
                     _estComplete = value;
                     _voyage.EstComplete = value;
                     OnPropertyChanged();
-                    // Forcer la mise à jour de l'affichage en déclenchant tous les changements liés
-                    OnPropertyChanged(nameof(EstArchive)); // Pour s'assurer que les indicateurs se mettent à jour
+                    
+                    // Déclencher les mises à jour des propriétés liées
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        OnPropertyChanged(nameof(EstArchive));
+                    });
                 }
             }
         }
@@ -423,20 +462,36 @@ namespace TravelPlannMauiApp.ViewModels
                     _estArchive = value;
                     _voyage.EstArchive = value;
                     OnPropertyChanged();
-                    // Forcer la mise à jour de l'affichage en déclenchant tous les changements liés
-                    OnPropertyChanged(nameof(EstComplete)); // Pour s'assurer que les indicateurs se mettent à jour
+                    
+                    // Déclencher les mises à jour des propriétés liées
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        OnPropertyChanged(nameof(EstComplete));
+                    });
                 }
             }
         }
 
         public void UpdateFromVoyage(Voyage updatedVoyage)
         {
+            if (updatedVoyage == null) return;
+            
             // Mise à jour avec notification des changements
+            var oldComplete = _estComplete;
+            var oldArchive = _estArchive;
+            
             EstComplete = updatedVoyage.EstComplete;
             EstArchive = updatedVoyage.EstArchive;
             
-            // Déclencher une mise à jour complète pour s'assurer que l'UI se rafraîchit
-            OnPropertyChanged(string.Empty); // Met à jour toutes les propriétés
+            // Si les valeurs ont changé, forcer une mise à jour complète de l'UI
+            if (oldComplete != _estComplete || oldArchive != _estArchive)
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    // Déclencher une mise à jour de toutes les propriétés
+                    OnPropertyChanged(string.Empty);
+                });
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
