@@ -62,12 +62,33 @@ namespace BU.Services
         
         public async Task<List<Voyage>> GetVoyagesByUtilisateurAsync(int utilisateurId)
         {
-            return await _context.Voyages
-                .Include(v => v.Activites)
-                .Include(v => v.Hebergements)
-                .Where(v => v.UtilisateurId == utilisateurId)
-                .OrderByDescending(v => v.VoyageId)
-                .ToListAsync();
+            try
+            {
+                Debug.WriteLine($"Recherche des voyages pour utilisateur ID: {utilisateurId}");
+                
+                var voyages = await _context.Voyages
+                    .Include(v => v.Activites)
+                    .Include(v => v.Hebergements)
+                    .Where(v => v.UtilisateurId == utilisateurId)
+                    .OrderByDescending(v => v.VoyageId)
+                    .ToListAsync();
+                    
+                Debug.WriteLine($"Requête exécutée, {voyages.Count} voyages trouvés");
+                
+                foreach (var voyage in voyages)
+                {
+                    Debug.WriteLine($"Voyage trouvé: ID={voyage.VoyageId}, Nom={voyage.NomVoyage}, " +
+                                $"UtilisateurId={voyage.UtilisateurId}, Complete={voyage.EstComplete}, Archive={voyage.EstArchive}");
+                }
+                
+                return voyages;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur dans GetVoyagesByUtilisateurAsync: {ex}");
+                Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+                throw;
+            }
         }    
 
         public async Task AddVoyageAsync(Voyage voyage)

@@ -136,20 +136,24 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Chargement des voyages pour l'utilisateur ID: {_currentUserId}");
                 
-                Voyages.Clear();
+                // Utiliser Dispatcher pour s'assurer que les modifications UI se font sur le bon thread
+                await MainThread.InvokeOnMainThreadAsync(() => Voyages.Clear());
                 
                 // Charger uniquement les voyages de l'utilisateur connecté
                 var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                 
                 Debug.WriteLine($"Nombre de voyages trouvés: {voyages?.Count ?? 0}");
                 
-                if (voyages != null)
+                if (voyages != null && voyages.Any())
                 {
-                    foreach (var v in voyages)
+                    await MainThread.InvokeOnMainThreadAsync(() =>
                     {
-                        Debug.WriteLine($"Ajout du voyage: {v.NomVoyage} (ID: {v.VoyageId})");
-                        Voyages.Add(v);
-                    }
+                        foreach (var v in voyages)
+                        {
+                            Debug.WriteLine($"Ajout du voyage: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
+                            Voyages.Add(v);
+                        }
+                    });
                 }
                 else
                 {
@@ -162,7 +166,13 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 Debug.WriteLine($"=== ERREUR CHARGEMENT VOYAGES ===");
                 Debug.WriteLine($"Exception: {ex}");
-                await HandleError(ex, "Erreur lors du chargement des voyages");
+                Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+                
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlert("Erreur", 
+                        $"Erreur lors du chargement des voyages: {ex.Message}", "OK");
+                });
             }
             finally
             {
