@@ -191,15 +191,13 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        // NOUVEAU : Méthode pour définir le flag de modification après une action Toggle
-        private async Task SetModificationFlag()
+        // Méthode simple pour définir le flag de rechargement après modification
+        private void SetForceReloadFlag()
         {
             try
             {
-                var timestamp = DateTime.Now.Ticks.ToString();
-                Preferences.Set("voyage_list_needs_refresh", true);
-                Preferences.Set("last_voyage_update_timestamp", timestamp);
-                Debug.WriteLine($"Flag de modification défini - Timestamp: {timestamp}");
+                Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
+                Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD défini");
             }
             catch (Exception ex)
             {
@@ -250,8 +248,8 @@ namespace TravelPlannMauiApp.ViewModels
                     OnPropertyChanged(nameof(Voyages));
                 });
                 
-                // Définir le flag pour les autres instances
-                await SetModificationFlag();
+                // Définir le flag pour forcer le rechargement
+                SetForceReloadFlag();
                 
             }
             catch (Exception ex)
@@ -312,8 +310,8 @@ namespace TravelPlannMauiApp.ViewModels
                     OnPropertyChanged(nameof(Voyages));
                 });
                 
-                // Définir le flag pour les autres instances
-                await SetModificationFlag();
+                // Définir le flag pour forcer le rechargement
+                SetForceReloadFlag();
                 
             }
             catch (Exception ex)
@@ -406,33 +404,17 @@ namespace TravelPlannMauiApp.ViewModels
             await Shell.Current.GoToAsync(nameof(AddVoyagePage));
         }
 
-        // NOUVEAU : Méthode pour nettoyer les flags de rafraîchissement
-        public void ClearRefreshFlags()
+        // Méthode pour nettoyer le flag de rechargement
+        public void ClearForceReloadFlag()
         {
             try
             {
-                Preferences.Set("voyage_list_needs_refresh", false);
-                Debug.WriteLine("Flags de rafraîchissement nettoyés");
+                Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", false);
+                Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD nettoyé");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Erreur lors du nettoyage des flags: {ex}");
-            }
-        }
-
-        // NOUVEAU : Propriété pour vérifier si un rafraîchissement est nécessaire
-        public bool NeedsRefresh
-        {
-            get
-            {
-                try
-                {
-                    return Preferences.Get("voyage_list_needs_refresh", false);
-                }
-                catch
-                {
-                    return false;
-                }
+                Debug.WriteLine($"Erreur lors du nettoyage du flag: {ex}");
             }
         }
     }

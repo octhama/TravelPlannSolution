@@ -41,13 +41,13 @@ namespace TravelPlannMauiApp.ViewModels
         private bool _showActiviteForm;
         private string _nouvelleActiviteNom;
         private string _nouvelleActiviteDescription;
-        private string _nouvelleActiviteLocalisation; // NOUVEAU
+        private string _nouvelleActiviteLocalisation;
 
         // Propriétés pour les formulaires d'hébergements
         private bool _showHebergementForm;
         private string _nouvelHebergementNom;
         private string _nouvelHebergementType;
-        private string _nouvelHebergementAdresse; // NOUVEAU
+        private string _nouvelHebergementAdresse;
         private decimal _nouvelHebergementCout;
 
         // Collections
@@ -158,7 +158,6 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _nouvelleActiviteDescription, value);
         }
 
-        // NOUVEAU : Propriété pour la localisation des activités
         public string NouvelleActiviteLocalisation
         {
             get => _nouvelleActiviteLocalisation;
@@ -177,7 +176,6 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _nouvelHebergementType, value);
         }
 
-        // NOUVEAU : Propriété pour l'adresse des hébergements
         public string NouvelHebergementAdresse
         {
             get => _nouvelHebergementAdresse;
@@ -325,31 +323,18 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        private async Task NotifyVoyageListToRefresh()
+        // NOUVEAU: Méthode simple et efficace pour notifier le rafraîchissement
+        private void SetForceReloadFlag()
         {
             try
             {
-                Debug.WriteLine("=== Notification AGRESSIVE de rafraîchissement à la liste des voyages ===");
-                
-                // Méthode 1: Flags de stockage
-                await SecureStorage.SetAsync("needs_voyage_list_refresh", "true");
-                Preferences.Set("needs_voyage_list_refresh", true);
-                
-                // Méthode 2: Timestamp pour forcer le rafraîchissement
-                var timestamp = DateTime.Now.Ticks.ToString();
-                await SecureStorage.SetAsync("last_voyage_modification", timestamp);
-                Preferences.Set("last_voyage_modification", timestamp);
-                
-                // Méthode 3: Flag spécifique au voyage modifié
-                await SecureStorage.SetAsync($"voyage_modified_{VoyageId}", "true");
-                Preferences.Set($"voyage_modified_{VoyageId}", true);
-                
-                Debug.WriteLine($"Flags de rafraîchissement définis - Voyage ID: {VoyageId}, Timestamp: {timestamp}");
+                Debug.WriteLine("=== DÉFINITION DU FLAG DE RECHARGEMENT FORCÉ ===");
+                Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
+                Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD défini");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Erreur lors de la notification de rafraîchissement: {ex}");
-                // Ne pas faire échouer la sauvegarde pour cette erreur
+                Debug.WriteLine($"Erreur lors de la définition du flag: {ex}");
             }
         }
 
@@ -444,7 +429,10 @@ namespace TravelPlannMauiApp.ViewModels
 
                 await _voyageService.UpdateVoyageAsync(voyage);
                 
-                Debug.WriteLine("Voyage sauvegardé avec succès");
+                Debug.WriteLine("Voyage sauvegardé avec succès - FORCER LE RAFRAÎCHISSEMENT");
+                
+                // NOUVEAU: Définir le flag SIMPLE et DIRECT
+                SetForceReloadFlag();
                 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
@@ -457,10 +445,12 @@ namespace TravelPlannMauiApp.ViewModels
                     SaveOriginalValues();
                 });
                 
-                // NOUVEAU: Notifier qu'une modification a été faite
-                await NotifyVoyageListToRefresh();
-                
                 await Shell.Current.DisplayAlert("Succès", "Voyage mis à jour avec succès", "OK");
+                
+                // NOUVEAU: Retourner automatiquement à la liste des voyages
+                Debug.WriteLine("Retour automatique à la liste des voyages...");
+                await Shell.Current.GoToAsync("..");
+                
             }
             catch (Exception ex)
             {
@@ -493,9 +483,10 @@ namespace TravelPlannMauiApp.ViewModels
 
                     await _voyageService.DeleteVoyageAsync(VoyageId);
                     
-                    // NOUVEAU: Notifier qu'une modification a été faite
-                    await NotifyVoyageListToRefresh();
+                    // NOUVEAU: Flag simple pour forcer le rechargement
+                    SetForceReloadFlag();
                     
+                    Debug.WriteLine("Voyage supprimé - retour à la liste");
                     await Shell.Current.GoToAsync("..");
                 }
                 catch (Exception ex)
@@ -511,11 +502,17 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
+        // NOUVEAU: Méthode pour marquer qu'il y a eu des changements (pour ajouts/suppressions)
+        private void MarkAsModified()
+        {
+            SetForceReloadFlag();
+        }
+
         private void AnnulerAjoutActivite()
         {
             NouvelleActiviteNom = string.Empty;
             NouvelleActiviteDescription = string.Empty;
-            NouvelleActiviteLocalisation = string.Empty; // NOUVEAU
+            NouvelleActiviteLocalisation = string.Empty;
             ShowActiviteForm = false;
         }
 
@@ -523,7 +520,7 @@ namespace TravelPlannMauiApp.ViewModels
         {
             NouvelHebergementNom = string.Empty;
             NouvelHebergementType = string.Empty;
-            NouvelHebergementAdresse = string.Empty; // NOUVEAU
+            NouvelHebergementAdresse = string.Empty;
             NouvelHebergementCout = 0;
             ShowHebergementForm = false;
         }
@@ -547,7 +544,7 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     Nom = NouvelleActiviteNom.Trim(),
                     Description = NouvelleActiviteDescription?.Trim(),
-                    Localisation = NouvelleActiviteLocalisation?.Trim() // NOUVEAU
+                    Localisation = NouvelleActiviteLocalisation?.Trim()
                 };
 
                 // Ajout à la base de données
@@ -560,6 +557,9 @@ namespace TravelPlannMauiApp.ViewModels
                     Activites.Add(activiteAjoutee);
                     AnnulerAjoutActivite();
                 });
+
+                // Marquer comme modifié
+                MarkAsModified();
 
                 Debug.WriteLine($"Activité ajoutée: {activiteAjoutee.Nom} - Localisation: {activiteAjoutee.Localisation}");
             }
@@ -595,7 +595,7 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     Nom = NouvelHebergementNom.Trim(),
                     TypeHebergement = NouvelHebergementType?.Trim(),
-                    Adresse = NouvelHebergementAdresse?.Trim(), // NOUVEAU
+                    Adresse = NouvelHebergementAdresse?.Trim(),
                     Cout = NouvelHebergementCout
                 };
 
@@ -609,6 +609,9 @@ namespace TravelPlannMauiApp.ViewModels
                     Hebergements.Add(hebergementAjoute);
                     AnnulerAjoutHebergement();
                 });
+
+                // Marquer comme modifié
+                MarkAsModified();
 
                 Debug.WriteLine($"Hébergement ajouté: {hebergementAjoute.Nom} - Adresse: {hebergementAjoute.Adresse}");
             }
@@ -647,6 +650,10 @@ namespace TravelPlannMauiApp.ViewModels
                     {
                         Activites.Remove(activite);
                     });
+
+                    // Marquer comme modifié
+                    MarkAsModified();
+
                     Debug.WriteLine($"Activité supprimée: {activite.Nom}");
                 }
                 catch (Exception ex)
@@ -685,6 +692,9 @@ namespace TravelPlannMauiApp.ViewModels
                     {
                         Hebergements.Remove(hebergement);
                     });
+
+                    // Marquer comme modifié
+                    MarkAsModified();
 
                     Debug.WriteLine($"Hébergement supprimé: {hebergement.Nom}");
                 }

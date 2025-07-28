@@ -40,43 +40,35 @@ namespace TravelPlannMauiApp.Pages
         {
             try
             {
-                Debug.WriteLine("=== VÉRIFICATION DU BESOIN DE RAFRAÎCHISSEMENT ===");
+                Debug.WriteLine("=== VÉRIFICATION SIMPLE DU BESOIN DE RAFRAÎCHISSEMENT ===");
                 
-                // Vérifier le flag de rafraîchissement
-                bool needsRefresh = Preferences.Get("voyage_list_needs_refresh", false);
-                string currentTimestamp = Preferences.Get("last_voyage_update_timestamp", "");
+                // Vérifier le flag SIMPLE
+                bool forceReload = Preferences.Get("FORCE_VOYAGE_LIST_RELOAD", false);
                 
-                Debug.WriteLine($"Needs refresh flag: {needsRefresh}");
-                Debug.WriteLine($"Current timestamp: {currentTimestamp}");
-                Debug.WriteLine($"Last known timestamp: {_lastUpdateTimestamp}");
+                Debug.WriteLine($"Force reload flag: {forceReload}");
                 
-                // Conditions pour rafraîchir :
-                // 1. Le flag needs_refresh est true
-                // 2. Le timestamp a changé (nouvelle modification)
-                // 3. Première fois qu'on charge la page (_lastUpdateTimestamp vide)
-                
-                bool shouldRefresh = needsRefresh || 
-                                   (!string.IsNullOrEmpty(currentTimestamp) && currentTimestamp != _lastUpdateTimestamp) ||
-                                   string.IsNullOrEmpty(_lastUpdateTimestamp);
-                
-                if (shouldRefresh)
+                if (forceReload)
                 {
-                    Debug.WriteLine("🔄 RAFRAÎCHISSEMENT NÉCESSAIRE - Rechargement des données...");
+                    Debug.WriteLine("🔄 RECHARGEMENT FORCÉ DÉTECTÉ - Rechargement des données...");
                     
                     // Recharger les données depuis la base
                     await _viewModel.LoadVoyagesAsync();
                     
-                    // Mettre à jour le timestamp local
-                    _lastUpdateTimestamp = currentTimestamp;
-                    
                     // Réinitialiser le flag
-                    Preferences.Set("voyage_list_needs_refresh", false);
+                    Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", false);
                     
-                    Debug.WriteLine("✅ Rafraîchissement terminé");
+                    Debug.WriteLine("✅ Rafraîchissement FORCÉ terminé");
                 }
                 else
                 {
-                    Debug.WriteLine("ℹ️ Aucun rafraîchissement nécessaire - données à jour");
+                    Debug.WriteLine("ℹ️ Aucun rafraîchissement forcé nécessaire");
+                    
+                    // Faire un chargement normal si la liste est vide
+                    if (_viewModel.Voyages.Count == 0)
+                    {
+                        Debug.WriteLine("Liste vide - chargement initial");
+                        await _viewModel.LoadVoyagesAsync();
+                    }
                 }
             }
             catch (Exception ex)
@@ -103,9 +95,8 @@ namespace TravelPlannMauiApp.Pages
                 {
                     await _viewModel.LoadVoyagesAsync();
                     
-                    // Mettre à jour le timestamp pour éviter les doubles rechargements
-                    _lastUpdateTimestamp = Preferences.Get("last_voyage_update_timestamp", "");
-                    Preferences.Set("voyage_list_needs_refresh", false);
+                    // Réinitialiser le flag
+                    Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", false);
                 }
             }
             catch (Exception ex)
