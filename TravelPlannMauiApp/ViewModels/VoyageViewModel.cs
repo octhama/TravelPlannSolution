@@ -191,29 +191,31 @@ namespace TravelPlannMauiApp.ViewModels
                     return;
                 }
 
-                var voyageToUpdate = new Voyage
+                // CORRECTION 1: Récupérer le voyage complet avec ses relations
+                var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
+                if (voyageDetails?.Voyage == null)
                 {
-                    VoyageId = voyage.VoyageId,
-                    NomVoyage = voyage.NomVoyage,
-                    Description = voyage.Description,
-                    DateDebut = voyage.DateDebut,
-                    DateFin = voyage.DateFin,
-                    UtilisateurId = voyage.UtilisateurId,
-                    EstComplete = !voyage.EstComplete,
-                    EstArchive = voyage.EstArchive
-                };
+                    await Shell.Current.DisplayAlert("Erreur", "Voyage introuvable", "OK");
+                    return;
+                }
+
+                var voyageToUpdate = voyageDetails.Voyage;
+                voyageToUpdate.EstComplete = !voyageToUpdate.EstComplete;
 
                 if (voyageToUpdate.EstComplete) 
                 {
                     voyageToUpdate.EstArchive = false;
                 }
 
+                // CORRECTION 2: Passer le voyage complet avec ses relations
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // Mise à jour du ViewModel pour déclencher les notifications PropertyChanged
+                // CORRECTION 3: Mise à jour immédiate de l'UI
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     voyageViewModel.UpdateFromVoyage(voyageToUpdate);
+                    // Forcer une mise à jour de l'affichage
+                    OnPropertyChanged(nameof(Voyages));
                 });
                 
                 Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyageToUpdate.EstComplete}, EstArchive: {voyageToUpdate.EstArchive}");
@@ -252,24 +254,26 @@ namespace TravelPlannMauiApp.ViewModels
                     if (!confirm) return;
                 }
 
-                var voyageToUpdate = new Voyage
+                // CORRECTION 1: Récupérer le voyage complet avec ses relations
+                var voyageDetails = await _voyageService.GetVoyageDetailsAsync(voyage.VoyageId);
+                if (voyageDetails?.Voyage == null)
                 {
-                    VoyageId = voyage.VoyageId,
-                    NomVoyage = voyage.NomVoyage,
-                    Description = voyage.Description,
-                    DateDebut = voyage.DateDebut,
-                    DateFin = voyage.DateFin,
-                    UtilisateurId = voyage.UtilisateurId,
-                    EstComplete = voyage.EstComplete,
-                    EstArchive = !voyage.EstArchive
-                };
+                    await Shell.Current.DisplayAlert("Erreur", "Voyage introuvable", "OK");
+                    return;
+                }
+
+                var voyageToUpdate = voyageDetails.Voyage;
+                voyageToUpdate.EstArchive = !voyageToUpdate.EstArchive;
                 
+                // CORRECTION 2: Passer le voyage complet avec ses relations
                 await _voyageService.UpdateVoyageAsync(voyageToUpdate);
                 
-                // Mise à jour du ViewModel pour déclencher les notifications PropertyChanged
+                // CORRECTION 3: Mise à jour immédiate de l'UI
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     voyageViewModel.UpdateFromVoyage(voyageToUpdate);
+                    // Forcer une mise à jour de l'affichage
+                    OnPropertyChanged(nameof(Voyages));
                 });
                 
                 Debug.WriteLine($"Voyage {voyage.NomVoyage} - EstComplete: {voyageToUpdate.EstComplete}, EstArchive: {voyageToUpdate.EstArchive}");
@@ -370,14 +374,18 @@ namespace TravelPlannMauiApp.ViewModels
         }
     }
 
-    // Nouveau ViewModel pour chaque élément de voyage
+    // CORRECTION 4: Amélioration du VoyageItemViewModel
     public class VoyageItemViewModel : INotifyPropertyChanged
     {
         private Voyage _voyage;
+        private bool _estComplete;
+        private bool _estArchive;
 
         public VoyageItemViewModel(Voyage voyage)
         {
             _voyage = voyage ?? throw new ArgumentNullException(nameof(voyage));
+            _estComplete = voyage.EstComplete;
+            _estArchive = voyage.EstArchive;
         }
 
         public Voyage Voyage => _voyage;
@@ -391,38 +399,44 @@ namespace TravelPlannMauiApp.ViewModels
 
         public bool EstComplete 
         { 
-            get => _voyage.EstComplete;
+            get => _estComplete;
             private set
             {
-                if (_voyage.EstComplete != value)
+                if (_estComplete != value)
                 {
+                    _estComplete = value;
                     _voyage.EstComplete = value;
                     OnPropertyChanged();
+                    // Forcer la mise à jour de l'affichage en déclenchant tous les changements liés
+                    OnPropertyChanged(nameof(EstArchive)); // Pour s'assurer que les indicateurs se mettent à jour
                 }
             }
         }
 
         public bool EstArchive 
         { 
-            get => _voyage.EstArchive;
+            get => _estArchive;
             private set
             {
-                if (_voyage.EstArchive != value)
+                if (_estArchive != value)
                 {
+                    _estArchive = value;
                     _voyage.EstArchive = value;
                     OnPropertyChanged();
+                    // Forcer la mise à jour de l'affichage en déclenchant tous les changements liés
+                    OnPropertyChanged(nameof(EstComplete)); // Pour s'assurer que les indicateurs se mettent à jour
                 }
             }
         }
 
         public void UpdateFromVoyage(Voyage updatedVoyage)
         {
+            // Mise à jour avec notification des changements
             EstComplete = updatedVoyage.EstComplete;
             EstArchive = updatedVoyage.EstArchive;
             
-            // Mettre à jour l'objet voyage interne
-            _voyage.EstComplete = updatedVoyage.EstComplete;
-            _voyage.EstArchive = updatedVoyage.EstArchive;
+            // Déclencher une mise à jour complète pour s'assurer que l'UI se rafraîchit
+            OnPropertyChanged(string.Empty); // Met à jour toutes les propriétés
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
