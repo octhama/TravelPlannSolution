@@ -65,7 +65,7 @@
                            ZIndex="2"
                            InputTransparent="False">
     
-            <!-- Bouton Style de carte -->
+            <!-- Bouton Style de carte 
             <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
                    CornerRadius="20"
                    HasShadow="True"
@@ -78,7 +78,7 @@
                         TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
                         FontSize="20"
                         Command="{Binding ToggleMapStyleCommand}"/>
-            </Frame>
+            </Frame>-->
 
             <!-- Bouton Type de vue -->
             <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
