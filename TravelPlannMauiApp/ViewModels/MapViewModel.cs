@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
+using System.Collections.ObjectModel;
 using BU.Services;
 using DAL.DB;
 
@@ -26,6 +27,13 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     private bool _showFilters = false;
     private bool _showMessage = false;
     private string _messageText = "";
+
+    private bool _showPOIManagement = false;
+    private bool _poiTabAccommodations = true;
+    private bool _poiTabActivities = false;
+    private string _poiManagementMessage = "";
+    private ObservableCollection<Hebergement> _accommodationsList = new();
+    private ObservableCollection<Activite> _activitiesList = new();
     
     // Propriétés de localisation sélectionnée
     private string _selectedLocationName = "";
@@ -217,6 +225,69 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
+    public bool ShowPOIManagement
+{
+    get => _showPOIManagement;
+    set
+    {
+        _showPOIManagement = value;
+        OnPropertyChanged();
+    }
+}
+
+public bool POITabAccommodations
+{
+    get => _poiTabAccommodations;
+    set
+    {
+        _poiTabAccommodations = value;
+        OnPropertyChanged();
+    }
+}
+
+public bool POITabActivities
+{
+    get => _poiTabActivities;
+    set
+    {
+        _poiTabActivities = value;
+        OnPropertyChanged();
+    }
+}
+
+public string POIManagementMessage
+{
+    get => _poiManagementMessage;
+    set
+    {
+        _poiManagementMessage = value;
+        OnPropertyChanged();
+    }
+}
+
+public ObservableCollection<Hebergement> AccommodationsList
+{
+    get => _accommodationsList;
+    set
+    {
+        _accommodationsList = value;
+        OnPropertyChanged();
+    }
+}
+
+public ObservableCollection<Activite> ActivitiesList
+{
+    get => _activitiesList;
+    set
+    {
+        _activitiesList = value;
+        OnPropertyChanged();
+    }
+}
+
+public int AccommodationsCount => AccommodationsList?.Count ?? 0;
+public int ActivitiesCount => ActivitiesList?.Count ?? 0;
+
     // Coordonnées par défaut pour Namur, Belgique
     private static readonly Location DefaultLocation = new Location(50.4674, 4.8719); // Namur
     private static readonly MapSpan DefaultRegion = MapSpan.FromCenterAndRadius(DefaultLocation, Distance.FromKilometers(10));
@@ -239,11 +310,17 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
     // Commandes de zoom uniquement (navigation directionnelle supprimée)
     public ICommand ZoomInCommand { get; }
     public ICommand ZoomOutCommand { get; }
+    
+    public ICommand TogglePOIManagementCommand { get; }
+    public ICommand ClosePOIManagementCommand { get; }
+    public ICommand SwitchPOITabCommand { get; }
+    public ICommand DeleteAccommodationCommand { get; }
+    public ICommand DeleteActivityCommand { get; }
 
     #endregion
 
-    public MapViewModel(IVoyageService voyageService, 
-                      IActiviteService activiteService, 
+    public MapViewModel(IVoyageService voyageService,
+                      IActiviteService activiteService,
                       IHebergementService hebergementService,
                       ISessionService sessionService)
     {
@@ -265,13 +342,19 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
         ShowDirectionsCommand = new Command(() => ExecuteShowDirectionsCommand());
         ZoomInCommand = new Command(() => ExecuteZoomInCommand());
         ZoomOutCommand = new Command(() => ExecuteZoomOutCommand());
-        
+
+        TogglePOIManagementCommand = new Command(() => ExecuteTogglePOIManagementCommand());
+        ClosePOIManagementCommand = new Command(() => ExecuteClosePOIManagementCommand());
+        SwitchPOITabCommand = new Command<string>((tab) => ExecuteSwitchPOITabCommand(tab));
+        DeleteAccommodationCommand = new Command<Hebergement>(async (item) => await ExecuteDeleteAccommodationCommand(item));
+        DeleteActivityCommand = new Command<Activite>(async (item) => await ExecuteDeleteActivityCommand(item));
+
         // Initialiser le cancellation token pour les messages
         _messagesCancellationTokenSource = new CancellationTokenSource();
-        
+
         // Définir la région par défaut sur Namur
         _currentRegion = DefaultRegion;
-        
+
         // Charger les données utilisateur de manière asynchrone
         _ = LoadUserDataAsync();
     }
@@ -935,6 +1018,220 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
     #endregion
 
+    
+    #region POI Management Methods
+
+    private void ExecuteTogglePOIManagementCommand()
+    {
+        ShowPOIManagement = !ShowPOIManagement;
+        if (ShowPOIManagement)
+        {
+            // Fermer les autres panels
+            ShowFilters = false;
+            ShowLocationInfo = false;
+            
+            // Charger les données
+            _ = Task.Run(LoadPOIDataAsync);
+            ShowTemporaryMessage("Gestion des lieux");
+        }
+    }
+
+    private void ExecuteClosePOIManagementCommand()
+    {
+        ShowPOIManagement = false;
+        POIManagementMessage = "";
+    }
+
+    private void ExecuteSwitchPOITabCommand(string tab)
+    {
+        switch (tab?.ToLower())
+        {
+            case "accommodations":
+                POITabAccommodations = true;
+                POITabActivities = false;
+                break;
+            case "activities":
+                POITabAccommodations = false;
+                POITabActivities = true;
+                break;
+        }
+    }
+
+    private async Task ExecuteDeleteAccommodationCommand(Hebergement hebergement)
+    {
+        if (hebergement == null) return;
+
+        try
+        {
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Supprimer", 
+                $"Êtes-vous sûr de vouloir supprimer l'hébergement '{hebergement.Nom}' ?", 
+                "Oui", "Non");
+
+            if (confirm)
+            {
+                POIManagementMessage = "Suppression en cours...";
+                
+                await _hebergementService.DeleteHebergementAsync(hebergement.HebergementId);
+                
+                // Mettre à jour les listes
+                AccommodationsList.Remove(hebergement);
+                OnPropertyChanged(nameof(AccommodationsCount));
+                
+                // Supprimer le pin correspondant
+                RemoveAccommodationPin(hebergement);
+                
+                // Recharger les pins de la carte
+                await UpdateMapPins();
+                
+                await ShowTemporaryMessageAsync($"Hébergement '{hebergement.Nom}' supprimé");
+                POIManagementMessage = "";
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression de l'hébergement: {ex.Message}");
+            await ShowTemporaryMessageAsync("Erreur lors de la suppression");
+            POIManagementMessage = "Erreur lors de la suppression";
+        }
+    }
+
+    private async Task ExecuteDeleteActivityCommand(Activite activite)
+    {
+        if (activite == null) return;
+
+        try
+        {
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Supprimer", 
+                $"Êtes-vous sûr de vouloir supprimer l'activité '{activite.Nom}' ?", 
+                "Oui", "Non");
+
+            if (confirm)
+            {
+                POIManagementMessage = "Suppression en cours...";
+                
+                await _activiteService.DeleteActiviteAsync(activite.ActiviteId);
+                
+                // Mettre à jour les listes
+                ActivitiesList.Remove(activite);
+                OnPropertyChanged(nameof(ActivitiesCount));
+                
+                // Supprimer le pin correspondant
+                RemoveActivityPin(activite);
+                
+                // Recharger les pins de la carte
+                await UpdateMapPins();
+                
+                await ShowTemporaryMessageAsync($"Activité '{activite.Nom}' supprimée");
+                POIManagementMessage = "";
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression de l'activité: {ex.Message}");
+            await ShowTemporaryMessageAsync("Erreur lors de la suppression");
+            POIManagementMessage = "Erreur lors de la suppression";
+        }
+    }
+
+    private async Task LoadPOIDataAsync()
+    {
+        try
+        {
+            POIManagementMessage = "Chargement en cours...";
+            
+            // Charger tous les hébergements
+            var hebergements = await _hebergementService.GetAllHebergementsAsync();
+            var activites = await _activiteService.GetAllActivitesAsync();
+            
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                AccommodationsList.Clear();
+                ActivitiesList.Clear();
+                
+                if (hebergements != null)
+                {
+                    foreach (var h in hebergements)
+                    {
+                        AccommodationsList.Add(h);
+                    }
+                }
+                
+                if (activites != null)
+                {
+                    foreach (var a in activites)
+                    {
+                        ActivitiesList.Add(a);
+                    }
+                }
+                
+                OnPropertyChanged(nameof(AccommodationsCount));
+                OnPropertyChanged(nameof(ActivitiesCount));
+                POIManagementMessage = "";
+            });
+            
+            System.Diagnostics.Debug.WriteLine($"Données POI chargées: {AccommodationsCount} hébergements, {ActivitiesCount} activités");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des données POI: {ex.Message}");
+            POIManagementMessage = "Erreur lors du chargement";
+        }
+    }
+
+    private void RemoveAccommodationPin(Hebergement hebergement)
+    {
+        try
+        {
+            var pinToRemove = _accommodationPins.FirstOrDefault(p => p.Label.Contains(hebergement.Nom));
+            if (pinToRemove != null)
+            {
+                _accommodationPins.Remove(pinToRemove);
+                
+                // Supprimer également de la carte si visible
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    if (_mapControl?.Pins.Contains(pinToRemove) == true)
+                    {
+                        _mapControl.Pins.Remove(pinToRemove);
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression du pin hébergement: {ex.Message}");
+        }
+    }
+
+    private void RemoveActivityPin(Activite activite)
+    {
+        try
+        {
+            var pinToRemove = _activityPins.FirstOrDefault(p => p.Label.Contains(activite.Nom));
+            if (pinToRemove != null)
+            {
+                _activityPins.Remove(pinToRemove);
+                
+                // Supprimer également de la carte si visible
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    if (_mapControl?.Pins.Contains(pinToRemove) == true)
+                    {
+                        _mapControl.Pins.Remove(pinToRemove);
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erreur lors de la suppression du pin activité: {ex.Message}");
+        }
+    }
+
+    #endregion
+
     #region Location Services
 
     public async Task<Location> GeocodeLocationAsync(string address)
@@ -948,13 +1245,13 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             }
 
             System.Diagnostics.Debug.WriteLine($"Tentative de géocodage: '{address}'");
-            
+
             // Nettoyer l'adresse
             var cleanAddress = address.Trim();
-            
+
             var locations = await Geocoding.Default.GetLocationsAsync(cleanAddress);
             var location = locations?.FirstOrDefault();
-            
+
             if (location != null)
             {
                 System.Diagnostics.Debug.WriteLine($"Géocodage réussi pour '{cleanAddress}': {location.Latitude:F6}, {location.Longitude:F6}");
@@ -963,7 +1260,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
             else
             {
                 System.Diagnostics.Debug.WriteLine($"Aucun résultat de géocodage pour '{cleanAddress}'");
-                
+
                 // Essayer une version simplifiée de l'adresse
                 var simplifiedAddress = ExtractMainLocation(cleanAddress);
                 if (!string.IsNullOrEmpty(simplifiedAddress) && simplifiedAddress != cleanAddress)
@@ -971,14 +1268,14 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
                     System.Diagnostics.Debug.WriteLine($"Tentative avec adresse simplifiée: '{simplifiedAddress}'");
                     var simplifiedLocations = await Geocoding.Default.GetLocationsAsync(simplifiedAddress);
                     var simplifiedLocation = simplifiedLocations?.FirstOrDefault();
-                    
+
                     if (simplifiedLocation != null)
                     {
                         System.Diagnostics.Debug.WriteLine($"Géocodage réussi avec adresse simplifiée: {simplifiedLocation.Latitude:F6}, {simplifiedLocation.Longitude:F6}");
                         return simplifiedLocation;
                     }
                 }
-                
+
                 return null;
             }
         }
