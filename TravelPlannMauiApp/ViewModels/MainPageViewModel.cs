@@ -6,178 +6,231 @@ using System.Text.Json.Serialization;
 using Refit;
 using BU.Services;
 
-public class MainPageViewModel : INotifyPropertyChanged
+namespace TravelPlannMauiApp.ViewModels
 {
-    private readonly IVoyageService _voyageService;
-    private readonly ISessionService _sessionService;
-    private int _totalVoyages;
-    private int _totalPays;
-    private decimal _totalDepenses;
-    private string _destinationRecommande;
-    private string _meteoDescription;
-    private string _temperature;
-
-    public int TotalVoyages
+    public class MainPageViewModel : INotifyPropertyChanged
     {
-        get => _totalVoyages;
-        set { _totalVoyages = value; OnPropertyChanged(); }
-    }
+        private readonly IVoyageService? _voyageService;
+        private readonly ISessionService? _sessionService;
+        private int _totalVoyages;
+        private int _totalPays;
+        private decimal _totalDepenses;
+        private string _destinationRecommande = "Destination recommandée";
+        private string _meteoDescription = "Ensoleillé";
+        private string _temperature = "22°C";
+        private string _userName = "Utilisateur";
+        private string _meteoIcon = "☀️";
 
-    public int TotalPays
-    {
-        get => _totalPays;
-        set { _totalPays = value; OnPropertyChanged(); }
-    }
+        public int TotalVoyages
+        {
+            get => _totalVoyages;
+            set { _totalVoyages = value; OnPropertyChanged(); }
+        }
 
-    public decimal TotalDepenses
-    {
-        get => _totalDepenses;
-        set { _totalDepenses = value; OnPropertyChanged(); }
-    }
+        public int TotalPays
+        {
+            get => _totalPays;
+            set { _totalPays = value; OnPropertyChanged(); }
+        }
 
-    public string DestinationRecommande
-    {
-        get => _destinationRecommande;
-        set { _destinationRecommande = value; OnPropertyChanged(); }
-    }
+        public decimal TotalDepenses
+        {
+            get => _totalDepenses;
+            set { _totalDepenses = value; OnPropertyChanged(); }
+        }
 
-    public string MeteoDescription
-    {
-        get => _meteoDescription;
-        set { _meteoDescription = value; OnPropertyChanged(); }
-    }
+        public string DestinationRecommande
+        {
+            get => _destinationRecommande;
+            set { _destinationRecommande = value; OnPropertyChanged(); }
+        }
 
-    public string Temperature
-    {
-        get => _temperature;
-        set { _temperature = value; OnPropertyChanged(); }
-    }
+        public string MeteoDescription
+        {
+            get => _meteoDescription;
+            set { _meteoDescription = value; OnPropertyChanged(); }
+        }
 
-    public MainPageViewModel(IVoyageService voyageService, ISessionService sessionService)
-    {
-        _voyageService = voyageService;
-        _sessionService = sessionService;
-        _ = LoadDataAsync();
-    }
+        public string Temperature
+        {
+            get => _temperature;
+            set { _temperature = value; OnPropertyChanged(); }
+        }
 
-    public async Task LoadUserInfoAsync()
+        public string UserName
+        {
+            get => _userName;
+            set { _userName = value; OnPropertyChanged(); }
+        }
+
+        public string MeteoIcon
+        {
+            get => _meteoIcon;
+            set { _meteoIcon = value; OnPropertyChanged(); }
+        }
+
+        public MainPageViewModel(IVoyageService? voyageService, ISessionService? sessionService)
+        {
+            _voyageService = voyageService;
+            _sessionService = sessionService;
+            
+            // Initialiser avec des valeurs par défaut
+            InitializeDefaultValues();
+            
+            // Charger les données asynchrones
+            _ = LoadDataAsync();
+        }
+
+        private void InitializeDefaultValues()
+        {
+            TotalVoyages = 0;
+            TotalPays = 0;
+            TotalDepenses = 0;
+            DestinationRecommande = "Paris, France";
+            MeteoDescription = "Ensoleillé";
+            Temperature = "22°C";
+            UserName = "Voyageur";
+            MeteoIcon = "☀️";
+        }
+
+        public async Task LoadUserInfoAsync()
         {
             try
             {
-                var userId = await _sessionService.GetCurrentUserIdAsync();
-                if (userId.HasValue)
+                if (_sessionService != null)
                 {
-                    // Add logic to load user-specific information here
-                    Debug.WriteLine($"User ID: {userId.Value}");
+                    var userId = await _sessionService.GetCurrentUserIdAsync();
+                    var userName = await _sessionService.GetCurrentUserNameAsync();
+                    
+                    if (userId.HasValue)
+                    {
+                        UserName = userName ?? "Voyageur";
+                        Debug.WriteLine($"User ID: {userId.Value}, Name: {UserName}");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur chargement utilisateur: {ex}");
+                UserName = "Voyageur";
             }
         }
-    public async Task LoadDataAsync()
-    {
-        await LoadUserInfoAsync();
-        await LoadVoyageStatsAsync();
-        await LoadDestinationRecommandeAsync();
-        await LoadMeteoAsync();
-    }
 
-    private async Task LoadVoyageStatsAsync()
-    {
-        try
+        public async Task LoadDataAsync()
         {
-            var userId = await _sessionService.GetCurrentUserIdAsync();
-            if (userId.HasValue)
+            await LoadUserInfoAsync();
+            await LoadVoyageStatsAsync();
+            await LoadDestinationRecommandeAsync();
+            await LoadMeteoAsync();
+        }
+
+        private async Task LoadVoyageStatsAsync()
+        {
+            try
             {
-                var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(userId.Value);
-                TotalVoyages = voyages.Count;
-                TotalPays = voyages.Select(v => v.NomVoyage.Split(',').Last().Trim()).Distinct().Count();
-                TotalDepenses = voyages.Sum(v => v.Hebergements?.Sum(h => h.Cout) ?? 0);
+                if (_sessionService != null && _voyageService != null)
+                {
+                    var userId = await _sessionService.GetCurrentUserIdAsync();
+                    if (userId.HasValue)
+                    {
+                        var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(userId.Value);
+                        TotalVoyages = voyages.Count;
+                        TotalPays = voyages.Select(v => v.NomVoyage.Split(',').LastOrDefault()?.Trim() ?? "").Where(p => !string.IsNullOrEmpty(p)).Distinct().Count();
+                        TotalDepenses = voyages.Sum(v => v.Hebergements?.Sum(h => h.Cout) ?? 0);
+                    }
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Erreur stats voyages: {ex}");
-        }
-    }
-
-    private async Task LoadDestinationRecommandeAsync()
-    {
-        try
-        {
-            var userId = await _sessionService.GetCurrentUserIdAsync();
-            if (userId.HasValue)
+            catch (Exception ex)
             {
-                var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(userId.Value);
-                var voyageRecommande = voyages.FirstOrDefault(v => !v.EstArchive);
-                DestinationRecommande = voyageRecommande?.NomVoyage ?? "Aucune destination recommandée";
+                Debug.WriteLine($"Erreur stats voyages: {ex}");
+                // Garder les valeurs par défaut en cas d'erreur
             }
         }
-        catch (Exception ex)
+
+        private async Task LoadDestinationRecommandeAsync()
         {
-            Debug.WriteLine($"Erreur recommandation: {ex}");
-            DestinationRecommande = "Erreur de chargement";
+            try
+            {
+                if (_sessionService != null && _voyageService != null)
+                {
+                    var userId = await _sessionService.GetCurrentUserIdAsync();
+                    if (userId.HasValue)
+                    {
+                        var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(userId.Value);
+                        var voyageRecommande = voyages.FirstOrDefault(v => !v.EstArchive);
+                        DestinationRecommande = voyageRecommande?.NomVoyage ?? "Paris, France";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur recommandation: {ex}");
+                DestinationRecommande = "Paris, France";
+            }
+        }
+
+        private async Task LoadMeteoAsync()
+        {
+            try
+            {
+                // Pour l'instant, utiliser des données mockées
+                // TODO: Implémenter l'appel API météo réel
+                var random = new Random();
+                var temperatures = new[] { "18°C", "22°C", "25°C", "19°C", "23°C" };
+                var descriptions = new[] { "Ensoleillé", "Nuageux", "Partiellement nuageux", "Pluvieux" };
+                var icons = new[] { "☀️", "☁️", "⛅", "🌧️" };
+                
+                var index = random.Next(descriptions.Length);
+                Temperature = temperatures[random.Next(temperatures.Length)];
+                MeteoDescription = descriptions[index];
+                MeteoIcon = icons[index];
+                
+                await Task.Delay(100); // Simuler un appel réseau
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur météo: {ex}");
+                Temperature = "22°C";
+                MeteoDescription = "Données indisponibles";
+                MeteoIcon = "☀️";
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
-    private async Task LoadMeteoAsync()
+    // Interface pour l'API météo (à implémenter plus tard)
+    [Headers("Content-Type: application/json")]
+    public interface IOpenWeatherApi
     {
-        try
-        {
-            var apiKey = "VOTRE_CLE_API";
-            var ville = DestinationRecommande.Split(',').First().Trim();
-            var api = RestService.For<IOpenWeatherApi>("https://api.openweathermap.org");
-            
-            // Configuration pour System.Text.Json dans Refit
-            var meteo = await api.GetMeteoAsync(ville, apiKey, "fr", "metric");
-
-            Temperature = $"{meteo.Main.Temp}°C";
-            MeteoDescription = meteo.Weather.FirstOrDefault()?.Description ?? "Inconnu";
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Erreur météo: {ex}");
-            Temperature = "N/A";
-            MeteoDescription = "Données indisponibles";
-        }
+        [Get("/data/2.5/weather?q={ville}&appid={apiKey}&lang={lang}&units={units}")]
+        Task<OpenWeatherResponse> GetMeteoAsync(string ville, string apiKey, string lang, string units);
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    // Classes de réponse avec attributs System.Text.Json
+    public class OpenWeatherResponse
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        [JsonPropertyName("main")]
+        public MainInfo Main { get; set; } = new();
+
+        [JsonPropertyName("weather")]
+        public List<WeatherInfo> Weather { get; set; } = new();
     }
-}
 
-// Configuration Refit avec System.Text.Json
-[Headers("Content-Type: application/json")]
-public interface IOpenWeatherApi
-{
-    [Get("/data/2.5/weather?q={ville}&appid={apiKey}&lang={lang}&units={units}")]
-    Task<OpenWeatherResponse> GetMeteoAsync(string ville, string apiKey, string lang, string units);
-}
+    public class MainInfo
+    {
+        [JsonPropertyName("temp")]
+        public decimal Temp { get; set; }
+    }
 
-// Classes de réponse avec attributs System.Text.Json
-public class OpenWeatherResponse
-{
-    [JsonPropertyName("main")]
-    public MainInfo Main { get; set; } = default!;
-
-    [JsonPropertyName("weather")]
-    public List<WeatherInfo> Weather { get; set; } = new();
-}
-
-public class MainInfo
-{
-    [JsonPropertyName("temp")]
-    public decimal Temp { get; set; }
-}
-
-public class WeatherInfo
-{
-    [JsonPropertyName("description")]
-    public string Description { get; set; } = string.Empty;
+    public class WeatherInfo
+    {
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+    }
 }

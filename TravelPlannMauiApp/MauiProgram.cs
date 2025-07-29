@@ -9,7 +9,6 @@ using Microsoft.Maui.Controls.Maps;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
-using Refit;
 using TravelPlannMauiApp.Pages;
 using TravelPlannMauiApp.ViewModels;
 
@@ -63,7 +62,6 @@ public static class MauiProgram
 #endif
         });
 
-
         // Services - IMPORTANT: Tous utilisant IDbContextFactory
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
@@ -81,15 +79,14 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();
-        builder.Services.AddRefitClient<IOpenWeatherApi>(provider => 
-                new RefitSettings {
-                    ContentSerializer = new SystemTextJsonContentSerializer(
-                        new JsonSerializerOptions {
-                            PropertyNameCaseInsensitive = true,
-                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                        })
-                })
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.openweathermap.org"));
+
+        // Configuration HttpClient pour les appels API futurs (optionnel)
+        // Note: Nécessite le package Microsoft.Extensions.Http
+        builder.Services.AddHttpClient("WeatherApi", client =>
+        {
+            client.BaseAddress = new Uri("https://api.openweathermap.org");
+            client.DefaultRequestHeaders.Add("User-Agent", "TravelPlannApp/1.0");
+        });
         
         // Enregistrement des Pages
         builder.Services.AddTransient<MainPage>();

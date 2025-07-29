@@ -2,6 +2,7 @@
 using TravelPlannMauiApp.Pages;
 using TravelPlannMauiApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using BU.Services; // Ajout de cette directive using
 
 namespace TravelPlannMauiApp
 {
@@ -26,13 +27,18 @@ namespace TravelPlannMauiApp
                 {
                     var voyageService = _serviceProvider.GetService<IVoyageService>();
                     var sessionService = _serviceProvider.GetService<ISessionService>();
-                    viewModel = new MainPageViewModel(voyageService, sessionService);
+                    if (voyageService != null && sessionService != null)
+                    {
+                        viewModel = new MainPageViewModel(voyageService, sessionService);
+                    }
                 }
                 BindingContext = viewModel;
             }
-            else
+            
+            // Fallback avec un ViewModel minimal si les services ne sont pas disponibles
+            if (BindingContext == null)
             {
-                BindingContext = new MainPageViewModel(new DefaultVoyageService(), new DefaultSessionService());
+                BindingContext = new MainPageViewModel(null, null);
             }
             
             UpdateTabSelection();
@@ -53,7 +59,7 @@ namespace TravelPlannMauiApp
             // Recharger les informations utilisateur
             if (BindingContext is MainPageViewModel viewModel)
             {
-                viewModel.LoadUserInfoAsync();
+                _ = viewModel.LoadUserInfoAsync();
             }
         }
 
