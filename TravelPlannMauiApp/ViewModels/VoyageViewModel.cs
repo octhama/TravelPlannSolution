@@ -123,10 +123,30 @@ namespace TravelPlannMauiApp.ViewModels
                 return;
             }
 
+            await InternalLoadVoyagesAsync();
+        }
+
+        // NOUVEAU : Méthode pour forcer le rechargement depuis la base de données
+        public async Task ForceReloadFromDatabase()
+        {
+            Debug.WriteLine("=== FORCE RELOAD FROM DATABASE ===");
+            await InternalLoadVoyagesAsync(forceReload: true);
+        }
+
+        // NOUVEAU : Méthode interne consolidée pour le chargement
+        private async Task InternalLoadVoyagesAsync(bool forceReload = false)
+        {
+            if (IsLoading && !forceReload) 
+            {
+                Debug.WriteLine("Chargement déjà en cours - ignoré");
+                return;
+            }
+
             IsLoading = true;
             try
             {
-                Debug.WriteLine("=== DÉBUT RECHARGEMENT OPTIMISÉ VOYAGES ===");
+                string typeChargement = forceReload ? "RECHARGEMENT FORCÉ" : "RECHARGEMENT NORMAL";
+                Debug.WriteLine($"=== DÉBUT {typeChargement} VOYAGES ===");
                 
                 _currentUserId = await GetCurrentUserIdAsync();
                 if (_currentUserId == 0) 
@@ -142,12 +162,12 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 Debug.WriteLine($"Nombre de voyages récupérés de la DB: {voyages?.Count ?? 0}");
                 
-                // NOUVEAU : Mise à jour optimisée sur le thread principal
+                // Mise à jour FORCÉE sur le thread principal
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Debug.WriteLine("Mise à jour optimisée de la collection...");
+                    Debug.WriteLine("Mise à jour FORCÉE de la collection...");
                     
-                    // Vider la collection existante
+                    // TOUJOURS vider la collection existante
                     Voyages.Clear();
                     
                     if (voyages != null && voyages.Any())
@@ -166,11 +186,12 @@ namespace TravelPlannMauiApp.ViewModels
                     
                     Debug.WriteLine($"Collection mise à jour - {Voyages.Count} voyages dans la liste");
                     
-                    // Forcer la notification de changement de la collection
+                    // Forcer PLUSIEURS notifications de changement
                     OnPropertyChanged(nameof(Voyages));
+                    OnPropertyChanged(); // Notification générale
                 });
                 
-                Debug.WriteLine($"=== RECHARGEMENT TERMINÉ - {Voyages.Count} voyages affichés ===");
+                Debug.WriteLine($"=== {typeChargement} TERMINÉ - {Voyages.Count} voyages affichés ===");
             }
             catch (Exception ex)
             {
@@ -198,6 +219,10 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
                 Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD défini");
+                
+                // NOUVEAU : Envoyer aussi un message pour déclencher le rafraîchissement immédiatement
+                MessagingCenter.Send<object>(this, "RefreshVoyageList");
+                Debug.WriteLine("Message RefreshVoyageList envoyé");
             }
             catch (Exception ex)
             {
@@ -241,7 +266,7 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 Debug.WriteLine($"Voyage {voyage.NomVoyage} mis à jour - Nouveau statut Complete: {voyageToUpdate.EstComplete}");
                 
-                // NOUVEAU : Mise à jour immédiate de l'item dans la collection
+                // Mise à jour immédiate de l'item dans la collection
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     voyageViewModel.UpdateFromVoyage(voyageToUpdate);
@@ -303,7 +328,7 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 Debug.WriteLine($"Voyage {voyage.NomVoyage} mis à jour - Nouveau statut Archive: {voyageToUpdate.EstArchive}");
                 
-                // NOUVEAU : Mise à jour immédiate de l'item dans la collection
+                // Mise à jour immédiate de l'item dans la collection
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     voyageViewModel.UpdateFromVoyage(voyageToUpdate);
@@ -402,20 +427,6 @@ namespace TravelPlannMauiApp.ViewModels
         public async Task AddVoyageAsync()
         {
             await Shell.Current.GoToAsync(nameof(AddVoyagePage));
-        }
-
-        // Méthode pour nettoyer le flag de rechargement
-        public void ClearForceReloadFlag()
-        {
-            try
-            {
-                Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", false);
-                Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD nettoyé");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Erreur lors du nettoyage du flag: {ex}");
-            }
         }
     }
 

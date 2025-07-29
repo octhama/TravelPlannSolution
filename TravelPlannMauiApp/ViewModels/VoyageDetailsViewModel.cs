@@ -330,7 +330,11 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 Debug.WriteLine("=== DÉFINITION DU FLAG DE RECHARGEMENT FORCÉ ===");
                 Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
-                Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD défini");
+                
+                // NOUVEAU : Envoyer un message pour déclencher le rafraîchissement immédiatement
+                MessagingCenter.Send<object>(this, "RefreshVoyageList");
+                
+                Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD défini et message envoyé");
             }
             catch (Exception ex)
             {

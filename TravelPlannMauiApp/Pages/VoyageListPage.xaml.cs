@@ -6,14 +6,20 @@ namespace TravelPlannMauiApp.Pages
     public partial class VoyageListPage : ContentPage
     {
         private readonly VoyageViewModel _viewModel;
-        private string _lastUpdateTimestamp = "";
 
         public VoyageListPage(VoyageViewModel viewModel)
         {
             InitializeComponent();
             BindingContext = _viewModel = viewModel;
+            
+            // S'abonner aux messages de rafraîchissement
+            MessagingCenter.Subscribe<object>(this, "RefreshVoyageList", async (sender) =>
+            {
+                Debug.WriteLine("=== MESSAGE REFRESH REÇU ===");
+                await RefreshVoyageListFromMessage();
+            });
         }
-        
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -22,11 +28,8 @@ namespace TravelPlannMauiApp.Pages
             {
                 Debug.WriteLine("=== OnAppearing - VoyageListPage ===");
                 
-                if (BindingContext is VoyageViewModel viewModel)
-                {
-                    // NOUVEAU : Vérifier si un rafraîchissement est nécessaire
-                    await CheckAndRefreshIfNeeded();
-                }
+                // TOUJOURS vérifier le flag et rafraîchir si nécessaire
+                await CheckAndForceRefreshIfNeeded();
             }
             catch (Exception ex)
             {
@@ -35,35 +38,35 @@ namespace TravelPlannMauiApp.Pages
             }
         }
 
-        // NOUVEAU : Méthode pour vérifier et rafraîchir si nécessaire
-        private async Task CheckAndRefreshIfNeeded()
+        // NOUVEAU : Méthode qui FORCE systématiquement le rechargement si flag présent
+        private async Task CheckAndForceRefreshIfNeeded()
         {
             try
             {
-                Debug.WriteLine("=== VÉRIFICATION SIMPLE DU BESOIN DE RAFRAÎCHISSEMENT ===");
+                Debug.WriteLine("=== VÉRIFICATION SYSTÉMATIQUE DU FLAG ===");
                 
-                // Vérifier le flag SIMPLE
+                // Vérifier le flag
                 bool forceReload = Preferences.Get("FORCE_VOYAGE_LIST_RELOAD", false);
                 
                 Debug.WriteLine($"Force reload flag: {forceReload}");
                 
                 if (forceReload)
                 {
-                    Debug.WriteLine("🔄 RECHARGEMENT FORCÉ DÉTECTÉ - Rechargement des données...");
+                    Debug.WriteLine("🔄 FLAG DÉTECTÉ - RECHARGEMENT FORCÉ IMMÉDIAT");
                     
-                    // Recharger les données depuis la base
-                    await _viewModel.LoadVoyagesAsync();
-                    
-                    // Réinitialiser le flag
+                    // Réinitialiser le flag IMMÉDIATEMENT pour éviter les boucles
                     Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", false);
                     
-                    Debug.WriteLine("✅ Rafraîchissement FORCÉ terminé");
+                    // Forcer le rechargement depuis la base de données
+                    await _viewModel.ForceReloadFromDatabase();
+                    
+                    Debug.WriteLine("✅ Rechargement forcé terminé");
                 }
                 else
                 {
-                    Debug.WriteLine("ℹ️ Aucun rafraîchissement forcé nécessaire");
+                    Debug.WriteLine("ℹ️ Pas de flag - chargement normal si nécessaire");
                     
-                    // Faire un chargement normal si la liste est vide
+                    // Chargement normal si la liste est vide
                     if (_viewModel.Voyages.Count == 0)
                     {
                         Debug.WriteLine("Liste vide - chargement initial");
@@ -73,9 +76,41 @@ namespace TravelPlannMauiApp.Pages
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Erreur lors de la vérification du rafraîchissement: {ex}");
-                // En cas d'erreur, faire un rechargement complet par sécurité
+                Debug.WriteLine($"Erreur lors de la vérification: {ex}");
+                // En cas d'erreur, faire un rechargement de sécurité
                 await _viewModel.LoadVoyagesAsync();
+            }
+        }
+
+        // NOUVEAU : Méthode appelée par les messages
+        private async Task RefreshVoyageListFromMessage()
+        {
+            try
+            {
+                Debug.WriteLine("=== RAFRAÎCHISSEMENT VIA MESSAGE ===");
+                await _viewModel.ForceReloadFromDatabase();
+                Debug.WriteLine("✅ Rafraîchissement via message terminé");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur rafraîchissement via message: {ex}");
+            }
+        }
+
+        // Méthode publique pour forcer le rechargement
+        public async Task ForceRefreshAsync()
+        {
+            try
+            {
+                Debug.WriteLine("=== ForceRefreshAsync - Rechargement public ===");
+                if (_viewModel != null)
+                {
+                    await _viewModel.ForceReloadFromDatabase();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur ForceRefreshAsync: {ex}");
             }
         }
 
@@ -85,43 +120,16 @@ namespace TravelPlannMauiApp.Pages
             Debug.WriteLine("=== OnDisappearing - VoyageListPage ===");
         }
 
-        // NOUVEAU : Méthode publique pour forcer le rechargement immédiat
-        public async Task ForceRefreshAsync()
+        // Nettoyage des abonnements
+        protected override void OnBindingContextChanged()
         {
-            try
-            {
-                Debug.WriteLine("=== ForceRefreshAsync - Rechargement forcé ===");
-                if (_viewModel != null)
-                {
-                    await _viewModel.LoadVoyagesAsync();
-                    
-                    // Réinitialiser le flag
-                    Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", false);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Erreur ForceRefreshAsync: {ex}");
-            }
+            base.OnBindingContextChanged();
         }
 
-        // NOUVEAU : Méthode pour rafraîchir manuellement (Pull-to-refresh)
-        private async void OnRefreshRequested(object sender, EventArgs e)
+        // NOUVEAU : Méthode pour nettoyer les abonnements
+        ~VoyageListPage()
         {
-            try
-            {
-                Debug.WriteLine("=== Rafraîchissement manuel demandé ===");
-                
-                if (_viewModel != null)
-                {
-                    await _viewModel.LoadVoyagesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Erreur lors du rafraîchissement manuel: {ex}");
-                await DisplayAlert("Erreur", "Erreur lors du rafraîchissement", "OK");
-            }
+            MessagingCenter.Unsubscribe<object>(this, "RefreshVoyageList");
         }
     }
 }
