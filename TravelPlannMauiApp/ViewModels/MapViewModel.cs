@@ -1018,7 +1018,6 @@ public int ActivitiesCount => ActivitiesList?.Count ?? 0;
 
     #endregion
 
-    
     #region POI Management Methods
 
     private void ExecuteTogglePOIManagementCommand()
