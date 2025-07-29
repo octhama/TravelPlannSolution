@@ -2111,7 +2111,7 @@ public async Task CenterOnPinsAsync(List<Pin> pins, double paddingKm = 2)
                 UserLocation = _userLocation != null ? 
                     $"{_userLocation.Latitude:F4},{_userLocation.Longitude:F4}" : 
                     "Non définie",
-                MapPinsCount = _isMapInitialized ? _mapControl?.Pins.Count ?? 0 : 0
+                MapPinsCount = _isMapInitialized ? (_mapControl?.Pins.Count ?? 0) : 0
             };
 
             System.Diagnostics.Debug.WriteLine($"=== État MapViewModel ===");
