@@ -1,3 +1,7 @@
+using System.Windows.Input;
+using BU.Services;
+using DAL.DB;
+
 namespace TravelPlannMauiApp.ViewModels;
 
 public class LoginViewModel : BaseViewModel
@@ -20,14 +24,14 @@ public class LoginViewModel : BaseViewModel
         
         try
         {
-            // Utilisation des méthodes CreateCommand du BaseViewModel
+            // Utiliser les méthodes CreateCommand du BaseViewModel
             LoginCommand = CreateCommand(LoginAsync, CanLogin);
             RegisterCommand = CreateCommand(NavigateToRegisterAsync);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Erreur lors de la création des commandes: {ex}");
-            // Création des commandes vides pour éviter les erreurs
+            // Créer des commandes vides pour éviter les erreurs
             LoginCommand = new Command(() => { });
             RegisterCommand = new Command(() => { });
         }
@@ -97,8 +101,8 @@ public class LoginViewModel : BaseViewModel
             {
                 System.Diagnostics.Debug.WriteLine($"Connexion réussie pour: {utilisateur.Prenom} {utilisateur.Nom}");
                 System.Diagnostics.Debug.WriteLine($"ID utilisateur: {utilisateur.UtilisateurId}");
-
-                // Utilisation du SessionService si disponible
+                
+                // Utiliser le SessionService si disponible
                 if (_sessionService != null)
                 {
                     try
@@ -120,8 +124,8 @@ public class LoginViewModel : BaseViewModel
                 }
                 
                 System.Diagnostics.Debug.WriteLine("Navigation vers MainPage...");
-
-                // Navigation vers la page principale
+                
+                // Naviguer vers la page principale
                 await Shell.Current.GoToAsync("//MainPage");
             }
             else
@@ -172,7 +176,7 @@ public class LoginViewModel : BaseViewModel
 
     private async Task SaveUserSessionManually(Utilisateur utilisateur)
     {
-        // Sauvegarde de l'utilisateur connecté avec gestion d'erreur SecureStorage
+        // Sauvegarder l'utilisateur connecté avec gestion d'erreur SecureStorage
         try
         {
             await SecureStorage.SetAsync("current_user_id", utilisateur.UtilisateurId.ToString());
@@ -183,7 +187,7 @@ public class LoginViewModel : BaseViewModel
         {
             System.Diagnostics.Debug.WriteLine($"Erreur SecureStorage: {secureStorageEx.Message}");
             
-            // Fallback vers Preferences
+            // Alternative: utiliser Preferences comme fallback
             try
             {
                 Preferences.Set("current_user_id", utilisateur.UtilisateurId.ToString());

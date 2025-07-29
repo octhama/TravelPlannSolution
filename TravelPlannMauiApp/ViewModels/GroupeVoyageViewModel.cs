@@ -1,3 +1,8 @@
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+using BU.Services;
+using DAL.DB;
+
 namespace TravelPlannMauiApp.ViewModels;
 
 public class GroupeVoyageViewModel : BaseViewModel

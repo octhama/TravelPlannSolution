@@ -1,3 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using Xamarin.Essentials;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
 namespace BU.Services;
 
 public class SettingsService : ISettingsService

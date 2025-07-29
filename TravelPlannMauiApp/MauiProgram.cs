@@ -1,4 +1,18 @@
-﻿namespace TravelPlannMauiApp;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using BU.Services;
+using DAL.DB;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Controls.Maps;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
+using TravelPlannMauiApp.Pages;
+using TravelPlannMauiApp.ViewModels;
+
+namespace TravelPlannMauiApp;
 
 public static class MauiProgram
 {

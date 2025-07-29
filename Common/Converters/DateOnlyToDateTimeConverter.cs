@@ -1,3 +1,8 @@
+using System.Globalization;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System;
+
 namespace Common.Converters
 {
     public class DateOnlyToDateTimeConverter : IValueConverter

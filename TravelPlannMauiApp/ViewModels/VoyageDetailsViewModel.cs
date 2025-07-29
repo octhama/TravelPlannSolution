@@ -1,3 +1,12 @@
+using BU.Services;
+using DAL.DB;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Diagnostics;
+
 namespace TravelPlannMauiApp.ViewModels
 {
     public class VoyageDetailsViewModel : BaseViewModel
@@ -314,7 +323,7 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        // Méthode pour notifier le rafraîchissement
+        // NOUVEAU: Méthode simple et efficace pour notifier le rafraîchissement
         private void SetForceReloadFlag()
         {
             try
@@ -493,7 +502,7 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        // Méthode pour marquer qu'il y a eu des changements (pour ajouts/suppressions)
+        // NOUVEAU: Méthode pour marquer qu'il y a eu des changements (pour ajouts/suppressions)
         private void MarkAsModified()
         {
             SetForceReloadFlag();

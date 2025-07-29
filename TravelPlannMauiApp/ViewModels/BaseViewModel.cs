@@ -1,3 +1,8 @@
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using System.Diagnostics;
+
 namespace TravelPlannMauiApp.ViewModels
 {
     public abstract class BaseViewModel : INotifyPropertyChanged

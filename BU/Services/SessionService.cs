@@ -1,3 +1,11 @@
+using DAL.DB;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xamarin.Essentials;
+
+
 namespace BU.Services;
 
 public class SessionService : ISessionService
@@ -123,7 +131,7 @@ public class SessionService : ISessionService
     public async Task ClearSessionAsync()
     {
         System.Diagnostics.Debug.WriteLine("=== NETTOYAGE SESSION ===");
-        
+
         _currentUserId = null;
         _currentUserName = null;
 
@@ -176,13 +184,13 @@ public class SessionService : ISessionService
     {
         var userId = await GetCurrentUserIdAsync();
         var userName = await GetCurrentUserNameAsync();
-        
+
         if (!userId.HasValue)
             return null;
-            
-        return new Utilisateur 
-        { 
-            UtilisateurId = userId.Value, 
+
+        return new Utilisateur
+        {
+            UtilisateurId = userId.Value,
             Nom = userName ?? "Utilisateur"
         };
     }

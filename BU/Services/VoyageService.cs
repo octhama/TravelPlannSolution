@@ -1,3 +1,11 @@
+﻿using DAL.DB;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using BU.Entities;
+
 ﻿namespace BU.Services
 {
     public class VoyageService : IVoyageService
@@ -10,7 +18,7 @@
         {
             _context = context;
         }
-        
+
         public async Task<Voyage> GetVoyageByIdAsync(int voyageId)
         {
             return await _context.Voyages
@@ -51,28 +59,28 @@
                 throw;
             }
         }
-        
+
         public async Task<List<Voyage>> GetVoyagesByUtilisateurAsync(int utilisateurId)
         {
             try
             {
                 Debug.WriteLine($"Recherche des voyages pour utilisateur ID: {utilisateurId}");
-                
+
                 var voyages = await _context.Voyages
                     .Include(v => v.Activites)
                     .Include(v => v.Hebergements)
                     .Where(v => v.UtilisateurId == utilisateurId)
                     .OrderByDescending(v => v.VoyageId)
                     .ToListAsync();
-                    
+
                 Debug.WriteLine($"Requête exécutée, {voyages.Count} voyages trouvés");
-                
+
                 foreach (var voyage in voyages)
                 {
                     Debug.WriteLine($"Voyage trouvé: ID={voyage.VoyageId}, Nom={voyage.NomVoyage}, " +
                                 $"UtilisateurId={voyage.UtilisateurId}, Complete={voyage.EstComplete}, Archive={voyage.EstArchive}");
                 }
-                
+
                 return voyages;
             }
             catch (Exception ex)
@@ -81,7 +89,7 @@
                 Debug.WriteLine($"StackTrace: {ex.StackTrace}");
                 throw;
             }
-        }    
+        }
 
         public async Task AddVoyageAsync(Voyage voyage)
         {
@@ -123,7 +131,7 @@
                         if (voyage.Activites != null && voyage.Activites.Any())
                         {
                             Debug.WriteLine("=== Gestion des activités ===");
-                            
+
                             // Récupérer les IDs des activités à associer
                             var activiteIds = voyage.Activites.Select(a => a.ActiviteId).ToList();
                             Debug.WriteLine($"IDs des activités: {string.Join(", ", activiteIds)}");
@@ -159,7 +167,7 @@
                         if (voyage.Hebergements != null && voyage.Hebergements.Any())
                         {
                             Debug.WriteLine("=== Gestion des hébergements ===");
-                            
+
                             // Récupérer les IDs des hébergements à associer
                             var hebergementIds = voyage.Hebergements.Select(h => h.HebergementId).ToList();
                             Debug.WriteLine($"IDs des hébergements: {string.Join(", ", hebergementIds)}");
@@ -203,12 +211,12 @@
                         Debug.WriteLine($"Message: {ex.Message}");
                         Debug.WriteLine($"Type: {ex.GetType().Name}");
                         Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                        
+
                         if (ex.InnerException != null)
                         {
                             Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
                         }
-                        
+
                         await transaction.RollbackAsync();
                         throw;
                     }
@@ -222,13 +230,13 @@
                 Debug.WriteLine($"Message: {ex.Message}");
                 Debug.WriteLine($"Type: {ex.GetType().Name}");
                 Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                
+
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     Debug.WriteLine($"Inner exception type: {ex.InnerException.GetType().Name}");
                 }
-                
+
                 throw;
             }
         }
@@ -242,7 +250,7 @@
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         // Charger l'entité existante avec tracking activé
@@ -251,7 +259,7 @@
                             .Include(v => v.Hebergements)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyage.VoyageId);
 
-                        if (existingVoyage == null) 
+                        if (existingVoyage == null)
                         {
                             throw new InvalidOperationException($"Voyage avec ID {voyage.VoyageId} introuvable");
                         }
@@ -267,7 +275,7 @@
                         // Vider les collections existantes
                         existingVoyage.Activites.Clear();
                         existingVoyage.Hebergements.Clear();
-                        
+
                         // Sauvegarder pour supprimer les relations existantes
                         await _context.SaveChangesAsync();
 
@@ -300,7 +308,7 @@
 
                         await _context.SaveChangesAsync();
                         await transaction.CommitAsync();
-                        
+
                         Debug.WriteLine($"Voyage {voyage.VoyageId} mis à jour avec succès");
                     }
                     catch
@@ -309,7 +317,7 @@
                         throw;
                     }
                 });
-                
+
                 _cachedVoyages = null;
             }
             catch (Exception ex)
@@ -318,7 +326,7 @@
                 throw;
             }
         }
-        
+
         public async Task<VoyageDetails> GetVoyageDetails(int voyageId)
         {
             return await GetVoyageDetailsAsync(voyageId);
@@ -358,7 +366,7 @@
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         // Chercher si l'activité existe déjà
@@ -382,7 +390,7 @@
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
-                        
+
                         if (voyage != null && !voyage.Activites.Any(a => a.ActiviteId == existingActivite.ActiviteId))
                         {
                             voyage.Activites.Add(existingActivite);
@@ -397,7 +405,7 @@
                         throw;
                     }
                 });
-                
+
                 _cachedVoyages = null;
             }
             catch (Exception ex)
@@ -415,7 +423,7 @@
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         // Chercher si l'hébergement existe déjà
@@ -440,7 +448,7 @@
                         var voyage = await _context.Voyages
                             .Include(v => v.Hebergements)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
-                        
+
                         if (voyage != null && !voyage.Hebergements.Any(h => h.HebergementId == existingHebergement.HebergementId))
                         {
                             voyage.Hebergements.Add(existingHebergement);
@@ -455,7 +463,7 @@
                         throw;
                     }
                 });
-                
+
                 _cachedVoyages = null;
             }
             catch (Exception ex)
@@ -473,13 +481,13 @@
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         var voyage = await _context.Voyages
                             .Include(v => v.Activites)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
-                        
+
                         if (voyage != null)
                         {
                             var activite = voyage.Activites.FirstOrDefault(a => a.ActiviteId == activiteId);
@@ -515,13 +523,13 @@
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         var voyage = await _context.Voyages
                             .Include(v => v.Hebergements)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
-                        
+
                         if (voyage != null)
                         {
                             var hebergement = voyage.Hebergements.FirstOrDefault(h => h.HebergementId == hebergementId);
@@ -557,7 +565,7 @@
                 await strategy.ExecuteAsync(async () =>
                 {
                     using var transaction = await _context.Database.BeginTransactionAsync();
-                    
+
                     try
                     {
                         // Charger l'entité existante avec toutes ses relations
@@ -611,7 +619,7 @@
                         // 6. Valider la transaction
                         await transaction.CommitAsync();
                         _cachedVoyages = null;
-                        
+
                         Debug.WriteLine($"Voyage {voyageId} supprimé avec succès");
                     }
                     catch (Exception ex)
@@ -625,19 +633,19 @@
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur lors de la suppression du voyage {voyageId}: {ex}");
-                
+
                 var errorDetails = new List<string> { ex.Message };
-                
+
                 var currentEx = ex.InnerException;
                 while (currentEx != null)
                 {
                     errorDetails.Add(currentEx.Message);
                     currentEx = currentEx.InnerException;
                 }
-                
+
                 var fullErrorMessage = string.Join(" -> ", errorDetails);
                 Debug.WriteLine($"Détails complets de l'erreur: {fullErrorMessage}");
-                
+
                 throw new InvalidOperationException($"Impossible de supprimer le voyage: {fullErrorMessage}", ex);
             }
         }

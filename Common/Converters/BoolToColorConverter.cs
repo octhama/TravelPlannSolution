@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Common.Converters
 {
     public class BoolToColorConverter : IValueConverter

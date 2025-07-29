@@ -1,4 +1,10 @@
-﻿namespace TravelPlannMauiApp
+﻿using Microsoft.Maui.Controls;
+using TravelPlannMauiApp.Pages;
+using TravelPlannMauiApp.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using BU.Services;
+
+namespace TravelPlannMauiApp
 {
     public partial class MainPage : ContentPage
     {

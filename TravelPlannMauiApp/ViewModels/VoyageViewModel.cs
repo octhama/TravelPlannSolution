@@ -1,3 +1,12 @@
+using BU.Services;
+using DAL.DB;
+using System.Collections.ObjectModel;
+using System.Text.Json;
+using System.Windows.Input;
+using TravelPlannMauiApp.Pages;
+using System.Diagnostics;
+using System.ComponentModel;
+
 namespace TravelPlannMauiApp.ViewModels
 {
     public class VoyageViewModel : BaseViewModel

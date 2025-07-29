@@ -1,3 +1,10 @@
+using DAL.DB;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
 namespace BU.Services;
 
 public class UtilisateurService : IUtilisateurService
@@ -77,12 +84,12 @@ public class UtilisateurService : IUtilisateurService
             Debug.WriteLine($"ERREUR dans AuthenticateAsync: {ex.Message}");
             Debug.WriteLine($"Type d'exception: {ex.GetType().Name}");
             Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-            
+
             if (ex.InnerException != null)
             {
                 Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
             }
-            
+
             throw;
         }
         finally
@@ -96,7 +103,7 @@ public class UtilisateurService : IUtilisateurService
         try
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
-            
+
             if (await EmailExistsAsync(email))
             {
                 throw new InvalidOperationException("Cette adresse email est déjà utilisée.");

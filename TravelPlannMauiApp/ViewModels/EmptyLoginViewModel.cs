@@ -1,3 +1,6 @@
+using System.Windows.Input;
+
+
 namespace TravelPlannMauiApp.ViewModels;
 // ViewModel de secours pour éviter les crashs
 public class EmptyLoginViewModel : BaseViewModel

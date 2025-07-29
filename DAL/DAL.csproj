@@ -23,11 +23,5 @@
     <!-- Reference the net8.0 target of Common for console apps -->
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
+  
 </Project>

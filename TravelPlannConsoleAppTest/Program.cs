@@ -1,4 +1,10 @@
-﻿namespace TravelPlannConsoleAppTest;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Linq;
+
+namespace TravelPlannConsoleAppTest;
 
 internal class Program
 {

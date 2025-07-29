@@ -1,3 +1,8 @@
+using System.Globalization;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System;
+
 namespace Common.Converters
 {
     public class StatusToColorConverter : IValueConverter
@@ -12,7 +17,7 @@ namespace Common.Converters
             {
                 return status ? Color.FromArgb("#FF9800") : Color.FromArgb("#4CAF50"); // Orange si archivé, Vert sinon
             }
-            
+
             // Pour la complétion (défaut)
             return status ? Color.FromArgb("#4CAF50") : Color.FromArgb("#FF9800"); // Vert si complet, Orange sinon
         }

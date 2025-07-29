@@ -1,3 +1,10 @@
+using DAL.DB;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
 namespace BU.Services
 {
     public class ActiviteService : IActiviteService
@@ -26,14 +33,14 @@ namespace BU.Services
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Recherche des activités pour le voyage {voyageId}");
-                
+
                 // Utiliser la relation many-to-many via la table ActiviteVoyage
                 var activites = await _context.Activites
                     .Where(a => a.Voyages.Any(v => v.VoyageId == voyageId))
                     .ToListAsync();
-                
+
                 System.Diagnostics.Debug.WriteLine($"Trouvé {activites?.Count() ?? 0} activités pour le voyage {voyageId}");
-                
+
                 return activites ?? new List<Activite>();
             }
             catch (Exception ex)

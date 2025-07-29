@@ -1,5 +1,11 @@
+using System.Globalization;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System;
+
 namespace Common.Converters
-{ public class BoolToTextColorConverter : IValueConverter
+{
+    public class BoolToTextColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

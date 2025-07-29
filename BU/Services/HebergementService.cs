@@ -1,3 +1,10 @@
+using DAL.DB;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
 namespace BU.Services
 {
     public class HebergementService : IHebergementService
@@ -26,14 +33,14 @@ namespace BU.Services
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Recherche des hébergements pour le voyage {voyageId}");
-                
+
                 // Utiliser la relation many-to-many via la table HebergementVoyage
                 var hebergements = await _context.Hebergements
                     .Where(h => h.Voyages.Any(v => v.VoyageId == voyageId))
                     .ToListAsync();
 
                 System.Diagnostics.Debug.WriteLine($"Trouvé {hebergements?.Count() ?? 0} hébergements pour le voyage {voyageId}");
-                
+
                 return hebergements ?? new List<Hebergement>();
             }
             catch (Exception ex)

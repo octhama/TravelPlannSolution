@@ -666,229 +666,6 @@
           }
         }
       },
-      "Microsoft.Maui.Controls/8.0.14": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Maui.Controls.Build.Tasks": "8.0.14",
-          "Microsoft.Maui.Controls.Core": "8.0.14",
-          "Microsoft.Maui.Controls.Xaml": "8.0.14",
-          "Microsoft.Maui.Resizetizer": "8.0.14"
-        }
-      },
-      "Microsoft.Maui.Controls.Build.Tasks/8.0.14": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Maui.Controls.Core": "8.0.14",
-          "Microsoft.Maui.Controls.Xaml": "8.0.14"
-        },
-        "build": {
-          "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.props": {},
-          "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.targets": {}
-        }
-      },
-      "Microsoft.Maui.Controls.Core/8.0.14": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration": "8.0.0",
-          "Microsoft.Extensions.DependencyInjection": "8.0.0",
-          "Microsoft.Extensions.Logging": "8.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
-          "Microsoft.Maui.Core": "8.0.14"
-        },
-        "compile": {
-          "lib/net8.0/Microsoft.Maui.Controls.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.Maui.Controls.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "resource": {
-          "lib/net8.0/ar/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ar"
-          },
-          "lib/net8.0/ca/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ca"
-          },
-          "lib/net8.0/cs/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "cs"
-          },
-          "lib/net8.0/da/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "da"
-          },
-          "lib/net8.0/de/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "de"
-          },
-          "lib/net8.0/el/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "el"
-          },
-          "lib/net8.0/es/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "es"
-          },
-          "lib/net8.0/fi/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "fi"
-          },
-          "lib/net8.0/fr/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "fr"
-          },
-          "lib/net8.0/he/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "he"
-          },
-          "lib/net8.0/hi/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "hi"
-          },
-          "lib/net8.0/hr/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "hr"
-          },
-          "lib/net8.0/hu/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "hu"
-          },
-          "lib/net8.0/id/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "id"
-          },
-          "lib/net8.0/it/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "it"
-          },
-          "lib/net8.0/ja/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ja"
-          },
-          "lib/net8.0/ko/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ko"
-          },
-          "lib/net8.0/ms/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ms"
-          },
-          "lib/net8.0/nb/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "nb"
-          },
-          "lib/net8.0/nl/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "nl"
-          },
-          "lib/net8.0/pl/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "pl"
-          },
-          "lib/net8.0/pt-BR/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "pt-BR"
-          },
-          "lib/net8.0/pt/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "pt"
-          },
-          "lib/net8.0/ro/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ro"
-          },
-          "lib/net8.0/ru/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "ru"
-          },
-          "lib/net8.0/sk/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "sk"
-          },
-          "lib/net8.0/sv/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "sv"
-          },
-          "lib/net8.0/th/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "th"
-          },
-          "lib/net8.0/tr/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "tr"
-          },
-          "lib/net8.0/uk/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "uk"
-          },
-          "lib/net8.0/vi/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "vi"
-          },
-          "lib/net8.0/zh-HK/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "zh-HK"
-          },
-          "lib/net8.0/zh-Hans/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "zh-Hans"
-          },
-          "lib/net8.0/zh-Hant/Microsoft.Maui.Controls.resources.dll": {
-            "locale": "zh-Hant"
-          }
-        }
-      },
-      "Microsoft.Maui.Controls.Xaml/8.0.14": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration": "8.0.0",
-          "Microsoft.Maui.Controls.Core": "8.0.14",
-          "Microsoft.Maui.Core": "8.0.14"
-        },
-        "compile": {
-          "lib/net8.0/Microsoft.Maui.Controls.Xaml.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.Maui.Controls.Xaml.dll": {
-            "related": ".pdb;.xml"
-          }
-        }
-      },
-      "Microsoft.Maui.Core/8.0.14": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration": "8.0.0",
-          "Microsoft.Extensions.DependencyInjection": "8.0.0",
-          "Microsoft.Extensions.Logging": "8.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
-          "Microsoft.Maui.Essentials": "8.0.14",
-          "Microsoft.Maui.Graphics": "8.0.14"
-        },
-        "compile": {
-          "lib/net8.0/Microsoft.Maui.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.Maui.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "build": {
-          "buildTransitive/Microsoft.Maui.Core.props": {},
-          "buildTransitive/Microsoft.Maui.Core.targets": {}
-        }
-      },
-      "Microsoft.Maui.Essentials/8.0.14": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Maui.Graphics": "8.0.14"
-        },
-        "compile": {
-          "lib/net8.0/Microsoft.Maui.Essentials.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.Maui.Essentials.dll": {
-            "related": ".pdb;.xml"
-          }
-        }
-      },
-      "Microsoft.Maui.Graphics/8.0.14": {
-        "type": "package",
-        "compile": {
-          "lib/net8.0/Microsoft.Maui.Graphics.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.Maui.Graphics.dll": {
-            "related": ".pdb;.xml"
-          }
-        }
-      },
-      "Microsoft.Maui.Resizetizer/8.0.14": {
-        "type": "package",
-        "build": {
-          "buildTransitive/Microsoft.Maui.Resizetizer.props": {},
-          "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
-        }
-      },
       "Microsoft.NETCore.Platforms/1.1.0": {
         "type": "package",
         "compile": {
@@ -1393,12 +1170,1198 @@
           }
         }
       },
+      "Xamarin.Essentials/1.8.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Numerics.Vectors": "4.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Xamarin.Essentials.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Xamarin.Essentials.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "Common/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Json": "8.0.0",
-          "Microsoft.Maui.Controls": "8.0.14"
+          "Microsoft.Extensions.Configuration.Json": "8.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Common.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Common.dll": {}
+        }
+      },
+      "DAL/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Common": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "8.0.14",
+          "Microsoft.EntityFrameworkCore.Proxies": "8.0.14",
+          "Microsoft.EntityFrameworkCore.SqlServer": "8.0.14",
+          "Microsoft.Extensions.Configuration": "8.0.0",
+          "Microsoft.Extensions.Configuration.FileExtensions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Json": "8.0.0"
+        },
+        "compile": {
+          "bin/placeholder/DAL.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DAL.dll": {}
+        }
+      }
+    },
+    "net8.0/maccatalyst-x64": {
+      "Azure.Core/1.38.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
+          "System.ClientModel": "1.0.0",
+          "System.Diagnostics.DiagnosticSource": "6.0.1",
+          "System.Memory.Data": "1.0.2",
+          "System.Numerics.Vectors": "4.5.0",
+          "System.Text.Encodings.Web": "4.7.2",
+          "System.Text.Json": "4.7.2",
+          "System.Threading.Tasks.Extensions": "4.5.4"
+        },
+        "compile": {
+          "lib/net6.0/Azure.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Azure.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Azure.Identity/1.11.4": {
+        "type": "package",
+        "dependencies": {
+          "Azure.Core": "1.38.0",
+          "Microsoft.Identity.Client": "4.61.3",
+          "Microsoft.Identity.Client.Extensions.Msal": "4.61.3",
+          "System.Memory": "4.5.4",
+          "System.Security.Cryptography.ProtectedData": "4.7.0",
+          "System.Text.Json": "4.7.2",
+          "System.Threading.Tasks.Extensions": "4.5.4"
+        },
+        "compile": {
+          "lib/netstandard2.0/Azure.Identity.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Azure.Identity.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Castle.Core/5.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.CSharp/4.5.0": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.0/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/_._": {}
+        }
+      },
+      "Microsoft.Data.SqlClient/5.1.6": {
+        "type": "package",
+        "dependencies": {
+          "Azure.Identity": "1.11.4",
+          "Microsoft.Data.SqlClient.SNI.runtime": "5.1.1",
+          "Microsoft.Identity.Client": "4.61.3",
+          "Microsoft.IdentityModel.JsonWebTokens": "6.35.0",
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.35.0",
+          "Microsoft.SqlServer.Server": "1.0.0",
+          "System.Configuration.ConfigurationManager": "6.0.1",
+          "System.Diagnostics.DiagnosticSource": "6.0.1",
+          "System.Runtime.Caching": "6.0.0",
+          "System.Security.Cryptography.Cng": "5.0.0",
+          "System.Security.Principal.Windows": "5.0.0",
+          "System.Text.Encoding.CodePages": "6.0.0",
+          "System.Text.Encodings.Web": "6.0.0"
+        },
+        "compile": {
+          "ref/net6.0/Microsoft.Data.SqlClient.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "runtimes/unix/lib/net6.0/Microsoft.Data.SqlClient.dll": {
+            "related": ".pdb"
+          }
+        }
+      },
+      "Microsoft.Data.SqlClient.SNI.runtime/5.1.1": {
+        "type": "package"
+      },
+      "Microsoft.EntityFrameworkCore/8.0.14": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Abstractions": "8.0.14",
+          "Microsoft.EntityFrameworkCore.Analyzers": "8.0.14",
+          "Microsoft.Extensions.Caching.Memory": "8.0.1",
+          "Microsoft.Extensions.Logging": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/Microsoft.EntityFrameworkCore.props": {}
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Abstractions/8.0.14": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Analyzers/8.0.14": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/_._": {}
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Proxies/8.0.14": {
+        "type": "package",
+        "dependencies": {
+          "Castle.Core": "5.1.1",
+          "Microsoft.EntityFrameworkCore": "8.0.14"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.Proxies.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.Proxies.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Relational/8.0.14": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "8.0.14",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.EntityFrameworkCore.SqlServer/8.0.14": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Data.SqlClient": "5.1.6",
+          "Microsoft.EntityFrameworkCore.Relational": "8.0.14",
+          "System.Formats.Asn1": "8.0.2"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Caching.Memory/8.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Memory.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Memory.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.Abstractions/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.FileExtensions/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "8.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0",
+          "Microsoft.Extensions.FileProviders.Physical": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.FileExtensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.FileExtensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.Json/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "8.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Configuration.FileExtensions": "8.0.0",
+          "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0",
+          "System.Text.Json": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Configuration.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection/8.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.FileProviders.Abstractions/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.FileProviders.Physical/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0",
+          "Microsoft.Extensions.FileSystemGlobbing": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.FileProviders.Physical.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.FileProviders.Physical.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.FileSystemGlobbing/8.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.FileSystemGlobbing.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.FileSystemGlobbing.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Logging/8.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Options": "8.0.2"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Logging.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Logging.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/8.0.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
+        }
+      },
+      "Microsoft.Extensions.Options/8.0.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Options.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Options.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/Microsoft.Extensions.Options.targets": {}
+        }
+      },
+      "Microsoft.Extensions.Primitives/8.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Identity.Client/4.61.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Abstractions": "6.35.0",
+          "System.Diagnostics.DiagnosticSource": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.Identity.Client.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Identity.Client.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Identity.Client.Extensions.Msal/4.61.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Identity.Client": "4.61.3",
+          "System.Security.Cryptography.ProtectedData": "4.5.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.Identity.Client.Extensions.Msal.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Identity.Client.Extensions.Msal.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Abstractions/6.35.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.JsonWebTokens/6.35.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Tokens": "6.35.0",
+          "System.Text.Encoding": "4.3.0",
+          "System.Text.Encodings.Web": "4.7.2",
+          "System.Text.Json": "4.7.2"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Logging/6.35.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Abstractions": "6.35.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Logging.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Logging.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Protocols/6.35.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "6.35.0",
+          "Microsoft.IdentityModel.Tokens": "6.35.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Protocols.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Protocols.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Protocols.OpenIdConnect/6.35.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols": "6.35.0",
+          "System.IdentityModel.Tokens.Jwt": "6.35.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Tokens/6.35.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.5.0",
+          "Microsoft.IdentityModel.Logging": "6.35.0",
+          "System.Security.Cryptography.Cng": "4.5.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Tokens.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Tokens.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.NETCore.Platforms/1.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard1.0/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.0/_._": {}
+        }
+      },
+      "Microsoft.NETCore.Targets/1.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard1.0/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.0/_._": {}
+        }
+      },
+      "Microsoft.SqlServer.Server/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.SqlServer.Server.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.SqlServer.Server.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Microsoft.Win32.SystemEvents/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Win32.SystemEvents.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "runtime.any.System.Runtime/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Private.Uri": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.5/System.Runtime.dll": {}
+        }
+      },
+      "runtime.any.System.Text.Encoding/4.3.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/System.Text.Encoding.dll": {}
+        }
+      },
+      "runtime.native.System/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.0"
+        },
+        "compile": {
+          "lib/netstandard1.0/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.0/_._": {}
+        }
+      },
+      "runtime.unix.System.Private.Uri/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "runtime.native.System": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard/_._": {}
+        },
+        "runtime": {
+          "runtimes/unix/lib/netstandard1.0/System.Private.Uri.dll": {}
+        }
+      },
+      "System.ClientModel/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory.Data": "1.0.2",
+          "System.Text.Json": "4.7.2"
+        },
+        "compile": {
+          "lib/net6.0/System.ClientModel.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.ClientModel.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Configuration.ConfigurationManager/6.0.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Security.Cryptography.ProtectedData": "6.0.0",
+          "System.Security.Permissions": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Configuration.ConfigurationManager.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Diagnostics.DiagnosticSource/6.0.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/System.Diagnostics.DiagnosticSource.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.DiagnosticSource.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Diagnostics.EventLog/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Drawing.Common/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "runtimes/unix/lib/net6.0/System.Drawing.Common.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Formats.Asn1/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Formats.Asn1.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.Formats.Asn1.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "System.IdentityModel.Tokens.Jwt/6.35.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.JsonWebTokens": "6.35.0",
+          "Microsoft.IdentityModel.Tokens": "6.35.0"
+        },
+        "compile": {
+          "lib/net6.0/System.IdentityModel.Tokens.Jwt.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.IdentityModel.Tokens.Jwt.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Memory/4.5.4": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.1/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/_._": {}
+        }
+      },
+      "System.Memory.Data/1.0.2": {
+        "type": "package",
+        "dependencies": {
+          "System.Text.Encodings.Web": "4.7.2",
+          "System.Text.Json": "4.6.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/System.Memory.Data.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Memory.Data.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Numerics.Vectors/4.5.0": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.0/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/_._": {}
+        }
+      },
+      "System.Private.Uri/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.0",
+          "runtime.unix.System.Private.Uri": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard/_._": {}
+        }
+      },
+      "System.Runtime/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.0",
+          "runtime.any.System.Runtime": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard1.5/System.Runtime.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Runtime.Caching/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Configuration.ConfigurationManager": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Runtime.Caching.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Security.AccessControl/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Security.AccessControl.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Security.Cryptography.Cng/5.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Formats.Asn1": "5.0.0"
+        },
+        "compile": {
+          "ref/netcoreapp3.0/System.Security.Cryptography.Cng.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/System.Security.Cryptography.Cng.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Security.Permissions/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Security.AccessControl": "6.0.0",
+          "System.Windows.Extensions": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Security.Permissions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Security.Principal.Windows/5.0.0": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp3.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "runtimes/unix/lib/netcoreapp2.1/System.Security.Principal.Windows.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Text.Encoding/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.0",
+          "System.Runtime": "4.3.0",
+          "runtime.any.System.Text.Encoding": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard1.3/System.Text.Encoding.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Text.Encoding.CodePages/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Text.Encoding.CodePages.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Text.Encodings.Web/8.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Text.Encodings.Web.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.Text.Encodings.Web.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "System.Text.Json/8.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Text.Encodings.Web": "8.0.0"
+        },
+        "compile": {
+          "lib/net8.0/System.Text.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.Text.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/System.Text.Json.targets": {}
+        }
+      },
+      "System.Threading.Tasks.Extensions/4.5.4": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.1/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/_._": {}
+        }
+      },
+      "System.Windows.Extensions/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Drawing.Common": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Windows.Extensions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Xamarin.Essentials/1.8.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Numerics.Vectors": "4.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Xamarin.Essentials.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Xamarin.Essentials.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Json": "8.0.0"
         },
         "compile": {
           "bin/placeholder/Common.dll": {}
@@ -2443,780 +3406,6 @@
         "microsoft.identitymodel.tokens.nuspec"
       ]
     },
-    "Microsoft.Maui.Controls/8.0.14": {
-      "sha512": "ISOfYkm7+UJ2fktcCSTF9yOsghCSUesNnqSVkw2cA0YGQfmvnSmhJ6CGpPpI2y3ObH8l9NVUuGqNmtEMSHNzFg==",
-      "type": "package",
-      "path": "microsoft.maui.controls/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "icon.png",
-        "microsoft.maui.controls.8.0.14.nupkg.sha512",
-        "microsoft.maui.controls.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Controls.Build.Tasks/8.0.14": {
-      "sha512": "byfwwnkC1TuR6eY32uJvgFOv3h3gWIjU1jTpbYoQWx34KFpiu8KTjuMkJZDpW83EnYIM6I1+5yYNUgwHvOUp5Q==",
-      "type": "package",
-      "path": "microsoft.maui.controls.build.tasks/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "buildTransitive/Microsoft.Maui.Controls.Build.Tasks.props",
-        "buildTransitive/Microsoft.Maui.Controls.Build.Tasks.targets",
-        "buildTransitive/net6.0-ios10.0/Microsoft.Maui.Controls.Build.Tasks.props",
-        "buildTransitive/net6.0-ios10.0/Microsoft.Maui.Controls.Build.Tasks.targets",
-        "buildTransitive/net6.0-ios10.0/Microsoft.Maui.Controls.iOS.targets",
-        "buildTransitive/net6.0-maccatalyst13.1/Microsoft.Maui.Controls.Build.Tasks.props",
-        "buildTransitive/net6.0-maccatalyst13.1/Microsoft.Maui.Controls.Build.Tasks.targets",
-        "buildTransitive/net6.0-maccatalyst13.1/Microsoft.Maui.Controls.MacCatalyst.targets",
-        "buildTransitive/net6.0-windows10.0.17763.0/Microsoft.Maui.Controls.Build.Tasks.props",
-        "buildTransitive/net6.0-windows10.0.17763.0/Microsoft.Maui.Controls.Build.Tasks.targets",
-        "buildTransitive/net6.0-windows10.0.17763.0/Microsoft.Maui.Sdk.Windows.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.After.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.Before.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.dll",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.pdb",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.props",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Build.Tasks.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Common.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.DefaultItems.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.Globs.props",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.SingleProject.targets",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.SourceGen.dll",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.SourceGen.pdb",
-        "buildTransitive/netstandard2.0/Microsoft.Maui.Controls.targets",
-        "buildTransitive/netstandard2.0/Mono.Cecil.Mdb.dll",
-        "buildTransitive/netstandard2.0/Mono.Cecil.Mdb.pdb",
-        "buildTransitive/netstandard2.0/Mono.Cecil.Pdb.dll",
-        "buildTransitive/netstandard2.0/Mono.Cecil.Pdb.pdb",
-        "buildTransitive/netstandard2.0/Mono.Cecil.Rocks.dll",
-        "buildTransitive/netstandard2.0/Mono.Cecil.Rocks.pdb",
-        "buildTransitive/netstandard2.0/Mono.Cecil.dll",
-        "buildTransitive/netstandard2.0/Mono.Cecil.pdb",
-        "buildTransitive/netstandard2.0/System.CodeDom.dll",
-        "buildTransitive/netstandard2.0/ar/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/ca/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/cs/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/da/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/de/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/el/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/es/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/fi/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/fr/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/he/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/hi/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/hr/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/hu/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/id/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/it/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/ja/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/ko/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/maui-blazor.aotprofile",
-        "buildTransitive/netstandard2.0/maui.aotprofile",
-        "buildTransitive/netstandard2.0/ms/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/nb/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/nl/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/pl/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/proguard.cfg",
-        "buildTransitive/netstandard2.0/pt-BR/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/pt/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/ro/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/ru/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/sk/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/sv/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/th/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/tr/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/uk/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/vi/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/zh-HK/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/zh-Hans/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "buildTransitive/netstandard2.0/zh-Hant/Microsoft.Maui.Controls.Build.Tasks.resources.dll",
-        "icon.png",
-        "microsoft.maui.controls.build.tasks.8.0.14.nupkg.sha512",
-        "microsoft.maui.controls.build.tasks.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Controls.Core/8.0.14": {
-      "sha512": "aU0iZzP7lKGWFdw0F822k/4spRbc5s6df02zKUVNXBLpdRlbAGNx3dAdLM2avUTH92qoF9F80RVWnljywD4xlw==",
-      "type": "package",
-      "path": "microsoft.maui.controls.core/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "icon.png",
-        "lib/net8.0-android34.0/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0-android34.0/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.aar",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.dll",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.xml",
-        "lib/net8.0-android34.0/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-android34.0/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0-ios17.2/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Controls.dll",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Controls.xml",
-        "lib/net8.0-ios17.2/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-ios17.2/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0-maccatalyst17.2/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Controls.dll",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Controls.xml",
-        "lib/net8.0-maccatalyst17.2/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-maccatalyst17.2/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0-tizen8.0/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Controls.dll",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Controls.xml",
-        "lib/net8.0-tizen8.0/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-tizen8.0/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0-windows10.0.19041/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.dll",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.pri",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.xml",
-        "lib/net8.0-windows10.0.19041/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.19041/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0-windows10.0.20348/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.dll",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.pri",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.xml",
-        "lib/net8.0-windows10.0.20348/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0-windows10.0.20348/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/net8.0/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/net8.0/Microsoft.Maui.Controls.dll",
-        "lib/net8.0/Microsoft.Maui.Controls.pdb",
-        "lib/net8.0/Microsoft.Maui.Controls.xml",
-        "lib/net8.0/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/net8.0/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/netstandard2.0/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.Controls.dll",
-        "lib/netstandard2.0/Microsoft.Maui.Controls.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.Controls.xml",
-        "lib/netstandard2.0/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.0/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/Design/Microsoft.Maui.Controls.DesignTools.dll",
-        "lib/netstandard2.1/Design/Microsoft.Maui.Controls.DesignTools.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.Controls.dll",
-        "lib/netstandard2.1/Microsoft.Maui.Controls.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.Controls.xml",
-        "lib/netstandard2.1/ar/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/ca/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/cs/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/da/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/de/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/el/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/es/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/fi/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/fr/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/he/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/hi/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/hr/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/hu/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/id/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/it/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/ja/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/ko/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/ms/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/nb/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/nl/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/pl/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/pt-BR/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/pt/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/ro/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/ru/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/sk/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/sv/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/th/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/tr/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/uk/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/vi/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/zh-HK/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/zh-Hans/Microsoft.Maui.Controls.resources.dll",
-        "lib/netstandard2.1/zh-Hant/Microsoft.Maui.Controls.resources.dll",
-        "microsoft.maui.controls.core.8.0.14.nupkg.sha512",
-        "microsoft.maui.controls.core.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Controls.Xaml/8.0.14": {
-      "sha512": "hmw6P2uU/bn2Bw5QXP9C4YsHP2vbRKpefP9gw3NsIuOvn5Vhw5NF2hXN32BzdHudmvRbwWZOzWTn8eJh7DunKg==",
-      "type": "package",
-      "path": "microsoft.maui.controls.xaml/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "icon.png",
-        "lib/net8.0-android34.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0-android34.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/net8.0-ios17.2/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0-ios17.2/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/net8.0-maccatalyst17.2/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0-maccatalyst17.2/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/net8.0-tizen8.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0-tizen8.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/net8.0-windows10.0.19041/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0-windows10.0.19041/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/net8.0-windows10.0.20348/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0-windows10.0.20348/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/net8.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/net8.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/net8.0/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/net8.0/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/net8.0/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/netstandard2.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/netstandard2.0/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/netstandard2.0/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.Controls.Xaml.xml",
-        "lib/netstandard2.1/Design/Microsoft.Maui.Controls.Xaml.DesignTools.dll",
-        "lib/netstandard2.1/Design/Microsoft.Maui.Controls.Xaml.DesignTools.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.Controls.Xaml.dll",
-        "lib/netstandard2.1/Microsoft.Maui.Controls.Xaml.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.Controls.Xaml.xml",
-        "microsoft.maui.controls.xaml.8.0.14.nupkg.sha512",
-        "microsoft.maui.controls.xaml.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Core/8.0.14": {
-      "sha512": "GHnwkyH9t8/gKV7D4ASJhWsmNqepUEdt6B0EpH1dohpDkSeIlpDGNF/zjzuoOWrOp6syIdMHJxos20+khXgiSA==",
-      "type": "package",
-      "path": "microsoft.maui.core/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "buildTransitive/Microsoft.Maui.Core.After.targets",
-        "buildTransitive/Microsoft.Maui.Core.Before.targets",
-        "buildTransitive/Microsoft.Maui.Core.BundledVersions.targets",
-        "buildTransitive/Microsoft.Maui.Core.props",
-        "buildTransitive/Microsoft.Maui.Core.targets",
-        "buildTransitive/WinUI.targets",
-        "buildTransitive/net6.0-windows10.0.17763.0/Microsoft.Maui.Core.props",
-        "buildTransitive/net6.0-windows10.0.17763.0/Microsoft.Maui.Core.targets",
-        "icon.png",
-        "lib/net8.0-android34.0/Microsoft.Maui.aar",
-        "lib/net8.0-android34.0/Microsoft.Maui.dll",
-        "lib/net8.0-android34.0/Microsoft.Maui.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.xml",
-        "lib/net8.0-android34.0/maui.aar",
-        "lib/net8.0-ios17.2/Microsoft.Maui.dll",
-        "lib/net8.0-ios17.2/Microsoft.Maui.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.xml",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.dll",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.xml",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.dll",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.xml",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.dll",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.pri",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.xml",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.dll",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.pri",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.xml",
-        "lib/net8.0/Microsoft.Maui.dll",
-        "lib/net8.0/Microsoft.Maui.pdb",
-        "lib/net8.0/Microsoft.Maui.xml",
-        "lib/netstandard2.0/Microsoft.Maui.dll",
-        "lib/netstandard2.0/Microsoft.Maui.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.xml",
-        "lib/netstandard2.1/Microsoft.Maui.dll",
-        "lib/netstandard2.1/Microsoft.Maui.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.xml",
-        "microsoft.maui.core.8.0.14.nupkg.sha512",
-        "microsoft.maui.core.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Essentials/8.0.14": {
-      "sha512": "AI2hD7UVUR98KC5IZlfKwTLBsCzUfbMWgeRw3ZuFeI9CQNy/L6qf8WaDEXUP9LLX/1JwTbRjHTJyganyoVJx/A==",
-      "type": "package",
-      "path": "microsoft.maui.essentials/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "icon.png",
-        "lib/net7.0-android33.0/Microsoft.Maui.Essentials.aar",
-        "lib/net7.0-android33.0/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0-android33.0/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0-android33.0/Microsoft.Maui.Essentials.xml",
-        "lib/net7.0-ios16.1/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0-ios16.1/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0-ios16.1/Microsoft.Maui.Essentials.xml",
-        "lib/net7.0-maccatalyst16.1/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0-maccatalyst16.1/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0-maccatalyst16.1/Microsoft.Maui.Essentials.xml",
-        "lib/net7.0-tizen7.0/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0-tizen7.0/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0-tizen7.0/Microsoft.Maui.Essentials.xml",
-        "lib/net7.0-windows10.0.19041/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0-windows10.0.19041/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0-windows10.0.19041/Microsoft.Maui.Essentials.xml",
-        "lib/net7.0-windows10.0.20348/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0-windows10.0.20348/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0-windows10.0.20348/Microsoft.Maui.Essentials.xml",
-        "lib/net7.0/Microsoft.Maui.Essentials.dll",
-        "lib/net7.0/Microsoft.Maui.Essentials.pdb",
-        "lib/net7.0/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0-android34.0/Microsoft.Maui.Essentials.aar",
-        "lib/net8.0-android34.0/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0-android34.0/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Essentials.xml",
-        "lib/net8.0/Microsoft.Maui.Essentials.dll",
-        "lib/net8.0/Microsoft.Maui.Essentials.pdb",
-        "lib/net8.0/Microsoft.Maui.Essentials.xml",
-        "lib/netstandard2.0/Microsoft.Maui.Essentials.dll",
-        "lib/netstandard2.0/Microsoft.Maui.Essentials.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.Essentials.xml",
-        "lib/netstandard2.1/Microsoft.Maui.Essentials.dll",
-        "lib/netstandard2.1/Microsoft.Maui.Essentials.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.Essentials.xml",
-        "microsoft.maui.essentials.8.0.14.nupkg.sha512",
-        "microsoft.maui.essentials.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Graphics/8.0.14": {
-      "sha512": "2+mZAdTBw48BzHDR2H91lWW2giuwAalKg4pExjYCKDP+ke+UF2b8cJEQRNW/nr01BAt89ZNyR/i2svmmCH3SoA==",
-      "type": "package",
-      "path": "microsoft.maui.graphics/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "icon.png",
-        "lib/net7.0-android33.0/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-android33.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-android33.0/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0-ios16.1/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-ios16.1/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-ios16.1/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0-maccatalyst16.1/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-maccatalyst16.1/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-maccatalyst16.1/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0-macos13.0/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-macos13.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-macos13.0/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0-tizen7.0/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-tizen7.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-tizen7.0/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0-windows10.0.19041/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-windows10.0.19041/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-windows10.0.19041/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0-windows10.0.20348/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0-windows10.0.20348/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0-windows10.0.20348/Microsoft.Maui.Graphics.xml",
-        "lib/net7.0/Microsoft.Maui.Graphics.dll",
-        "lib/net7.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net7.0/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-android34.0/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-android34.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-android34.0/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-ios17.2/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-maccatalyst17.2/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-macos14.2/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-macos14.2/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-macos14.2/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-tizen8.0/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-windows10.0.19041/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0-windows10.0.20348/Microsoft.Maui.Graphics.xml",
-        "lib/net8.0/Microsoft.Maui.Graphics.dll",
-        "lib/net8.0/Microsoft.Maui.Graphics.pdb",
-        "lib/net8.0/Microsoft.Maui.Graphics.xml",
-        "lib/netstandard2.0/Microsoft.Maui.Graphics.dll",
-        "lib/netstandard2.0/Microsoft.Maui.Graphics.pdb",
-        "lib/netstandard2.0/Microsoft.Maui.Graphics.xml",
-        "lib/netstandard2.1/Microsoft.Maui.Graphics.dll",
-        "lib/netstandard2.1/Microsoft.Maui.Graphics.pdb",
-        "lib/netstandard2.1/Microsoft.Maui.Graphics.xml",
-        "microsoft.maui.graphics.8.0.14.nupkg.sha512",
-        "microsoft.maui.graphics.nuspec"
-      ]
-    },
-    "Microsoft.Maui.Resizetizer/8.0.14": {
-      "sha512": "H0kvSlNe5HZ9wuturDg3CLVcseybeHADQOARd+9mDNuB0ixNthWpJt7zgzJer9dr2IPq+c6oOut2P8ge/6s2OQ==",
-      "type": "package",
-      "path": "microsoft.maui.resizetizer/8.0.14",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "README.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "buildTransitive/Fizzler.dll",
-        "buildTransitive/HarfBuzzSharp.dll",
-        "buildTransitive/HarfBuzzSharp.pdb",
-        "buildTransitive/Microsoft.Bcl.AsyncInterfaces.dll",
-        "buildTransitive/Microsoft.Maui.Resizetizer.After.targets",
-        "buildTransitive/Microsoft.Maui.Resizetizer.Before.targets",
-        "buildTransitive/Microsoft.Maui.Resizetizer.dll",
-        "buildTransitive/Microsoft.Maui.Resizetizer.pdb",
-        "buildTransitive/Microsoft.Maui.Resizetizer.props",
-        "buildTransitive/Microsoft.Maui.Resizetizer.targets",
-        "buildTransitive/ShimSkiaSharp.dll",
-        "buildTransitive/SkiaSharp.HarfBuzz.dll",
-        "buildTransitive/SkiaSharp.HarfBuzz.pdb",
-        "buildTransitive/SkiaSharp.dll",
-        "buildTransitive/SkiaSharp.pdb",
-        "buildTransitive/Svg.Custom.dll",
-        "buildTransitive/Svg.Model.dll",
-        "buildTransitive/Svg.Skia.dll",
-        "buildTransitive/System.Buffers.dll",
-        "buildTransitive/System.IO.UnmanagedMemoryStream.dll",
-        "buildTransitive/System.Memory.dll",
-        "buildTransitive/System.Numerics.Vectors.dll",
-        "buildTransitive/System.ObjectModel.dll",
-        "buildTransitive/System.Runtime.CompilerServices.Unsafe.dll",
-        "buildTransitive/System.Text.Encodings.Web.dll",
-        "buildTransitive/System.Text.Json.dll",
-        "buildTransitive/arm/libHarfBuzzSharp.so",
-        "buildTransitive/arm/libSkiaSharp.so",
-        "buildTransitive/arm64/libHarfBuzzSharp.dll",
-        "buildTransitive/arm64/libHarfBuzzSharp.so",
-        "buildTransitive/arm64/libSkiaSharp.dll",
-        "buildTransitive/arm64/libSkiaSharp.so",
-        "buildTransitive/libHarfBuzzSharp.dylib",
-        "buildTransitive/libSkiaSharp.dylib",
-        "buildTransitive/musl-x64/libHarfBuzzSharp.so",
-        "buildTransitive/musl-x64/libSkiaSharp.so",
-        "buildTransitive/x64/libHarfBuzzSharp.dll",
-        "buildTransitive/x64/libHarfBuzzSharp.so",
-        "buildTransitive/x64/libSkiaSharp.dll",
-        "buildTransitive/x64/libSkiaSharp.so",
-        "buildTransitive/x86/libHarfBuzzSharp.dll",
-        "buildTransitive/x86/libSkiaSharp.dll",
-        "icon.png",
-        "microsoft.maui.resizetizer.8.0.14.nupkg.sha512",
-        "microsoft.maui.resizetizer.nuspec"
-      ]
-    },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
       "type": "package",
@@ -3292,6 +3481,88 @@
         "runtimes/win/lib/netcoreapp3.1/Microsoft.Win32.SystemEvents.dll",
         "runtimes/win/lib/netcoreapp3.1/Microsoft.Win32.SystemEvents.xml",
         "useSharedDesignerContext.txt"
+      ]
+    },
+    "runtime.any.System.Runtime/4.3.0": {
+      "sha512": "fRS7zJgaG9NkifaAxGGclDDoRn9HC7hXACl52Or06a/fxdzDajWb5wov3c6a+gVSlekRoexfjwQSK9sh5um5LQ==",
+      "type": "package",
+      "path": "runtime.any.system.runtime/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/netcore50/System.Runtime.dll",
+        "lib/netstandard1.5/System.Runtime.dll",
+        "lib/win8/_._",
+        "lib/wp80/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/netstandard/_._",
+        "runtime.any.system.runtime.4.3.0.nupkg.sha512",
+        "runtime.any.system.runtime.nuspec",
+        "runtimes/aot/lib/netcore50/_._"
+      ]
+    },
+    "runtime.any.System.Text.Encoding/4.3.0": {
+      "sha512": "+ihI5VaXFCMVPJNstG4O4eo1CfbrByLxRrQQTqOTp1ttK0kUKDqOdBSTaCB2IBk/QtjDrs6+x4xuezyMXdm0HQ==",
+      "type": "package",
+      "path": "runtime.any.system.text.encoding/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/netcore50/System.Text.Encoding.dll",
+        "lib/netstandard1.3/System.Text.Encoding.dll",
+        "lib/win8/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/netstandard/_._",
+        "runtime.any.system.text.encoding.4.3.0.nupkg.sha512",
+        "runtime.any.system.text.encoding.nuspec",
+        "runtimes/aot/lib/netcore50/_._"
+      ]
+    },
+    "runtime.native.System/4.3.0": {
+      "sha512": "c/qWt2LieNZIj1jGnVNsE2Kl23Ya2aSTBuXMD6V7k9KWr6l16Tqdwq+hJScEpWER9753NWC8h96PaVNY5Ld7Jw==",
+      "type": "package",
+      "path": "runtime.native.system/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/netstandard1.0/_._",
+        "runtime.native.system.4.3.0.nupkg.sha512",
+        "runtime.native.system.nuspec"
+      ]
+    },
+    "runtime.unix.System.Private.Uri/4.3.0": {
+      "sha512": "ooWzobr5RAq34r9uan1r/WPXJYG1XWy9KanrxNvEnBzbFdQbMG7Y3bVi4QxR7xZMNLOxLLTAyXvnSkfj5boZSg==",
+      "type": "package",
+      "path": "runtime.unix.system.private.uri/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "ref/netstandard/_._",
+        "runtime.unix.system.private.uri.4.3.0.nupkg.sha512",
+        "runtime.unix.system.private.uri.nuspec",
+        "runtimes/unix/lib/netstandard1.0/System.Private.Uri.dll"
       ]
     },
     "System.ClientModel/1.0.0": {
@@ -3570,6 +3841,20 @@
         "system.numerics.vectors.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+      ]
+    },
+    "System.Private.Uri/4.3.0": {
+      "sha512": "I4SwANiUGho1esj4V4oSlPllXjzCZDE+5XXso2P03LW2vOda2Enzh8DWOxwN6hnrJyp314c7KuVu31QYhRzOGg==",
+      "type": "package",
+      "path": "system.private.uri/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "ref/netstandard/_._",
+        "system.private.uri.4.3.0.nupkg.sha512",
+        "system.private.uri.nuspec"
       ]
     },
     "System.Runtime/4.3.0": {
@@ -4230,6 +4515,48 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Xamarin.Essentials/1.8.1": {
+      "sha512": "IzfRGrCrRuytgdQU+Im17Cepib6qUyLj1xfMjn+sDPTfmhmcZotsQCm5Dblm4Vxo9/SGFTdm1OgJUKWzu+dfjw==",
+      "type": "package",
+      "path": "xamarin.essentials/1.8.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "icon.png",
+        "lib/monoandroid13.0/Xamarin.Essentials.dll",
+        "lib/monoandroid13.0/Xamarin.Essentials.pdb",
+        "lib/monoandroid13.0/Xamarin.Essentials.xml",
+        "lib/netstandard1.0/Xamarin.Essentials.dll",
+        "lib/netstandard1.0/Xamarin.Essentials.pdb",
+        "lib/netstandard1.0/Xamarin.Essentials.xml",
+        "lib/netstandard2.0/Xamarin.Essentials.dll",
+        "lib/netstandard2.0/Xamarin.Essentials.pdb",
+        "lib/netstandard2.0/Xamarin.Essentials.xml",
+        "lib/tizen40/Xamarin.Essentials.dll",
+        "lib/tizen40/Xamarin.Essentials.pdb",
+        "lib/tizen40/Xamarin.Essentials.xml",
+        "lib/uap10.0.16299/Xamarin.Essentials.dll",
+        "lib/uap10.0.16299/Xamarin.Essentials.pdb",
+        "lib/uap10.0.16299/Xamarin.Essentials.pri",
+        "lib/uap10.0.16299/Xamarin.Essentials.xml",
+        "lib/xamarinios10/Xamarin.Essentials.dll",
+        "lib/xamarinios10/Xamarin.Essentials.pdb",
+        "lib/xamarinios10/Xamarin.Essentials.xml",
+        "lib/xamarinmac20/Xamarin.Essentials.dll",
+        "lib/xamarinmac20/Xamarin.Essentials.pdb",
+        "lib/xamarinmac20/Xamarin.Essentials.xml",
+        "lib/xamarintvos10/Xamarin.Essentials.dll",
+        "lib/xamarintvos10/Xamarin.Essentials.pdb",
+        "lib/xamarintvos10/Xamarin.Essentials.xml",
+        "lib/xamarinwatchos10/Xamarin.Essentials.dll",
+        "lib/xamarinwatchos10/Xamarin.Essentials.pdb",
+        "lib/xamarinwatchos10/Xamarin.Essentials.xml",
+        "readme.txt",
+        "xamarin.essentials.1.8.1.nupkg.sha512",
+        "xamarin.essentials.nuspec"
+      ]
+    },
     "Common/1.0.0": {
       "type": "project",
       "path": "../Common/Common.csproj",
@@ -4244,7 +4571,8 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Common >= 1.0.0",
-      "DAL >= 1.0.0"
+      "DAL >= 1.0.0",
+      "Xamarin.Essentials >= 1.8.1"
     ]
   },
   "packageFolders": {
@@ -4296,6 +4624,12 @@
     "frameworks": {
       "net8.0": {
         "targetAlias": "net8.0",
+        "dependencies": {
+          "Xamarin.Essentials": {
+            "target": "Package",
+            "version": "[1.8.1, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -4313,6 +4647,11 @@
           }
         },
         "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "maccatalyst-x64": {
+        "#import": []
       }
     }
   }

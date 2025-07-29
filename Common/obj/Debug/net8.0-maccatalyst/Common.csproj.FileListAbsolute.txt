@@ -1,4 +1,3 @@
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/bin/Debug/net8.0-maccatalyst/Common.runtimeconfig.json
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/bin/Debug/net8.0-maccatalyst/Common.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/bin/Debug/net8.0-maccatalyst/Common.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst/actool/_PartialAppManifest.items
@@ -18,5 +17,4 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst/Common.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst/refint/Common.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst/Common.pdb
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst/Common.genruntimeconfig.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst/ref/Common.dll

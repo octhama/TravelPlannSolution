@@ -1,4 +1,6 @@
-﻿namespace TravelPlannMauiApp
+﻿using TravelPlannMauiApp.Pages;
+
+namespace TravelPlannMauiApp
 {
     public partial class AppShell : Shell
     {

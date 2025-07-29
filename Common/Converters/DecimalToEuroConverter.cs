@@ -1,3 +1,8 @@
+using System.Globalization;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System;
+
 namespace Common.Converters
 {
     public class DecimalToEuroConverter : IValueConverter
@@ -20,7 +25,7 @@ namespace Common.Converters
             {
                 return $"{intValue:F2} €";
             }
-            
+
             return "0,00 €";
         }
 
