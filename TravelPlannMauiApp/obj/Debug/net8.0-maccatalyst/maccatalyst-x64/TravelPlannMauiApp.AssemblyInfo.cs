@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TravelPlannMauiApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+60ac526719f6fb893bfe0c129ee93ec867fb609d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+d864a57b70770715bcbe3adf2431533bea3e29b1")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelPlannMauiApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelPlannMauiApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

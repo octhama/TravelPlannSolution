@@ -34,7 +34,7 @@ namespace TravelPlannMauiApp.Pages
                 // Configurer les événements de la carte
                 SetupMapEvents();
                 
-                // Rafraîchir les données utilisateur - IMPORTANT: Attendre que ce soit terminé
+                // Rafraîchir les données utilisateur
                 System.Diagnostics.Debug.WriteLine("Début du rafraîchissement des données...");
                 await _viewModel.RefreshDataAsync();
                 System.Diagnostics.Debug.WriteLine("Rafraîchissement des données terminé");
@@ -51,7 +51,6 @@ namespace TravelPlannMauiApp.Pages
             }
         }
 
-
         private async Task InitializeMapAsync()
         {
             try
@@ -62,7 +61,7 @@ namespace TravelPlannMauiApp.Pages
 
                 MapControl.MoveToRegion(mapSpan);
                 
-                // DÉSACTIVER COMPLÈTEMENT LA GÉOLOCALISATION
+                // Désactiver la géolocalisation
                 MapControl.IsShowingUser = false;
                 
                 System.Diagnostics.Debug.WriteLine("Carte initialisée sans géolocalisation");
@@ -93,50 +92,50 @@ namespace TravelPlannMauiApp.Pages
         }
 
         private async void OnMapClicked(object sender, MapClickedEventArgs e)
-{
-    try
-    {
-        var clickedLocation = e.Location;
-        System.Diagnostics.Debug.WriteLine($"Carte cliquée à: {clickedLocation.Latitude:F6}, {clickedLocation.Longitude:F6}");
-        
-        // Fermer le panel d'informations si ouvert
-        _viewModel.CloseLocationInfoCommand?.Execute(null);
-        
-        // Effectuer un géocodage inverse pour obtenir l'adresse
-        var address = await _viewModel.GetAddressFromLocationAsync(clickedLocation);
-        System.Diagnostics.Debug.WriteLine($"Adresse obtenue: {address}");
-        
-        // Créer un pin temporaire à l'emplacement cliqué
-        var tempPin = new Pin
         {
-            Location = clickedLocation,
-            Label = "Lieu sélectionné",
-            Address = address,
-            Type = PinType.Generic
-        };
-        
-        // Supprimer les anciens pins temporaires
-        var existingTempPins = MapControl.Pins
-            .Where(p => p.Label == "Lieu sélectionné")
-            .ToList();
-        
-        foreach (var pin in existingTempPins)
-        {
-            MapControl.Pins.Remove(pin);
+            try
+            {
+                var clickedLocation = e.Location;
+                System.Diagnostics.Debug.WriteLine($"Carte cliquée à: {clickedLocation.Latitude:F6}, {clickedLocation.Longitude:F6}");
+                
+                // Fermer le panel d'informations si ouvert
+                _viewModel.CloseLocationInfoCommand?.Execute(null);
+                
+                // Effectuer un géocodage inverse pour obtenir l'adresse
+                var address = await _viewModel.GetAddressFromLocationAsync(clickedLocation);
+                System.Diagnostics.Debug.WriteLine($"Adresse obtenue: {address}");
+                
+                // Créer un pin temporaire à l'emplacement cliqué
+                var tempPin = new Pin
+                {
+                    Location = clickedLocation,
+                    Label = "Lieu sélectionné",
+                    Address = address,
+                    Type = PinType.Generic
+                };
+                
+                // Supprimer les anciens pins temporaires
+                var existingTempPins = MapControl.Pins
+                    .Where(p => p.Label == "Lieu sélectionné")
+                    .ToList();
+                
+                foreach (var pin in existingTempPins)
+                {
+                    MapControl.Pins.Remove(pin);
+                }
+                
+                // Ajouter le nouveau pin temporaire
+                MapControl.Pins.Add(tempPin);
+                System.Diagnostics.Debug.WriteLine("Pin temporaire ajouté");
+                
+                // Afficher les détails du lieu
+                _viewModel.ShowLocationDetails(tempPin);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du clic sur la carte: {ex.Message}");
+            }
         }
-        
-        // Ajouter le nouveau pin temporaire
-        MapControl.Pins.Add(tempPin);
-        System.Diagnostics.Debug.WriteLine("Pin temporaire ajouté");
-        
-        // Afficher les détails du lieu
-        _viewModel.ShowLocationDetails(tempPin);
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"Erreur lors du clic sur la carte: {ex.Message}");
-    }
-}
 
         private void OnMapPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
