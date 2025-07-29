@@ -1875,13 +1875,13 @@ public async Task CenterOnVoyageAsync(int voyageId)
         if (voyage.Hebergements != null && voyage.Hebergements.Any())
         {
             relevantPins.AddRange(_accommodationPins.Where(p => 
-                voyage.Hebergements.Any(h => p.Label.Contains(h.Nom)));
+                voyage.Hebergements.Any(h => p.Label.Contains(h.Nom))));
         }
         
         if (voyage.Activites != null && voyage.Activites.Any())
         {
             relevantPins.AddRange(_activityPins.Where(p => 
-                voyage.Activites.Any(a => p.Label.Contains(a.Nom)));
+                voyage.Activites.Any(a => p.Label.Contains(a.Nom))));
         }
 
         if (relevantPins.Any())
