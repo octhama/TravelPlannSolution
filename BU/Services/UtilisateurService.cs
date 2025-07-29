@@ -1,9 +1,3 @@
-using DAL.DB;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
-using System.Diagnostics;
-
 namespace BU.Services;
 
 public class UtilisateurService : IUtilisateurService

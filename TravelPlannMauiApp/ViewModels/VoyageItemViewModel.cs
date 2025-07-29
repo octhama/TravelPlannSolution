@@ -1,7 +1,3 @@
-using DAL.DB;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
 namespace TravelPlannMauiApp.ViewModels
 {
     public class VoyageItemViewModel : INotifyPropertyChanged
@@ -31,7 +27,7 @@ namespace TravelPlannMauiApp.ViewModels
         
         public int UtilisateurId => _voyage.UtilisateurId;
 
-        // NOUVEAU : Méthode pour mettre à jour le voyage et notifier les changements
+        // Méthode pour mettre à jour le voyage et notifier les changements
         public void UpdateFromVoyage(Voyage nouveauVoyage)
         {
             if (nouveauVoyage == null) return;
@@ -54,7 +50,7 @@ namespace TravelPlannMauiApp.ViewModels
             System.Diagnostics.Debug.WriteLine($"VoyageItemViewModel mis à jour: {NomVoyage} - Complete: {EstComplete}, Archive: {EstArchive}");
         }
 
-        // NOUVEAU : Méthode pour forcer la mise à jour de l'affichage
+        // Méthode pour forcer la mise à jour de l'affichage
         public void ForceUpdate()
         {
             OnPropertyChanged(nameof(NomVoyage));

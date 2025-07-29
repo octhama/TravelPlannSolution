@@ -47,7 +47,7 @@ namespace TravelPlannMauiApp.Pages
             }
         }
 
-        // NOUVEAU : Méthode qui FORCE systématiquement le rechargement si flag présent
+        // Méthode qui vérifie  le rechargement si flag présent
         private async Task CheckAndForceRefreshIfNeeded()
         {
             try
@@ -91,7 +91,7 @@ namespace TravelPlannMauiApp.Pages
             }
         }
 
-        // NOUVEAU : Méthode appelée par les messages
+        // Méthode appelée par les messages
         private async Task RefreshVoyageListFromMessage()
         {
             try
@@ -135,7 +135,7 @@ namespace TravelPlannMauiApp.Pages
             base.OnBindingContextChanged();
         }
 
-        // NOUVEAU : Méthode pour nettoyer les abonnements
+        // Méthode pour nettoyer les abonnements
         ~VoyageListPage()
         {
             MessagingCenter.Unsubscribe<object>(this, "RefreshVoyageList");

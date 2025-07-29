@@ -1,9 +1,4 @@
-﻿using DAL.DB;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Reflection;
-
-namespace TravelPlannConsoleAppTest;
+﻿namespace TravelPlannConsoleAppTest;
 
 internal class Program
 {

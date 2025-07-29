@@ -1,10 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-using TravelPlannMauiApp.Pages;
-using TravelPlannMauiApp.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using BU.Services; // Ajout de cette directive using
-
-namespace TravelPlannMauiApp
+﻿namespace TravelPlannMauiApp
 {
     public partial class MainPage : ContentPage
     {

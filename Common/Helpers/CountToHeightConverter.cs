@@ -1,7 +1,3 @@
-using System.Globalization;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-
 namespace Common.Helpers
 {
     public class CountToHeightConverter : IValueConverter

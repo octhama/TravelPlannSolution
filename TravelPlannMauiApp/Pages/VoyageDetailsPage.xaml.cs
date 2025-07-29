@@ -27,8 +27,7 @@ namespace TravelPlannMauiApp.Pages
         {
             base.OnAppearing();
             
-            // Si les données n'ont pas été chargées via SerializedViewModel,
-            // charger depuis la base de données
+            // Vérifier si le ViewModel a déjà été chargé
             if (_viewModel.VoyageId > 0 && string.IsNullOrEmpty(_viewModel.NomVoyage))
             {
                 await _viewModel.LoadVoyageDetails();
@@ -129,7 +128,9 @@ namespace TravelPlannMauiApp.Pages
         }
     }
 
-    // DTOs mis à jour pour correspondre à ceux du ViewModel
+    // DTOs pour la page VoyageDetails
+    // Utilisés pour transférer les données entre les pages
+    // et éviter les problèmes de cycle de vie des ViewModels
     public class VoyageDetailsDTO
     {
         public int VoyageID { get; set; }

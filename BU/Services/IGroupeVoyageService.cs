@@ -1,7 +1,4 @@
-using DAL.DB;
-
 namespace BU.Services;
-
 public interface IGroupeVoyageService
 {
     Task<GroupeVoyage> CreateAsync(string nomGroupe);

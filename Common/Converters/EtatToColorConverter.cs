@@ -1,7 +1,3 @@
-using System.Globalization;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
-
 namespace Common.Converters
 {
     public class EtatToColorConverter : IValueConverter

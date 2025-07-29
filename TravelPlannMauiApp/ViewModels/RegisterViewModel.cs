@@ -5,7 +5,7 @@ namespace TravelPlannMauiApp.ViewModels;
 
 public class RegisterViewModel : BaseViewModel
 {
-    private readonly IUtilisateurService _utilisateurService;
+    private readonly IUtilisateurService _utilisateurService; // Le _ c'est pour indiquer que c'est un champ privé et non une propriété publique
     private string _nom = string.Empty;
     private string _prenom = string.Empty;
     private string _email = string.Empty;

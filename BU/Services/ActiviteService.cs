@@ -1,12 +1,3 @@
-using DAL.DB;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using BU.Entities;
-using System.Linq;
-
 namespace BU.Services
 {
     public class ActiviteService : IActiviteService

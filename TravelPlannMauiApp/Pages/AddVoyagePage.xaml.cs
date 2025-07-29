@@ -9,7 +9,6 @@ namespace TravelPlannMauiApp.Pages
             InitializeComponent();
             BindingContext = viewModel;
             
-            // Assurez-vous que le ViewModel est correctement initialisé
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel), "Le ViewModel ne peut pas être nul");

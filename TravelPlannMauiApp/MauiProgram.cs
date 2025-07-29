@@ -1,18 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using BU.Services;
-using DAL.DB;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using CommunityToolkit.Maui;
-using TravelPlannMauiApp.Pages;
-using TravelPlannMauiApp.ViewModels;
-
-namespace TravelPlannMauiApp;
+﻿namespace TravelPlannMauiApp;
 
 public static class MauiProgram
 {
@@ -21,7 +7,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiMaps() // Ajoutez cette ligne
+            .UseMauiMaps()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => 
             {
@@ -37,13 +23,13 @@ public static class MauiProgram
             .AddJsonStream(stream)
             .Build();
 
-        // Configuration DB avec la chaîne depuis appsettings.json
+        // Configuration DB avec la chaîne depuis appsettings.json or une valeur par défaut
         var connectionString = config.GetConnectionString("TravelPlannConnectionString") ?? 
                               "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;";
 
         Debug.WriteLine($"Chaîne de connexion: {connectionString}");
 
-        // IMPORTANT: Utiliser seulement DbContextFactory pour éviter les conflits
+        // Enregistrement du DbContextFactory
         builder.Services.AddDbContextFactory<TravelPlannDbContext>(options =>
         {
             options.UseSqlServer(connectionString, sqlOptions =>
@@ -62,7 +48,7 @@ public static class MauiProgram
 #endif
         });
 
-        // Services - IMPORTANT: Tous utilisant IDbContextFactory
+        // Services 
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
         builder.Services.AddScoped<IVoyageService, VoyageService>();
@@ -80,8 +66,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();
 
-        // Configuration HttpClient pour les appels API futurs (optionnel)
-        // Note: Nécessite le package Microsoft.Extensions.Http
+        // Configuration HttpClient pour les appels API futurs
         builder.Services.AddHttpClient("WeatherApi", client =>
         {
             client.BaseAddress = new Uri("https://api.openweathermap.org");

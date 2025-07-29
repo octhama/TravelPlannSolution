@@ -285,8 +285,8 @@ public ObservableCollection<Activite> ActivitiesList
     }
 }
 
-public int AccommodationsCount => AccommodationsList?.Count ?? 0;
-public int ActivitiesCount => ActivitiesList?.Count ?? 0;
+    public int AccommodationsCount => AccommodationsList?.Count ?? 0;
+    public int ActivitiesCount => ActivitiesList?.Count ?? 0;
 
     // Coordonnées par défaut pour Namur, Belgique
     private static readonly Location DefaultLocation = new Location(50.4674, 4.8719); // Namur
@@ -307,7 +307,7 @@ public int ActivitiesCount => ActivitiesList?.Count ?? 0;
     public ICommand ShowRestaurantsCommand { get; }
     public ICommand ShowDirectionsCommand { get; }
     
-    // Commandes de zoom uniquement (navigation directionnelle supprimée)
+    // Commandes de zoom
     public ICommand ZoomInCommand { get; }
     public ICommand ZoomOutCommand { get; }
     

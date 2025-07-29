@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using DAL.DB;
-using System.ComponentModel.DataAnnotations;
-
 namespace BU.Entities
 {
     public class VoyageDetails

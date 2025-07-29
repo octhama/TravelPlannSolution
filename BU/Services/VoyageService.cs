@@ -1,12 +1,4 @@
-﻿using DAL.DB;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using BU.Entities;
-
-namespace BU.Services
+﻿namespace BU.Services
 {
     public class VoyageService : IVoyageService
     {

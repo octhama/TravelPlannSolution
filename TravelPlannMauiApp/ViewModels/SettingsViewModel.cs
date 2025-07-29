@@ -359,7 +359,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             }
 
             // Mettre à jour le mot de passe (le service se charge du hashage)
-            _currentUser.MotDePasse = NewPassword; // Le service devra hasher ce mot de passe
+            _currentUser.MotDePasse = NewPassword;
             await _utilisateurService.UpdateAsync(_currentUser);
 
             // Réinitialiser les champs
@@ -394,7 +394,6 @@ public class SettingsViewModel : INotifyPropertyChanged
                 System.Diagnostics.Debug.WriteLine("Déconnexion utilisateur...");
                 await _sessionService.ClearSessionAsync();
                 
-                // Use NavigationRequested event instead of direct navigation
                 OnNavigationRequested("//LoginPage");
             }
         }

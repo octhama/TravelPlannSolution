@@ -1,8 +1,3 @@
-using DAL.DB;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BU.Entities;
-
 namespace BU.Services
 {
     public interface IHebergementService

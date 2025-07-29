@@ -1,10 +1,3 @@
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Refit;
-using BU.Services;
 
 namespace TravelPlannMauiApp.ViewModels
 {
@@ -173,8 +166,7 @@ namespace TravelPlannMauiApp.ViewModels
         {
             try
             {
-                // Pour l'instant, utiliser des données mockées
-                // TODO: Implémenter l'appel API météo réel
+                // API météo fictive pour la démo - à remplacer par une vraie API
                 var random = new Random();
                 var temperatures = new[] { "18°C", "22°C", "25°C", "19°C", "23°C" };
                 var descriptions = new[] { "Ensoleillé", "Nuageux", "Partiellement nuageux", "Pluvieux" };
@@ -204,7 +196,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
     }
 
-    // Interface pour l'API météo (à implémenter plus tard)
+    // Interface pour l'API météo
     [Headers("Content-Type: application/json")]
     public interface IOpenWeatherApi
     {

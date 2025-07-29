@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using DAL.DB;
-using Microsoft.EntityFrameworkCore;
-
-namespace TravelPlannMauiApp;
+﻿namespace TravelPlannMauiApp;
 
 public partial class App : Application
 {

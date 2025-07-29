@@ -9,7 +9,7 @@ public class ProfileViewModel : BaseViewModel
 {
     private readonly IUtilisateurService _utilisateurService;
     private readonly IVoyageService _voyageService;
-    private Utilisateur? _currentUser;
+    private Utilisateur? _currentUser; // Utilisateur courant, peut être null si non connecté
     private string _userName = string.Empty;
     private int _totalVoyages;
     private int _pointsRecompenses;
