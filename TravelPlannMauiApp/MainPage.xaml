@@ -25,7 +25,7 @@
                                FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                         
-                        <Label Text="Voyageur passionné"
+                        <Label Text="Voyageur.se passionné"
                                Grid.Column="1"
                                Grid.Row="1"
                                FontSize="12"
