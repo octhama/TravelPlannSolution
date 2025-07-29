@@ -432,29 +432,25 @@ namespace TravelPlannMauiApp.ViewModels
                 };
 
                 await _voyageService.UpdateVoyageAsync(voyage);
+        
+                Debug.WriteLine("Voyage sauvegardé avec succès");
                 
-                Debug.WriteLine("Voyage sauvegardé avec succès - FORCER LE RAFRAÎCHISSEMENT");
-                
-                // NOUVEAU: Définir le flag SIMPLE et DIRECT
+                // 1. Définir le flag de rechargement
                 SetForceReloadFlag();
                 
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                // 2. Retourner à la liste des voyages avec une navigation "refresh"
+                await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     IsViewMode = true;
                     IsEditMode = false;
                     ShowActiviteForm = false;
                     ShowHebergementForm = false;
                     
-                    // Sauvegarder les nouvelles valeurs comme originales
                     SaveOriginalValues();
+                    
+                    // Modification: Utiliser le chemin de route enregistré plutôt que le nom de classe
+                    await Shell.Current.GoToAsync("..?forceRefresh=true");
                 });
-                
-                await Shell.Current.DisplayAlert("Succès", "Voyage mis à jour avec succès", "OK");
-                
-                // NOUVEAU: Retourner automatiquement à la liste des voyages
-                Debug.WriteLine("Retour automatique à la liste des voyages...");
-                await Shell.Current.GoToAsync("..");
-                
             }
             catch (Exception ex)
             {

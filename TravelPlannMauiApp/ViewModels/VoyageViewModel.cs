@@ -13,6 +13,7 @@ namespace TravelPlannMauiApp.ViewModels
     {
         private readonly IVoyageService _voyageService;
         private readonly ISessionService _sessionService;
+        private readonly IServiceProvider _serviceProvider;
         private bool _isLoading;
         private int _currentUserId;
         
@@ -29,10 +30,13 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _isLoading, value);
         }
         
-        public VoyageViewModel(IVoyageService voyageService, ISessionService sessionService = null)
+        public VoyageViewModel(IVoyageService voyageService, 
+                      ISessionService sessionService = null,
+                      IServiceProvider serviceProvider = null)
         {
             _voyageService = voyageService;
             _sessionService = sessionService;
+            _serviceProvider = serviceProvider;
 
             LoadVoyagesCommand = new Command(async () => await LoadVoyagesAsync());
             ViewVoyageDetailsCommand = new Command<VoyageItemViewModel>(async (v) => await ViewVoyageDetails(v));
@@ -131,6 +135,9 @@ namespace TravelPlannMauiApp.ViewModels
         {
             Debug.WriteLine("=== FORCE RELOAD FROM DATABASE ===");
             await InternalLoadVoyagesAsync(forceReload: true);
+            
+            // Forcer la notification de changement
+            OnPropertyChanged(nameof(Voyages));
         }
 
         // NOUVEAU : Méthode interne consolidée pour le chargement
@@ -157,39 +164,45 @@ namespace TravelPlannMauiApp.ViewModels
 
                 Debug.WriteLine($"Rechargement des voyages pour l'utilisateur ID: {_currentUserId}");
                 
-                // Récupérer les données fraîches de la DB
-                var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
-                
-                Debug.WriteLine($"Nombre de voyages récupérés de la DB: {voyages?.Count ?? 0}");
-                
-                // Mise à jour FORCÉE sur le thread principal
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                // NOUVEAU: Utiliser un nouveau scope pour chaque opération
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    Debug.WriteLine("Mise à jour FORCÉE de la collection...");
+                    var voyageService = scope.ServiceProvider.GetRequiredService<IVoyageService>();
                     
-                    // TOUJOURS vider la collection existante
-                    Voyages.Clear();
+                    // Récupérer les données fraîches de la DB
+                    var voyages = await voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                     
-                    if (voyages != null && voyages.Any())
+                    Debug.WriteLine($"Nombre de voyages récupérés de la DB: {voyages?.Count ?? 0}");
+                    
+                    // Mise à jour FORCÉE sur le thread principal
+                    await MainThread.InvokeOnMainThreadAsync(() =>
                     {
-                        // Trier les voyages par date de début
-                        var voyagesOrdonnes = voyages.OrderBy(x => x.DateDebut).ToList();
+                        Debug.WriteLine("Mise à jour FORCÉE de la collection...");
                         
-                        Debug.WriteLine("Ajout des voyages triés à la collection...");
-                        foreach (var v in voyagesOrdonnes)
+                        // TOUJOURS vider la collection existante
+                        Voyages.Clear();
+                        
+                        if (voyages != null && voyages.Any())
                         {
-                            Debug.WriteLine($"Ajout: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
-                            var voyageItemViewModel = new VoyageItemViewModel(v);
-                            Voyages.Add(voyageItemViewModel);
+                            // Trier les voyages par date de début
+                            var voyagesOrdonnes = voyages.OrderBy(x => x.DateDebut).ToList();
+                            
+                            Debug.WriteLine("Ajout des voyages triés à la collection...");
+                            foreach (var v in voyagesOrdonnes)
+                            {
+                                Debug.WriteLine($"Ajout: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
+                                var voyageItemViewModel = new VoyageItemViewModel(v);
+                                Voyages.Add(voyageItemViewModel);
+                            }
                         }
-                    }
-                    
-                    Debug.WriteLine($"Collection mise à jour - {Voyages.Count} voyages dans la liste");
-                    
-                    // Forcer PLUSIEURS notifications de changement
-                    OnPropertyChanged(nameof(Voyages));
-                    OnPropertyChanged(); // Notification générale
-                });
+                        
+                        Debug.WriteLine($"Collection mise à jour - {Voyages.Count} voyages dans la liste");
+                        
+                        // Forcer PLUSIEURS notifications de changement
+                        OnPropertyChanged(nameof(Voyages));
+                        OnPropertyChanged(); // Notification générale
+                    });
+                }
                 
                 Debug.WriteLine($"=== {typeChargement} TERMINÉ - {Voyages.Count} voyages affichés ===");
             }

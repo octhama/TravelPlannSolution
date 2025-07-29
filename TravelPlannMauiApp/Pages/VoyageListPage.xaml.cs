@@ -28,8 +28,17 @@ namespace TravelPlannMauiApp.Pages
             {
                 Debug.WriteLine("=== OnAppearing - VoyageListPage ===");
                 
-                // TOUJOURS vérifier le flag et rafraîchir si nécessaire
-                await CheckAndForceRefreshIfNeeded();
+                // Vérifier si le paramètre forceRefresh est présent
+                if (Shell.Current?.CurrentState?.Location?.OriginalString?.Contains("forceRefresh=true") ?? false)
+                {
+                    Debug.WriteLine("Forcer le rechargement via paramètre URL");
+                    await _viewModel.ForceReloadFromDatabase();
+                }
+                else
+                {
+                    // Logique normale de vérification du flag
+                    await CheckAndForceRefreshIfNeeded();
+                }
             }
             catch (Exception ex)
             {
