@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using BU.Services;
 using DAL.DB;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ using Microsoft.Maui.Controls.Maps;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
+using Refit;
 using TravelPlannMauiApp.Pages;
 using TravelPlannMauiApp.ViewModels;
 
@@ -78,6 +81,15 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();
+        builder.Services.AddRefitClient<IOpenWeatherApi>(provider => 
+                new RefitSettings {
+                    ContentSerializer = new SystemTextJsonContentSerializer(
+                        new JsonSerializerOptions {
+                            PropertyNameCaseInsensitive = true,
+                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                        })
+                })
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.openweathermap.org"));
         
         // Enregistrement des Pages
         builder.Services.AddTransient<MainPage>();

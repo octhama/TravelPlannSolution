@@ -24,13 +24,15 @@ namespace TravelPlannMauiApp
                 var viewModel = _serviceProvider.GetService<MainPageViewModel>();
                 if (viewModel == null)
                 {
-                    viewModel = new MainPageViewModel();
+                    var voyageService = _serviceProvider.GetService<IVoyageService>();
+                    var sessionService = _serviceProvider.GetService<ISessionService>();
+                    viewModel = new MainPageViewModel(voyageService, sessionService);
                 }
                 BindingContext = viewModel;
             }
             else
             {
-                BindingContext = new MainPageViewModel();
+                BindingContext = new MainPageViewModel(new DefaultVoyageService(), new DefaultSessionService());
             }
             
             UpdateTabSelection();

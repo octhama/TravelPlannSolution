@@ -48,25 +48,25 @@
                     </Frame.GestureRecognizers>
                 </Frame>
 
-                <!-- Widget Prochain Voyage -->
+                <!-- Widget Destination Recommandée -->
                 <Frame CornerRadius="12" 
                        Padding="15"
                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
                        HasShadow="True">
                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
-                        <Label Text="🗓️"
+                        <Label Text="📍"
                                Grid.RowSpan="2"
                                FontSize="24"
                                HeightRequest="40"
                                WidthRequest="40"
                                Margin="0,0,10,0"/>
                         
-                        <Label Text="PROCHAIN VOYAGE"
+                        <Label Text="DESTINATION RECOMMANDÉE"
                                Grid.Column="1"
                                FontSize="12"
                                TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
                         
-                        <Label Text="Paris, France"
+                        <Label Text="{Binding DestinationRecommande}"
                                Grid.Column="1"
                                Grid.Row="1"
                                FontSize="16"
@@ -84,7 +84,7 @@
                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
                        HasShadow="True">
                     <Grid ColumnDefinitions="Auto,*,Auto">
-                        <Label Text="☀️"
+                        <Label Text="{Binding MeteoIcon}"
                                FontSize="24"
                                HeightRequest="40"
                                WidthRequest="40"/>
@@ -93,17 +93,17 @@
                             <Label Text="MÉTÉO ACTUELLE"
                                   FontSize="12"
                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
-                            <Label Text="Paris, France"
+                            <Label Text="{Binding DestinationRecommande}"
                                   FontSize="14"
                                   TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
                         </VerticalStackLayout>
                         
                         <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
-                            <Label Text="24°C"
+                            <Label Text="{Binding Temperature}"
                                   FontSize="24"
                                   FontAttributes="Bold"
                                   TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
-                            <Label Text="Ensoleillé"
+                            <Label Text="{Binding MeteoDescription}"
                                   FontSize="12"
                                   HorizontalOptions="End"
                                   TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"/>
@@ -120,7 +120,7 @@
                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
                            HasShadow="True">
                         <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
-                            <Label Text="12"
+                            <Label Text="{Binding TotalVoyages}"
                                    FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
@@ -130,14 +130,14 @@
                         </VerticalStackLayout>
                     </Frame>
                     
-                    <!-- Destinations -->
+                    <!-- Pays -->
                     <Frame CornerRadius="12"
                            Grid.Column="1"
                            Padding="15"
                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
                            HasShadow="True">
                         <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
-                            <Label Text="5"
+                            <Label Text="{Binding TotalPays}"
                                    FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
@@ -154,7 +154,7 @@
                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
                            HasShadow="True">
                         <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
-                            <Label Text="€1,240"
+                            <Label Text="{Binding TotalDepenses, StringFormat='€{0:N0}'}"
                                    FontSize="24"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
@@ -194,9 +194,6 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <!--<Label Text="🗺️"
-                           HorizontalOptions="Center"
-                           FontSize="24"/>-->
                     <Label x:Name="MapLabel"
                            Text="Carte"
                            FontSize="16"/>
@@ -213,12 +210,10 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <!--<Label Text="🏠"
-                           HorizontalOptions="Center"
-                           FontSize="24"/>-->
                     <Label x:Name="HomeLabel"
                            Text="Accueil"
-                           FontSize="16"/>
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"/>
                 </VerticalStackLayout>
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnTabTapped"/>
@@ -232,9 +227,6 @@
                 <VerticalStackLayout Spacing="4"
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center">
-                    <!--<Label Text="✈️"
-                           HorizontalOptions="Center"
-                           FontSize="24"/>-->
                     <Label x:Name="TripsLabel"
                            Text="Voyages"
                            FontSize="16"/>
