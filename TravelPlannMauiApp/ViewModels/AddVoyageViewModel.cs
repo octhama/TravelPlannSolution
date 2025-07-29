@@ -285,15 +285,12 @@ namespace TravelPlannMauiApp.ViewModels
                 return;
             }
 
-            try
+             try
             {
                 IsBusy = true;
                 Debug.WriteLine("=== DÉBUT AddVoyageAsync ===");
 
-                // IMPORTANT : Récupérer l'utilisateur connecté
-                // Vous devrez adapter cette partie selon votre système de gestion des utilisateurs
-                var currentUserId = GetCurrentUserId(); // À implémenter selon votre logique
-                
+                var currentUserId = GetCurrentUserId();
                 if (currentUserId <= 0)
                 {
                     await Shell.Current.DisplayAlert("Erreur", "Utilisateur non connecté", "OK");
@@ -343,20 +340,25 @@ namespace TravelPlannMauiApp.ViewModels
                 
                 Debug.WriteLine($"Voyage prêt à être ajouté: {voyage.NomVoyage}, Dates: {voyage.DateDebut} - {voyage.DateFin}, UtilisateurId: {voyage.UtilisateurId}");
                 
-                // Ajouter le voyage via le service
                 await _voyageService.AddVoyageAsync(voyage);
                 Debug.WriteLine($"Voyage ajouté avec succès: {voyage.NomVoyage}");
                 
+                // 1. Définir le flag de rechargement
+                Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
+                
+                // 2. Envoyer un message pour déclencher le rafraîchissement
+                MessagingCenter.Send<object>(this, "RefreshVoyageList");
+                
+                Debug.WriteLine("Flag et message de rafraîchissement envoyés");
+
                 // Réinitialiser les champs
                 ResetForm();
-                
-                Debug.WriteLine("Réinitialisation des champs et collections après ajout du voyage");
                 
                 // Afficher un message de succès
                 await Shell.Current.DisplayAlert("Succès", "Voyage ajouté avec succès!", "OK");
                 
-                // Retour à la page précédente
-                await Shell.Current.GoToAsync("..");
+                // 3. Retour à la liste des voyages avec navigation forcée
+                await Shell.Current.GoToAsync($"..?forceRefresh=true");
             }
             catch (Exception ex)
             {
