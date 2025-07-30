@@ -30,9 +30,14 @@ public static class MauiProgram
             });
 
         // Configuration pour lire le fichier appsettings.json depuis les ressources embarquées
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = Assembly.GetExecutingAssembly(); // Récupère l'assembly courant
         using var stream = assembly.GetManifestResourceStream("TravelPlannMauiApp.appsettings.json");
         
+        if (stream == null)
+        {
+            throw new FileNotFoundException("Le fichier appsettings.json n'a pas été trouvé dans les ressources embarquées.");
+        }
+
         var config = new ConfigurationBuilder()
             .AddJsonStream(stream)
             .Build();
