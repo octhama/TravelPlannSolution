@@ -6,7 +6,6 @@ using BU.Services;
 using DAL.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Controls.Maps;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
@@ -22,7 +21,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiMaps()
+            .UseMauiMaps() // Ajoutez cette ligne
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => 
             {
@@ -38,12 +37,12 @@ public static class MauiProgram
             .AddJsonStream(stream)
             .Build();
 
-        // Configuration DB avec la chaîne depuis appsettings.json or une valeur par défaut
-        var connectionString = config.GetConnectionString("TravelPlannConnectionString");
+        // Configuration DB avec la chaîne depuis appsettings.json
+        var connectionString = config.GetConnectionString("TravelPlannConnectionString") ?? 
+                              "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;";
 
         Debug.WriteLine($"Chaîne de connexion: {connectionString}");
 
-        // Enregistrement du DbContextFactory
         builder.Services.AddDbContextFactory<TravelPlannDbContext>(options =>
         {
             options.UseSqlServer(connectionString, sqlOptions =>

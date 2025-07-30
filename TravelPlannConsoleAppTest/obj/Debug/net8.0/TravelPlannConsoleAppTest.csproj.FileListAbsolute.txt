@@ -76,7 +76,6 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Security.Cryptography.ProtectedData.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Security.Permissions.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Windows.Extensions.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/Xamarin.Essentials.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/cs/Microsoft.CodeAnalysis.resources.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/de/Microsoft.CodeAnalysis.resources.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/es/Microsoft.CodeAnalysis.resources.dll

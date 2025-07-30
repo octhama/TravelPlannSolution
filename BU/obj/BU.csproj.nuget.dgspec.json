@@ -50,12 +50,6 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Xamarin.Essentials": {
-              "target": "Package",
-              "version": "[1.8.1, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

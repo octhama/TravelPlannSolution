@@ -15,9 +15,9 @@ internal class Program
 
         // Configuration pour la console
         var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
 
         var options = new DbContextOptionsBuilder<TravelPlannDbContext>()
             .UseSqlServer(config.GetConnectionString("TravelPlannConnectionString"))

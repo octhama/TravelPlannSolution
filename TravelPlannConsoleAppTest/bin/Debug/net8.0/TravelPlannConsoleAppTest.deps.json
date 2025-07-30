@@ -1234,22 +1234,10 @@
           }
         }
       },
-      "Xamarin.Essentials/1.8.1": {
-        "dependencies": {
-          "System.Numerics.Vectors": "4.5.0"
-        },
-        "runtime": {
-          "lib/netstandard2.0/Xamarin.Essentials.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "BU/1.0.0": {
         "dependencies": {
           "Common": "1.0.0",
-          "DAL": "1.0.0",
-          "Xamarin.Essentials": "1.8.1"
+          "DAL": "1.0.0"
         },
         "runtime": {
           "BU.dll": {
@@ -1938,13 +1926,6 @@
       "sha512": "sha512-IXoJOXIqc39AIe+CIR7koBtRGMiCt/LPM3lI+PELtDIy9XdyeSrwXFdWV9dzJ2Awl0paLWUaknLxFQ5HpHZUog==",
       "path": "system.windows.extensions/6.0.0",
       "hashPath": "system.windows.extensions.6.0.0.nupkg.sha512"
-    },
-    "Xamarin.Essentials/1.8.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-IzfRGrCrRuytgdQU+Im17Cepib6qUyLj1xfMjn+sDPTfmhmcZotsQCm5Dblm4Vxo9/SGFTdm1OgJUKWzu+dfjw==",
-      "path": "xamarin.essentials/1.8.1",
-      "hashPath": "xamarin.essentials.1.8.1.nupkg.sha512"
     },
     "BU/1.0.0": {
       "type": "project",

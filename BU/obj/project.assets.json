@@ -1393,22 +1393,6 @@
           }
         }
       },
-      "Xamarin.Essentials/1.8.1": {
-        "type": "package",
-        "dependencies": {
-          "System.Numerics.Vectors": "4.5.0"
-        },
-        "compile": {
-          "lib/netstandard2.0/Xamarin.Essentials.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/netstandard2.0/Xamarin.Essentials.dll": {
-            "related": ".pdb;.xml"
-          }
-        }
-      },
       "Common/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -2785,22 +2769,6 @@
         "runtime": {
           "lib/net6.0/System.Windows.Extensions.dll": {
             "related": ".xml"
-          }
-        }
-      },
-      "Xamarin.Essentials/1.8.1": {
-        "type": "package",
-        "dependencies": {
-          "System.Numerics.Vectors": "4.5.0"
-        },
-        "compile": {
-          "lib/netstandard2.0/Xamarin.Essentials.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/netstandard2.0/Xamarin.Essentials.dll": {
-            "related": ".pdb;.xml"
           }
         }
       },
@@ -5737,48 +5705,6 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Xamarin.Essentials/1.8.1": {
-      "sha512": "IzfRGrCrRuytgdQU+Im17Cepib6qUyLj1xfMjn+sDPTfmhmcZotsQCm5Dblm4Vxo9/SGFTdm1OgJUKWzu+dfjw==",
-      "type": "package",
-      "path": "xamarin.essentials/1.8.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "icon.png",
-        "lib/monoandroid13.0/Xamarin.Essentials.dll",
-        "lib/monoandroid13.0/Xamarin.Essentials.pdb",
-        "lib/monoandroid13.0/Xamarin.Essentials.xml",
-        "lib/netstandard1.0/Xamarin.Essentials.dll",
-        "lib/netstandard1.0/Xamarin.Essentials.pdb",
-        "lib/netstandard1.0/Xamarin.Essentials.xml",
-        "lib/netstandard2.0/Xamarin.Essentials.dll",
-        "lib/netstandard2.0/Xamarin.Essentials.pdb",
-        "lib/netstandard2.0/Xamarin.Essentials.xml",
-        "lib/tizen40/Xamarin.Essentials.dll",
-        "lib/tizen40/Xamarin.Essentials.pdb",
-        "lib/tizen40/Xamarin.Essentials.xml",
-        "lib/uap10.0.16299/Xamarin.Essentials.dll",
-        "lib/uap10.0.16299/Xamarin.Essentials.pdb",
-        "lib/uap10.0.16299/Xamarin.Essentials.pri",
-        "lib/uap10.0.16299/Xamarin.Essentials.xml",
-        "lib/xamarinios10/Xamarin.Essentials.dll",
-        "lib/xamarinios10/Xamarin.Essentials.pdb",
-        "lib/xamarinios10/Xamarin.Essentials.xml",
-        "lib/xamarinmac20/Xamarin.Essentials.dll",
-        "lib/xamarinmac20/Xamarin.Essentials.pdb",
-        "lib/xamarinmac20/Xamarin.Essentials.xml",
-        "lib/xamarintvos10/Xamarin.Essentials.dll",
-        "lib/xamarintvos10/Xamarin.Essentials.pdb",
-        "lib/xamarintvos10/Xamarin.Essentials.xml",
-        "lib/xamarinwatchos10/Xamarin.Essentials.dll",
-        "lib/xamarinwatchos10/Xamarin.Essentials.pdb",
-        "lib/xamarinwatchos10/Xamarin.Essentials.xml",
-        "readme.txt",
-        "xamarin.essentials.1.8.1.nupkg.sha512",
-        "xamarin.essentials.nuspec"
-      ]
-    },
     "Common/1.0.0": {
       "type": "project",
       "path": "../Common/Common.csproj",
@@ -5793,8 +5719,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Common >= 1.0.0",
-      "DAL >= 1.0.0",
-      "Xamarin.Essentials >= 1.8.1"
+      "DAL >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -5846,12 +5771,6 @@
     "frameworks": {
       "net8.0": {
         "targetAlias": "net8.0",
-        "dependencies": {
-          "Xamarin.Essentials": {
-            "target": "Package",
-            "version": "[1.8.1, )"
-          }
-        },
         "imports": [
           "net461",
           "net462",

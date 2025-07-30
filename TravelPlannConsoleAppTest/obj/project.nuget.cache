@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "MtQv+Ci2e3M=",
+  "dgSpecHash": "xSAOYi5t14g=",
   "success": true,
   "projectFilePath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/TravelPlannConsoleAppTest.csproj",
   "expectedPackageFiles": [
@@ -95,8 +95,7 @@
     "/Users/kuassitehou/.nuget/packages/system.text.json/8.0.0/system.text.json.8.0.0.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/system.threading.channels/6.0.0/system.threading.channels.6.0.0.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "/Users/kuassitehou/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512",
-    "/Users/kuassitehou/.nuget/packages/xamarin.essentials/1.8.1/xamarin.essentials.1.8.1.nupkg.sha512"
+    "/Users/kuassitehou/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512"
   ],
   "logs": []
 }
