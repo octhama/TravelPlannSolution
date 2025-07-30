@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using BU.Entities;
 
-﻿namespace BU.Services
+namespace BU.Services
 {
     public class VoyageService : IVoyageService
     {
@@ -241,7 +241,6 @@ using BU.Entities;
             }
         }
 
-        // ... rest of the methods remain the same ...
         public async Task UpdateVoyageAsync(Voyage voyage)
         {
             try
