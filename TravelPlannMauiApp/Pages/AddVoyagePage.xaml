@@ -11,6 +11,7 @@
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBool"/>
         <converters:DecimalToEuroConverter x:Key="DecimalToEuro"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibility"/>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -181,7 +182,7 @@
                                            FontSize="11"
                                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
                                            VerticalOptions="Start"
-                                           IsVisible="{Binding Localisation, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                                           IsVisible="{Binding Localisation, Converter={StaticResource StringToVisibility}}"/>
                                     
                                     <!-- Bouton supprimer -->
                                     <Button Grid.Column="1" 
@@ -300,7 +301,7 @@
                                            FontSize="11"
                                            TextColor="{AppThemeBinding Light=#6200EE, Dark=#BB86FC}"
                                            VerticalOptions="Start"
-                                           IsVisible="{Binding Adresse, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                                           IsVisible="{Binding Adresse, Converter={StaticResource StringToVisibility}}"/>
                                     
                                     <!-- Bouton supprimer -->
                                     <Button Grid.Column="3" 

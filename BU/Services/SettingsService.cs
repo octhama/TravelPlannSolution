@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using Xamarin.Essentials;
+using static Microsoft.Maui.Storage.SecureStorage;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Security.Cryptography;

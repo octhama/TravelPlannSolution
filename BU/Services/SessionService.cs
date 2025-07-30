@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Xamarin.Essentials;
+using static Microsoft.Maui.Storage.SecureStorage;
 
 
 namespace BU.Services;
