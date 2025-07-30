@@ -39,7 +39,7 @@ public class SettingsViewModel : INotifyPropertyChanged
         LogoutCommand = new Command(async () => await LogoutAsync());
     }
 
-    #region Properties
+    #region Propriétés
     public bool IsBusy
     {
         get => _isBusy;
@@ -198,7 +198,7 @@ public class SettingsViewModel : INotifyPropertyChanged
     public int TotalPoints => _currentUser?.PointsRecompenses ?? 0;
     #endregion
 
-    #region Commands
+    #region Commandes
     public ICommand LoadSettingsCommand { get; }
     public ICommand SaveSettingsCommand { get; }
     public ICommand SaveUserInfoCommand { get; }
@@ -206,14 +206,14 @@ public class SettingsViewModel : INotifyPropertyChanged
     public ICommand LogoutCommand { get; }
     #endregion
 
-    #region Navigation Helper
+    #region Navigation Helpers
     protected virtual void OnNavigationRequested(string route)
     {
         NavigationRequested?.Invoke(this, route);
     }
     #endregion
 
-    #region Command Methods
+    #region Méthodes de chargement et de sauvegarde
     private async Task LoadSettingsAsync()
     {
         if (IsBusy) return;
@@ -405,7 +405,7 @@ public class SettingsViewModel : INotifyPropertyChanged
     }
     #endregion
 
-    #region Can Execute Methods
+    #region Méthodes de vérification des autorisations
     private bool CanSaveSettings() => !IsBusy;
 
     private bool CanSaveUserInfo()

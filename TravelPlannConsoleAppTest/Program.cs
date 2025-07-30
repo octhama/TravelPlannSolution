@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
+using DAL.DB;
 
 namespace TravelPlannConsoleAppTest;
 

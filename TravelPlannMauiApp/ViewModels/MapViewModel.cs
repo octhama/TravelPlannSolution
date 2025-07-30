@@ -69,7 +69,7 @@ public class MapViewModel : INotifyPropertyChanged, IDisposable
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    #region Properties
+    #region Propriétés
 
     public string SearchQuery
     {
@@ -294,7 +294,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Commands
+    #region Commandes
 
     public ICommand SearchCommand { get; }
     public ICommand ToggleViewModeCommand { get; }
@@ -360,7 +360,7 @@ public ObservableCollection<Activite> ActivitiesList
     }
 
 
-    #region Map Control Management
+    #region Gestion des contrôles de carte
 
     public void SetMapControl(Microsoft.Maui.Controls.Maps.Map mapControl)
     {
@@ -430,7 +430,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Command Implementations
+    #region Implementation de la logique métier (Commandes - Business Logic)
 
     private async Task ExecuteSearchCommand()
 {
@@ -696,7 +696,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Data Loading and Management
+    #region Gestion des données
 
     public void DiagnoseVoyageData()
     {
@@ -890,7 +890,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Map Pins Management
+    #region Gestion des pins de carte
 
     public async Task InitializeMapOnNamurAsync()
     {
@@ -1018,7 +1018,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region POI Management Methods
+    #region Gestion des points d'intérêt
 
     private void ExecuteTogglePOIManagementCommand()
     {
@@ -1231,7 +1231,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Location Services
+    #region Services de localisation
 
     public async Task<Location> GeocodeLocationAsync(string address)
     {
@@ -1410,7 +1410,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Distance and Utility Methods
+    #region Géolocalisation et distance
 
     /// <summary>
     /// Calcule la distance entre deux locations
@@ -1475,7 +1475,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Pin Management Helpers
+    #region Helpers de gestion des pins
 
     /// <summary>
     /// Trouve un pin par son label
@@ -1576,7 +1576,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Map Navigation Helpers
+    #region Helpers de navigation de la carte
 
     /// <summary>
     /// Centre la carte sur les pins d'un voyage spécifique
@@ -1691,7 +1691,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Export and Share Methods
+    #region Methodes d'exportation de l'état de la carte
 
     /// <summary>
     /// Exporte les informations de la carte actuelle
@@ -1735,7 +1735,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region INotifyPropertyChanged Implementation
+    #region Implementation de INotifyPropertyChanged
 
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
@@ -1754,7 +1754,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region IDisposable Implementation
+    #region Implementation de IDisposable
 
     private bool _disposed = false;
 
@@ -1808,7 +1808,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Debug and Logging Methods
+    #region Méthodes de débogage et de journalisation
 
     /// <summary>
     /// Affiche l'état actuel du ViewModel pour debug

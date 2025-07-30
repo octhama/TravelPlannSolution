@@ -6,6 +6,7 @@ using BU.Services;
 using DAL.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Controls.Maps;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
@@ -38,8 +39,7 @@ public static class MauiProgram
             .Build();
 
         // Configuration DB avec la chaîne depuis appsettings.json or une valeur par défaut
-        var connectionString = config.GetConnectionString("TravelPlannConnectionString") ?? 
-                              "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;";
+        var connectionString = config.GetConnectionString("TravelPlannConnectionString");
 
         Debug.WriteLine($"Chaîne de connexion: {connectionString}");
 
