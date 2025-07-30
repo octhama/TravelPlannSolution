@@ -1,5 +1,3 @@
-
-
 # Instructions d'installation - TravelPlann MAUI App
 
 ## Configuration Windows avec Visual Studio et SQL Server local
@@ -120,13 +118,13 @@ public static class MauiProgram
         {
             var assembly = Assembly.GetExecutingAssembly();
             using var stream = assembly.GetManifestResourceStream("TravelPlannMauiApp.appsettings.json");
-    
+  
             if (stream != null)
             {
                 var config = new ConfigurationBuilder()
                     .AddJsonStream(stream)
                     .Build();
-            
+          
                 connectionString = config.GetConnectionString("TravelPlannConnectionString");
                 Debug.WriteLine($"Chaîne de connexion depuis appsettings.json: {connectionString}");
             }
@@ -155,7 +153,7 @@ public static class MauiProgram
                     errorNumbersToAdd: null);
                 sqlOptions.CommandTimeout(60); // Timeout plus long pour Windows
             });
-    
+  
 #if DEBUG
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
@@ -212,16 +210,16 @@ public static class MauiProgram
             try
             {
                 Debug.WriteLine("=== TEST DE CONNEXION WINDOWS ===");
-        
+      
                 var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TravelPlannDbContext>>();
                 Debug.WriteLine("✓ DbContextFactory obtenu");
-        
+      
                 using var context = dbFactory.CreateDbContext();
-        
+      
                 // Test de connexion avec détails pour Windows
                 var canConnect = context.Database.CanConnect();
                 Debug.WriteLine($"✓ Connexion DB: {canConnect}");
-        
+      
                 if (canConnect)
                 {
                     // Vérification des tables essentielles
@@ -249,22 +247,22 @@ public static class MauiProgram
                     Debug.WriteLine("3. L'utilisateur sa_travelplann a les bons droits");
                     Debug.WriteLine("4. Le port 1433 est ouvert");
                 }
-        
+      
                 var utilisateurService = scope.ServiceProvider.GetRequiredService<IUtilisateurService>();
                 Debug.WriteLine("✓ UtilisateurService obtenu");
-        
+      
                 Debug.WriteLine("=== CONFIGURATION TERMINÉE ===");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"❌ ERREUR de configuration: {ex.Message}");
                 Debug.WriteLine($"Type: {ex.GetType().Name}");
-        
+      
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"Cause: {ex.InnerException.Message}");
                 }
-        
+      
                 // Messages d'aide spécifiques Windows
                 if (ex.Message.Contains("login failed"))
                 {
@@ -286,437 +284,35 @@ public static class MauiProgram
 }
 ```
 
-## 3. Configuration Console App Test (optionnel)
+## 3. Création de la base de données
 
-Si vous voulez tester la connexion avec une app console, créez `Program.cs` :
+### A. Utiliser les migrations Entity Framework
 
-```csharp
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-using System.Linq;
-using DAL.DB;
-using BU.Services;
+Dans la **Console du Gestionnaire de package** de Visual Studio :
 
-namespace TravelPlannConsoleAppTest;
+```powershell
+# Si vous n'avez pas encore de migrations
+Add-Migration InitialCreate
 
-internal class Program
-{
-    static async Task Main(string[] args)
-    {
-        Console.WriteLine("=== Test TravelPlanner - Windows ===");
-        Console.WriteLine("Initialisation...");
-
-        try
-        {
-            // Configuration pour Windows
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build();
-
-            // Chaîne de connexion avec fallback
-            var connectionString = config.GetConnectionString("TravelPlannConnectionString") ??
-                "Server=localhost,1433;Database=TravelPlanner;User Id=sa_travelplann;Password=VotreMotDePasseComplexe123!;TrustServerCertificate=True;";
-
-            Console.WriteLine($"Connexion: {connectionString.Substring(0, Math.Min(50, connectionString.Length))}...");
-
-            // Configuration Entity Framework
-            var options = new DbContextOptionsBuilder<TravelPlannDbContext>()
-                .UseSqlServer(connectionString, sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
-                    sqlOptions.CommandTimeout(30);
-                })
-                .EnableDetailedErrors()
-                .Options;
-
-            await using var context = new TravelPlannDbContext(options);
-          
-            // Test de connexion
-            Console.WriteLine("Test de connexion...");
-            var canConnect = await context.Database.CanConnectAsync();
-          
-            if (!canConnect)
-            {
-                Console.WriteLine("❌ Impossible de se connecter à la base de données !");
-                Console.WriteLine("Vérifiez votre configuration SQL Server.");
-                return;
-            }
-          
-            Console.WriteLine("✓ Connexion réussie !");
-
-            // Test des services
-            var voyageService = new VoyageService(context);
-            var utilisateurService = new UtilisateurService(context);
-
-            // Afficher les utilisateurs
-            Console.WriteLine("\n=== UTILISATEURS ===");
-            var users = await utilisateurService.GetAllAsync();
-            if (users.Any())
-            {
-                foreach (var user in users)
-                {
-                    Console.WriteLine($"- {user.Prenom} {user.Nom} ({user.Email})");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Aucun utilisateur trouvé.");
-            }
-
-            // Afficher les voyages
-            Console.WriteLine("\n=== VOYAGES ===");
-            var voyages = await voyageService.GetVoyagesAsync();
-          
-            if (voyages.Any())
-            {
-                foreach (var voyage in voyages)
-                {
-                    Console.WriteLine($"- {voyage.NomVoyage}");
-                    Console.WriteLine($"  Description: {voyage.Description ?? "Aucune"}");
-                    Console.WriteLine($"  Dates: {voyage.DateDebut:dd/MM/yyyy} au {voyage.DateFin:dd/MM/yyyy}");
-                    Console.WriteLine($"  Créateur: ID {voyage.UtilisateurId}");
-                    Console.WriteLine();
-                }
-            }
-            else
-            {
-                Console.WriteLine("Aucun voyage trouvé.");
-                Console.WriteLine("La base semble vide - c'est normal lors de la première installation.");
-            }
-
-            // Test statistiques
-            Console.WriteLine("\n=== STATISTIQUES ===");
-            var userCount = users.Count();
-            var voyageCount = voyages.Count();
-          
-            Console.WriteLine($"Utilisateurs: {userCount}");
-            Console.WriteLine($"Voyages: {voyageCount}");
-          
-            Console.WriteLine("\n✓ Tous les tests passés avec succès !");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"\n❌ ERREUR: {ex.Message}");
-            Console.WriteLine("\nDétails techniques:");
-            Console.WriteLine(ex.ToString());
-          
-            Console.WriteLine("\# Instructions d'installation - TravelPlann MAUI App
-## Configuration Windows avec Visual Studio et SQL Server local
-
-### Prérequis
-- Windows 10/11
-- Visual Studio 2022 (Community, Professional ou Enterprise)
-- SQL Server (Express, Developer ou Standard) installé localement
-- SQL Server Management Studio (SSMS)
-- .NET 8 SDK ou supérieur
-
----
-
-## 1. Configuration SQL Server
-
-### A. Vérifier l'installation SQL Server
-1. Ouvrez **SQL Server Configuration Manager**
-   - Cherchez "SQL Server Configuration Manager" dans le menu Démarrer
-   - Ou allez dans `C:\Windows\SysWOW64\SQLServerManager15.msc` (pour SQL Server 2019)
-
-2. Dans **SQL Server Services**, vérifiez que ces services sont démarrés :
-   - `SQL Server (MSSQLSERVER)` ou `SQL Server (nom_de_votre_instance)`
-   - `SQL Server Agent` (optionnel)
-
-### B. Activer l'authentification mixte
-1. Ouvrez **SQL Server Management Studio (SSMS)**
-2. Connectez-vous avec l'authentification Windows
-3. Clic droit sur le serveur → **Propriétés**
-4. Allez dans **Sécurité** → Sélectionnez **Mode d'authentification SQL Server et Windows**
-5. Cliquez **OK** et redémarrez le service SQL Server
-
-### C. Créer la base de données et l'utilisateur
-```sql
--- Dans SSMS, exécutez ces commandes :
-USE master;
-GO
-
--- Créer la base de données
-CREATE DATABASE TravelPlanner;
-GO
-
--- Créer le login et l'utilisateur
-CREATE LOGIN sa_travelplann WITH PASSWORD = 'VotreMotDePasseComplexe123!';
-GO
-
-USE TravelPlanner;
-GO
-
-CREATE USER sa_travelplann FOR LOGIN sa_travelplann;
-GO
-
--- Donner les droits complets
-ALTER ROLE db_owner ADD MEMBER sa_travelplann;
-GO
+# Appliquer les migrations
+Update-Database
 ```
 
-### D. Configurer le port et TCP/IP
+### B. Vérifier la création des tables
 
-1. Dans **SQL Server Configuration Manager**
-2. Allez dans **SQL Server Network Configuration** → **Protocols for MSSQLSERVER**
-3. Activez **TCP/IP** (clic droit → Enable)
-4. Double-cliquez sur **TCP/IP** → Onglet **IP Addresses**
-5. Scrollez jusqu'à **IPAll** et définissez :
-   * **TCP Dynamic Ports** : (laisser vide)
-   * **TCP Port** : `1433`
-6. Redémarrez le service SQL Server
+Dans **SQL Server Management Studio** :
 
-### E. Créer les tables avec le script SQL
-
-Dans SSMS, connectez-vous à la base **TravelPlanner** et exécutez ce script complet :
-
-```sql
--- Script de création des tables TravelPlanner
-USE TravelPlanner;
-GO
-
--- Table Activite
-CREATE TABLE dbo.Activite (
-    ActiviteID int NOT NULL IDENTITY(1,1),
-    Nom nvarchar(100) NOT NULL,
-    Description nvarchar(max) NULL,
-    Localisation nvarchar(255) NULL
-);
-GO
-
-ALTER TABLE dbo.Activite ADD CONSTRAINT PK__Activite__BE3FB865F23B2E86 PRIMARY KEY (ActiviteID);
-GO
-
--- Table Utilisateur
-CREATE TABLE dbo.Utilisateur (
-    UtilisateurID int NOT NULL IDENTITY(1,1),
-    Nom nvarchar(100) NOT NULL,
-    Prenom nvarchar(100) NOT NULL,
-    Email nvarchar(255) NOT NULL,
-    MotDePasse nvarchar(255) NOT NULL,
-    PointsRecompenses int NOT NULL DEFAULT 0
-);
-GO
-
-ALTER TABLE dbo.Utilisateur ADD CONSTRAINT PK__Utilisat__6CB6AE1F1218C985 PRIMARY KEY (UtilisateurID);
-GO
-
-ALTER TABLE dbo.Utilisateur ADD CONSTRAINT UQ_Utilisateur_Email UNIQUE (Email);
-GO
-
--- Table Voyage
-CREATE TABLE dbo.Voyage (
-    VoyageID int NOT NULL IDENTITY(1,1),
-    NomVoyage nvarchar(100) NOT NULL,
-    Description nvarchar(max) NULL,
-    DateDebut date NOT NULL,
-    DateFin date NOT NULL,
-    EstComplete bit NOT NULL DEFAULT 0,
-    EstArchive bit NOT NULL DEFAULT 0,
-    UtilisateurID int NOT NULL
-);
-GO
-
-ALTER TABLE dbo.Voyage ADD CONSTRAINT PK__Voyage__577D73A343C0B05F PRIMARY KEY (VoyageID);
-GO
-
-ALTER TABLE dbo.Voyage ADD CONSTRAINT FK_Voyage_Utilisateur 
-    FOREIGN KEY (UtilisateurID) REFERENCES dbo.Utilisateur(UtilisateurID);
-GO
-
--- Table Hebergement
-CREATE TABLE dbo.Hebergement (
-    HebergementID int NOT NULL IDENTITY(1,1),
-    Nom nvarchar(100) NOT NULL,
-    TypeHebergement nvarchar(50) NULL,
-    Cout decimal(10,2) NULL,
-    DateDebut date NULL,
-    DateFin date NULL,
-    Adresse nvarchar(255) NULL
-);
-GO
-
-ALTER TABLE dbo.Hebergement ADD CONSTRAINT PK__Hebergem__35A3F6B1A87E8D30 PRIMARY KEY (HebergementID);
-GO
-
--- Table de liaison ActiviteVoyage
-CREATE TABLE dbo.ActiviteVoyage (
-    ActiviteID int NOT NULL,
-    VoyageID int NOT NULL
-);
-GO
-
-ALTER TABLE dbo.ActiviteVoyage ADD CONSTRAINT PK_ActiviteVoyage PRIMARY KEY (ActiviteID, VoyageID);
-GO
-
-ALTER TABLE dbo.ActiviteVoyage ADD CONSTRAINT FK_ActiviteVoyage_Activite 
-    FOREIGN KEY (ActiviteID) REFERENCES dbo.Activite(ActiviteID) ON DELETE CASCADE;
-GO
-
-ALTER TABLE dbo.ActiviteVoyage ADD CONSTRAINT FK_ActiviteVoyage_Voyage 
-    FOREIGN KEY (VoyageID) REFERENCES dbo.Voyage(VoyageID) ON DELETE CASCADE;
-GO
-
--- Table de liaison HebergementVoyage
-CREATE TABLE dbo.HebergementVoyage (
-    VoyageID int NOT NULL,
-    HebergementID int NOT NULL
-);
-GO
-
-ALTER TABLE dbo.HebergementVoyage ADD CONSTRAINT PK_HebergementVoyage PRIMARY KEY (VoyageID, HebergementID);
-GO
-
-ALTER TABLE dbo.HebergementVoyage ADD CONSTRAINT FK_HebergementVoyage_Hebergement 
-    FOREIGN KEY (HebergementID) REFERENCES dbo.Hebergement(HebergementID) ON DELETE CASCADE;
-GO
-
-ALTER TABLE dbo.HebergementVoyage ADD CONSTRAINT FK_HebergementVoyage_Voyage 
-    FOREIGN KEY (VoyageID) REFERENCES dbo.Voyage(VoyageID) ON DELETE CASCADE;
-GO
-
--- Table GroupeVoyage
-CREATE TABLE dbo.GroupeVoyage (
-    GroupeID int NOT NULL IDENTITY(1,1),
-    NomGroupe nvarchar(100) NOT NULL,
-    DateCreation date DEFAULT GETDATE()
-);
-GO
-
-ALTER TABLE dbo.GroupeVoyage ADD CONSTRAINT PK__GroupeVo__5C811B3078FA0CDF PRIMARY KEY (GroupeID);
-GO
-
--- Table MembreGroupe
-CREATE TABLE dbo.MembreGroupe (
-    MembreGroupeID int NOT NULL IDENTITY(1,1),
-    UtilisateurID int NOT NULL,
-    GroupeID int NOT NULL,
-    Role nvarchar(50) NOT NULL,
-    DateAdhesion date DEFAULT GETDATE()
-);
-GO
-
-ALTER TABLE dbo.MembreGroupe ADD CONSTRAINT PK__MembreGr__DED3D73B96357064 PRIMARY KEY (MembreGroupeID);
-GO
-
-ALTER TABLE dbo.MembreGroupe ADD CONSTRAINT FK_Membre_Groupe 
-    FOREIGN KEY (GroupeID) REFERENCES dbo.GroupeVoyage(GroupeID);
-GO
-
-ALTER TABLE dbo.MembreGroupe ADD CONSTRAINT FK_Membre_Utilisateur 
-    FOREIGN KEY (UtilisateurID) REFERENCES dbo.Utilisateur(UtilisateurID);
-GO
-
--- Table OrganisationVoyage (relation many-to-many Utilisateur-Voyage)
-CREATE TABLE dbo.OrganisationVoyage (
-    UtilisateurID int NOT NULL,
-    VoyageID int NOT NULL
-);
-GO
-
-ALTER TABLE dbo.OrganisationVoyage ADD CONSTRAINT PK_OrganisationVoyage PRIMARY KEY (UtilisateurID, VoyageID);
-GO
-
-ALTER TABLE dbo.OrganisationVoyage ADD CONSTRAINT FK_OrganisationVoyage_Utilisateur 
-    FOREIGN KEY (UtilisateurID) REFERENCES dbo.Utilisateur(UtilisateurID) ON DELETE CASCADE;
-GO
-
-ALTER TABLE dbo.OrganisationVoyage ADD CONSTRAINT FK_OrganisationVoyage_Voyage 
-    FOREIGN KEY (VoyageID) REFERENCES dbo.Voyage(VoyageID) ON DELETE CASCADE;
-GO
-
--- Table NiveauRecompense
-CREATE TABLE dbo.NiveauRecompense (
-    NiveauRecompenseID int NOT NULL IDENTITY(1,1),
-    NomNiveau nvarchar(50) NOT NULL,
-    PointsRequis int NOT NULL,
-    Avantages nvarchar(max) NULL
-);
-GO
-
-ALTER TABLE dbo.NiveauRecompense ADD CONSTRAINT PK__NiveauRe__04A74635554B36E3 PRIMARY KEY (NiveauRecompenseID);
-GO
-
--- Table PointsRecompense
-CREATE TABLE dbo.PointsRecompense (
-    PointsRecompenseID int NOT NULL IDENTITY(1,1),
-    PointsGagnes int NOT NULL,
-    DateObtention date DEFAULT GETDATE(),
-    UtilisateurID int NOT NULL,
-    NiveauRecompenseID int NULL
-);
-GO
-
-ALTER TABLE dbo.PointsRecompense ADD CONSTRAINT PK__PointsRe__9A7FC267F35BD8D3 PRIMARY KEY (PointsRecompenseID);
-GO
-
-ALTER TABLE dbo.PointsRecompense ADD CONSTRAINT FK_Points_Utilisateur 
-    FOREIGN KEY (UtilisateurID) REFERENCES dbo.Utilisateur(UtilisateurID);
-GO
-
-ALTER TABLE dbo.PointsRecompense ADD CONSTRAINT FK_Points_NiveauRecompense 
-    FOREIGN KEY (NiveauRecompenseID) REFERENCES dbo.NiveauRecompense(NiveauRecompenseID);
-GO
-
--- Table ClassementVoyageur
-CREATE TABLE dbo.ClassementVoyageur (
-    ClassementID int NOT NULL IDENTITY(1,1),
-    UtilisateurID int NOT NULL,
-    Rang int NOT NULL,
-    NombreVoyages int NOT NULL,
-    DistanceTotale decimal(10,2) NOT NULL
-);
-GO
-
-ALTER TABLE dbo.ClassementVoyageur ADD CONSTRAINT PK__Classeme__63F085DD50156D31 PRIMARY KEY (ClassementID);
-GO
-
-ALTER TABLE dbo.ClassementVoyageur ADD CONSTRAINT FK_Classement_Utilisateur 
-    FOREIGN KEY (UtilisateurID) REFERENCES dbo.Utilisateur(UtilisateurID);
-GO
-
--- Table ReservationHebergement
-CREATE TABLE dbo.ReservationHebergement (
-    ReservationID int NOT NULL IDENTITY(1,1),
-    HebergementID int NOT NULL,
-    StatutReservation nvarchar(50) NOT NULL,
-    NumConfirmation nvarchar(50) NOT NULL
-);
-GO
-
-ALTER TABLE dbo.ReservationHebergement ADD CONSTRAINT PK__Reservat__B7EE5F04BCBEFAA4 PRIMARY KEY (ReservationID);
-GO
-
-ALTER TABLE dbo.ReservationHebergement ADD CONSTRAINT FK_Reservation_Hebergement 
-    FOREIGN KEY (HebergementID) REFERENCES dbo.Hebergement(HebergementID);
-GO
-
--- Insertion de données de test
-INSERT INTO dbo.Utilisateur (Nom, Prenom, Email, MotDePasse, PointsRecompenses)
-VALUES 
-    ('Admin', 'Test', 'admin@test.com', 'admin123', 0),
-    ('User', 'Demo', 'user@test.com', 'user123', 50);
-GO
-
-INSERT INTO dbo.Activite (Nom, Description, Localisation)
-VALUES 
-    ('Visite du Louvre', 'Visite du célèbre musée parisien', 'Paris, France'),
-    ('Tour Eiffel', 'Montée au sommet de la Tour Eiffel', 'Paris, France'),
-    ('Plage de Nice', 'Détente sur la Côte d''Azur', 'Nice, France');
-GO
-
-INSERT INTO dbo.Hebergement (Nom, TypeHebergement, Cout, Adresse)
-VALUES 
-    ('Hôtel Ritz Paris', 'Hôtel', 450.00, '15 Place Vendôme, Paris'),
-    ('Airbnb Montmartre', 'Appartement', 120.00, 'Montmartre, Paris'),
-    ('Camping Côte d''Azur', 'Camping', 35.00, 'Nice, France');
-GO
-
-PRINT 'Base de données TravelPlanner créée avec succès !';
-```
+1. Connectez-vous à votre serveur
+2. Expandez **Bases de données** → **TravelPlanner**
+3. Expandez **Tables** - vous devriez voir :
+   * `Activite`
+   * `ClassementVoyageur`
+   * `GroupeVoyage`
+   * `Hebergement`
+   * `MembreGroupe`
+   * `Utilisateur`
+   * `Voyage`
+   * Tables de liaison (`ActiviteVoyage`, `HebergementVoyage`, etc.)
 
 ---
 
