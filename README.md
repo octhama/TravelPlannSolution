@@ -1,21 +1,52 @@
----
-## 2. Configuration du projet MAUI
 
+
+# Instructions d'installation - TravelPlann MAUI App
+
+## Configuration Windows avec Visual Studio et SQL Server local
+
+### Prérequis
+
+* Windows 10/11
+* Visual Studio 2022 (Community, Professional ou Enterprise)
+* SQL Server (Express, Developer ou Standard) installé localement
+* SQL Server Management Studio (SSMS)
+* .NET 8 SDK ou supérieur
+
+---
+
+## 1. Configuration SQL Server
+
+### A. Vérifier l'installation SQL Server
+
+1. Ouvrez **SQL Server Configuration Manager**
+   * Cherchez "SQL Server Configuration Manager" dans le menu Démarrer
+   * Ou allez dans `C:\Windows\SysWOW64\SQLServerManager15.msc` (pour SQL Server 2019)
+2. Dans  **SQL Server Services** , vérifiez que ces services sont démarrés :
+   * `SQL Server (MSSQLSERVER)` ou `SQL Server (nom_de_votre_instance)`
+   * `SQL Server Agent` (optionnel)
+
+### B. Activer l'authentification mixte
+
+1. Ouvrez **SQL Server Management Studio (SSMS)**
+2. Connectez-vous avec l'authentification Windows
+3. Clic droit sur le serveur → **Propriétés**
+4. Allez dans **Sécurité** → Sélectionnez **Mode d'authentification SQL Server et Windows**
+5. Cliquez **OK** et redémarrez le service SQL Server
+
+### C. Créer la base de données et l'utilisateur
+
+## 2. Configuration du projet MAUI
 
 ### A. Ouvrir le projet dans Visual Studio
 
-
 1. Clonez le repository ou téléchargez les fichiers
-1. Ouvrez **Visual Studio 2022**
-1. **Fichier** → **Ouvrir** → **Projet/Solution**
-1. Sélectionnez le fichier `.sln` du projet TravelPlann
-
+2. Ouvrez **Visual Studio 2022**
+3. **Fichier** → **Ouvrir** → **Projet/Solution**
+4. Sélectionnez le fichier `.sln` du projet TravelPlann
 
 ### B. Vérifier les packages NuGet
 
-
 Dans Visual Studio, ouvrez la **Console du Gestionnaire de package** :
-
 
 ```powershell
 # Vérifiez que ces packages sont installés :
@@ -26,12 +57,9 @@ Install-Package CommunityToolkit.Maui
 Install-Package Microsoft.Maui.Controls.Maps
 ```
 
-
 ### C. Configurer appsettings.json
 
-
 1. Dans le projet MAUI, créez ou modifiez le fichier `appsettings.json` :
-
 
 ```json
 {
@@ -41,26 +69,20 @@ Install-Package Microsoft.Maui.Controls.Maps
 }
 ```
 
-
 **Variantes selon votre configuration Windows :**
-
 
 * **Instance par défaut :** `Server=localhost,1433;` ou `Server=.;`
 * **Instance nommée :** `Server=localhost\\SQLEXPRESS,1433;`
 * **Authentification Windows :** `Server=localhost,1433;Database=TravelPlanner;Integrated Security=True;TrustServerCertificate=True;`
 * **LocalDB :** `Server=(localdb)\\mssqllocaldb;Database=TravelPlanner;Trusted_Connection=true;TrustServerCertificate=True;`
 
-
 2. **Marquer appsettings.json comme ressource embarquée** :
    * Clic droit sur `appsettings.json` dans l'Explorateur de solutions
    * **Propriétés** → **Action de génération** : `Ressource incorporée`
 
-
 ### D. Configuration MauiProgram.cs pour Windows
 
-
 Remplacez le contenu de `MauiProgram.cs` par :
-
 
 ```csharp
 using System.Diagnostics;
@@ -93,18 +115,18 @@ public static class MauiProgram
 
         // Configuration pour Windows - lecture du fichier appsettings.json
         string connectionString;
-      
+  
         try
         {
             var assembly = Assembly.GetExecutingAssembly();
             using var stream = assembly.GetManifestResourceStream("TravelPlannMauiApp.appsettings.json");
-          
+    
             if (stream != null)
             {
                 var config = new ConfigurationBuilder()
                     .AddJsonStream(stream)
                     .Build();
-                  
+            
                 connectionString = config.GetConnectionString("TravelPlannConnectionString");
                 Debug.WriteLine($"Chaîne de connexion depuis appsettings.json: {connectionString}");
             }
@@ -133,7 +155,7 @@ public static class MauiProgram
                     errorNumbersToAdd: null);
                 sqlOptions.CommandTimeout(60); // Timeout plus long pour Windows
             });
-          
+    
 #if DEBUG
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
@@ -166,7 +188,7 @@ public static class MauiProgram
             client.DefaultRequestHeaders.Add("User-Agent", "TravelPlannApp/1.0");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
-      
+  
         // Pages
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<VoyageListPage>();
@@ -183,23 +205,23 @@ public static class MauiProgram
 #endif
 
         var app = builder.Build();
-      
+  
         // Test de connexion spécifique Windows
         using (var scope = app.Services.CreateScope())
         {
             try
             {
                 Debug.WriteLine("=== TEST DE CONNEXION WINDOWS ===");
-              
+        
                 var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TravelPlannDbContext>>();
                 Debug.WriteLine("✓ DbContextFactory obtenu");
-              
+        
                 using var context = dbFactory.CreateDbContext();
-              
+        
                 // Test de connexion avec détails pour Windows
                 var canConnect = context.Database.CanConnect();
                 Debug.WriteLine($"✓ Connexion DB: {canConnect}");
-              
+        
                 if (canConnect)
                 {
                     // Vérification des tables essentielles
@@ -227,22 +249,22 @@ public static class MauiProgram
                     Debug.WriteLine("3. L'utilisateur sa_travelplann a les bons droits");
                     Debug.WriteLine("4. Le port 1433 est ouvert");
                 }
-              
+        
                 var utilisateurService = scope.ServiceProvider.GetRequiredService<IUtilisateurService>();
                 Debug.WriteLine("✓ UtilisateurService obtenu");
-              
+        
                 Debug.WriteLine("=== CONFIGURATION TERMINÉE ===");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"❌ ERREUR de configuration: {ex.Message}");
                 Debug.WriteLine($"Type: {ex.GetType().Name}");
-              
+        
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"Cause: {ex.InnerException.Message}");
                 }
-              
+        
                 // Messages d'aide spécifiques Windows
                 if (ex.Message.Contains("login failed"))
                 {
@@ -263,7 +285,7 @@ public static class MauiProgram
     }   
 }
 ```
----
+
 ## 3. Configuration Console App Test (optionnel)
 
 Si vous voulez tester la connexion avec une app console, créez `Program.cs` :
@@ -695,88 +717,6 @@ GO
 
 PRINT 'Base de données TravelPlanner créée avec succès !';
 ```
-
----
-
-## 2. Configuration du projet MAUI
-
-### A. Ouvrir le projet dans Visual Studio
-
-1. Clonez le repository ou téléchargez les fichiers
-2. Ouvrez **Visual Studio 2022**
-3. **Fichier** → **Ouvrir** → **Projet/Solution**
-4. Sélectionnez le fichier `.sln` du projet TravelPlann
-
-### B. Vérifier les packages NuGet
-
-Dans Visual Studio, ouvrez la **Console du Gestionnaire de package** :
-
-```powershell
-# Vérifiez que ces packages sont installés :
-Install-Package Microsoft.EntityFrameworkCore.SqlServer
-Install-Package Microsoft.EntityFrameworkCore.Tools
-Install-Package Microsoft.Extensions.Configuration.Json
-Install-Package CommunityToolkit.Maui
-Install-Package Microsoft.Maui.Controls.Maps
-```
-
-### C. Configurer la chaîne de connexion
-
-1. Dans le projet, trouvez le fichier `appsettings.json`
-2. Modifiez la chaîne de connexion selon votre configuration :
-
-```json
-{
-  "ConnectionStrings": {
-    "TravelPlannConnectionString": "Server=localhost,1433;Database=TravelPlanner;User Id=sa_travelplann;Password=VotreMotDePasseComplexe123!;TrustServerCertificate=True;"
-  }
-}
-```
-
-**Variantes selon votre installation :**
-
-* **Instance par défaut :** `Server=localhost,1433;` ou `Server=.;`
-* **Instance nommée :** `Server=localhost\\SQLEXPRESS,1433;` (remplacez SQLEXPRESS par le nom de votre instance)
-* **Authentification Windows :** `Server=localhost,1433;Database=TravelPlanner;Integrated Security=True;TrustServerCertificate=True;`
-
-### D. Marquer appsettings.json comme ressource embarquée
-
-1. Dans l' **Explorateur de solutions** , clic droit sur `appsettings.json`
-2. **Propriétés**
-3. **Action de génération** : `Ressource incorporée`
-4. **Copier dans le répertoire de sortie** : `Ne pas copier`
-
----
-
-## 3. Création de la base de données
-
-### A. Utiliser les migrations Entity Framework
-
-Dans la **Console du Gestionnaire de package** de Visual Studio :
-
-```powershell
-# Si vous n'avez pas encore de migrations
-Add-Migration InitialCreate
-
-# Appliquer les migrations
-Update-Database
-```
-
-### B. Vérifier la création des tables
-
-Dans **SQL Server Management Studio** :
-
-1. Connectez-vous à votre serveur
-2. Expandez **Bases de données** → **TravelPlanner**
-3. Expandez **Tables** - vous devriez voir :
-   * `Activite`
-   * `ClassementVoyageur`
-   * `GroupeVoyage`
-   * `Hebergement`
-   * `MembreGroupe`
-   * `Utilisateur`
-   * `Voyage`
-   * Tables de liaison (`ActiviteVoyage`, `HebergementVoyage`, etc.)
 
 ---
 
