@@ -304,12 +304,19 @@ public class SettingsViewModel : INotifyPropertyChanged
 
         try
         {
-            System.Diagnostics.Debug.WriteLine("Sauvegarde des informations utilisateur...");
+            System.Diagnostics.Debug.WriteLine("=== SAUVEGARDE INFOS UTILISATEUR ===");
+            System.Diagnostics.Debug.WriteLine($"User ID: {_currentUser.UtilisateurId}");
+            System.Diagnostics.Debug.WriteLine($"Nom actuel: {_currentUser.Nom} -> Nouveau: {Nom}");
+            System.Diagnostics.Debug.WriteLine($"Prénom actuel: {_currentUser.Prenom} -> Nouveau: {Prenom}");
+            System.Diagnostics.Debug.WriteLine($"Email actuel: {_currentUser.Email} -> Nouveau: {Email}");
 
             // Vérifier si l'email a changé et s'il n'est pas déjà utilisé
-            if (_currentUser.Email != Email)
+            if (_currentUser.Email != Email.Trim())
             {
-                var emailExists = await _utilisateurService.EmailExistsAsync(Email);
+                // Vérifier avec la nouvelle méthode qui exclut l'utilisateur actuel
+                var emailExists = await _utilisateurService.EmailExistsForOtherUserAsync?.Invoke(Email.Trim(), _currentUser.UtilisateurId) 
+                    ?? await _utilisateurService.EmailExistsAsync(Email.Trim());
+                
                 if (emailExists)
                 {
                     await Shell.Current.DisplayAlert("Erreur", "Cette adresse email est déjà utilisée", "OK");
@@ -317,23 +324,46 @@ public class SettingsViewModel : INotifyPropertyChanged
                 }
             }
 
-            // Mettre à jour les informations
-            _currentUser.Nom = Nom;
-            _currentUser.Prenom = Prenom;
-            _currentUser.Email = Email;
+            // Créer une copie de l'utilisateur avec les nouvelles informations
+            var updatedUser = new Utilisateur
+            {
+                UtilisateurId = _currentUser.UtilisateurId,
+                Nom = Nom.Trim(),
+                Prenom = Prenom.Trim(),
+                Email = Email.Trim(),
+                MotDePasse = _currentUser.MotDePasse, // Garder le mot de passe existant
+                PointsRecompenses = _currentUser.PointsRecompenses
+            };
 
-            await _utilisateurService.UpdateAsync(_currentUser);
+            System.Diagnostics.Debug.WriteLine("Appel UpdateAsync...");
+            await _utilisateurService.UpdateAsync(updatedUser);
+
+            // Mettre à jour l'objet local
+            _currentUser.Nom = updatedUser.Nom;
+            _currentUser.Prenom = updatedUser.Prenom;
+            _currentUser.Email = updatedUser.Email;
 
             // Mettre à jour la session avec le nouveau nom
             await _sessionService.SetCurrentUserAsync(_currentUser.UtilisateurId, $"{Prenom} {Nom}");
 
             OnPropertyChanged(nameof(UserDisplayName));
+            
+            System.Diagnostics.Debug.WriteLine("Mise à jour réussie !");
             await Shell.Current.DisplayAlert("Succès", "Informations mises à jour", "OK");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erreur sauvegarde infos utilisateur: {ex}");
-            await Shell.Current.DisplayAlert("Erreur", "Impossible de mettre à jour les informations", "OK");
+            System.Diagnostics.Debug.WriteLine($"ERREUR sauvegarde infos utilisateur: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Message: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+            }
+            
+            await Shell.Current.DisplayAlert("Erreur", 
+                $"Impossible de mettre à jour les informations: {ex.Message}", "OK");
         }
         finally
         {
@@ -348,31 +378,59 @@ public class SettingsViewModel : INotifyPropertyChanged
 
         try
         {
-            System.Diagnostics.Debug.WriteLine("Changement de mot de passe...");
+            System.Diagnostics.Debug.WriteLine("=== CHANGEMENT MOT DE PASSE ===");
+            System.Diagnostics.Debug.WriteLine($"User ID: {_currentUser.UtilisateurId}");
+            System.Diagnostics.Debug.WriteLine($"Email: {_currentUser.Email}");
 
             // Vérifier le mot de passe actuel
+            System.Diagnostics.Debug.WriteLine("Vérification du mot de passe actuel...");
             var authenticatedUser = await _utilisateurService.AuthenticateAsync(_currentUser.Email, CurrentPassword);
             if (authenticatedUser == null)
             {
+                System.Diagnostics.Debug.WriteLine("Mot de passe actuel incorrect");
                 await Shell.Current.DisplayAlert("Erreur", "Mot de passe actuel incorrect", "OK");
                 return;
             }
 
-            // Mettre à jour le mot de passe (le service se charge du hashage)
-            _currentUser.MotDePasse = NewPassword;
-            await _utilisateurService.UpdateAsync(_currentUser);
+            System.Diagnostics.Debug.WriteLine("Mot de passe actuel vérifié, mise à jour...");
+
+            // Créer une copie de l'utilisateur avec le nouveau mot de passe
+            var updatedUser = new Utilisateur
+            {
+                UtilisateurId = _currentUser.UtilisateurId,
+                Nom = _currentUser.Nom,
+                Prenom = _currentUser.Prenom,
+                Email = _currentUser.Email,
+                MotDePasse = NewPassword, // Le service se charge du hashage
+                PointsRecompenses = _currentUser.PointsRecompenses
+            };
+
+            await _utilisateurService.UpdateAsync(updatedUser);
+
+            // Mettre à jour l'objet local
+            _currentUser.MotDePasse = updatedUser.MotDePasse;
 
             // Réinitialiser les champs
             CurrentPassword = string.Empty;
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
 
+            System.Diagnostics.Debug.WriteLine("Mot de passe changé avec succès !");
             await Shell.Current.DisplayAlert("Succès", "Mot de passe modifié avec succès", "OK");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erreur changement mot de passe: {ex}");
-            await Shell.Current.DisplayAlert("Erreur", "Impossible de changer le mot de passe", "OK");
+            System.Diagnostics.Debug.WriteLine($"ERREUR changement mot de passe: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Message: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+            }
+            
+            await Shell.Current.DisplayAlert("Erreur", 
+                $"Impossible de changer le mot de passe: {ex.Message}", "OK");
         }
         finally
         {

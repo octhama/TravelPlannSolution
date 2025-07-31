@@ -11,7 +11,6 @@ public class UtilisateurService : IUtilisateurService
 {
     private readonly IDbContextFactory<TravelPlannDbContext> _dbContextFactory;
 
-    // Modifié pour utiliser le DbContextFactory au lieu du DbContext direct
     public UtilisateurService(IDbContextFactory<TravelPlannDbContext> dbContextFactory)
     {
         _dbContextFactory = dbContextFactory;
@@ -25,11 +24,9 @@ public class UtilisateurService : IUtilisateurService
             Debug.WriteLine($"Email recherché: '{email}'");
             Debug.WriteLine($"Mot de passe fourni: '{motDePasse}'");
 
-            // Utiliser le factory pour créer le contexte
             await using var context = await _dbContextFactory.CreateDbContextAsync();
             Debug.WriteLine("Contexte DB créé avec succès via factory");
 
-            // Test de connexion
             var canConnect = await context.Database.CanConnectAsync();
             Debug.WriteLine($"Connexion DB possible: {canConnect}");
 
@@ -51,7 +48,6 @@ public class UtilisateurService : IUtilisateurService
             Debug.WriteLine($"Utilisateur trouvé: {user.Prenom} {user.Nom}");
             Debug.WriteLine($"Mot de passe en DB: '{user.MotDePasse}'");
 
-            // TEMPORAIRE: Vérifier si le mot de passe en DB semble être en clair ou hashé
             bool isPasswordHashed = IsPasswordHashed(user.MotDePasse);
             Debug.WriteLine($"Le mot de passe semble hashé: {isPasswordHashed}");
 
@@ -59,13 +55,11 @@ public class UtilisateurService : IUtilisateurService
 
             if (isPasswordHashed)
             {
-                // Utiliser la vérification avec hash
                 isAuthenticated = VerifyPassword(motDePasse, user.MotDePasse);
                 Debug.WriteLine("Utilisation de la vérification avec hash");
             }
             else
             {
-                // Comparaison directe (mot de passe en clair)
                 isAuthenticated = (motDePasse == user.MotDePasse);
                 Debug.WriteLine("Utilisation de la comparaison directe");
             }
@@ -184,14 +178,93 @@ public class UtilisateurService : IUtilisateurService
     {
         try
         {
+            Debug.WriteLine($"=== DÉBUT UpdateAsync ===");
+            Debug.WriteLine($"Utilisateur ID: {utilisateur.UtilisateurId}");
+            Debug.WriteLine($"Nom: {utilisateur.Nom}");
+            Debug.WriteLine($"Prénom: {utilisateur.Prenom}");
+            Debug.WriteLine($"Email: {utilisateur.Email}");
+
             await using var context = await _dbContextFactory.CreateDbContextAsync();
-            context.Utilisateurs.Update(utilisateur);
-            await context.SaveChangesAsync();
+            
+            // Vérifier que l'utilisateur existe en base
+            var existingUser = await context.Utilisateurs
+                .FirstOrDefaultAsync(u => u.UtilisateurId == utilisateur.UtilisateurId);
+            
+            if (existingUser == null)
+            {
+                Debug.WriteLine($"ERREUR: Utilisateur avec ID {utilisateur.UtilisateurId} non trouvé en base");
+                throw new InvalidOperationException($"Utilisateur avec ID {utilisateur.UtilisateurId} non trouvé");
+            }
+
+            Debug.WriteLine($"Utilisateur existant trouvé: {existingUser.Nom} {existingUser.Prenom}");
+
+            // Vérifier si l'email a changé et s'il n'est pas déjà utilisé par un autre utilisateur
+            if (existingUser.Email != utilisateur.Email)
+            {
+                var emailAlreadyExists = await context.Utilisateurs
+                    .AnyAsync(u => u.Email == utilisateur.Email && u.UtilisateurId != utilisateur.UtilisateurId);
+                
+                if (emailAlreadyExists)
+                {
+                    Debug.WriteLine($"ERREUR: Email {utilisateur.Email} déjà utilisé par un autre utilisateur");
+                    throw new InvalidOperationException("Cette adresse email est déjà utilisée par un autre utilisateur");
+                }
+            }
+
+            // Mettre à jour les propriétés
+            existingUser.Nom = utilisateur.Nom;
+            existingUser.Prenom = utilisateur.Prenom;
+            existingUser.Email = utilisateur.Email;
+            
+            // Si le mot de passe a été modifié, le hasher
+            if (!string.IsNullOrEmpty(utilisateur.MotDePasse) && 
+                existingUser.MotDePasse != utilisateur.MotDePasse)
+            {
+                Debug.WriteLine("Mise à jour du mot de passe");
+                // Vérifier si le nouveau mot de passe est déjà hashé
+                if (!IsPasswordHashed(utilisateur.MotDePasse))
+                {
+                    existingUser.MotDePasse = HashPassword(utilisateur.MotDePasse);
+                    Debug.WriteLine("Mot de passe hashé");
+                }
+                else
+                {
+                    existingUser.MotDePasse = utilisateur.MotDePasse;
+                    Debug.WriteLine("Mot de passe déjà hashé");
+                }
+            }
+
+            // Marquer l'entité comme modifiée
+            context.Entry(existingUser).State = EntityState.Modified;
+            
+            var changes = await context.SaveChangesAsync();
+            Debug.WriteLine($"Nombre de changements sauvegardés: {changes}");
+
+            if (changes == 0)
+            {
+                Debug.WriteLine("ATTENTION: Aucun changement détecté lors de la sauvegarde");
+            }
+            else
+            {
+                Debug.WriteLine("Mise à jour réussie");
+            }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Erreur UpdateAsync: {ex.Message}");
+            Debug.WriteLine($"ERREUR UpdateAsync: {ex.Message}");
+            Debug.WriteLine($"Type: {ex.GetType().Name}");
+            Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            
+            if (ex.InnerException != null)
+            {
+                Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+            }
+            
             throw;
+        }
+        finally
+        {
+            Debug.WriteLine($"=== FIN UpdateAsync ===");
         }
     }
 
@@ -225,6 +298,22 @@ public class UtilisateurService : IUtilisateurService
         catch (Exception ex)
         {
             Debug.WriteLine($"Erreur EmailExistsAsync: {ex.Message}");
+            throw;
+        }
+    }
+
+    // Méthode pour vérifier si un email existe pour un autre utilisateur
+    public async Task<bool> EmailExistsForOtherUserAsync(string email, int currentUserId)
+    {
+        try
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.Utilisateurs
+                .AnyAsync(u => u.Email == email && u.UtilisateurId != currentUserId);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur EmailExistsForOtherUserAsync: {ex.Message}");
             throw;
         }
     }
