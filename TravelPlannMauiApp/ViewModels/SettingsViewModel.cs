@@ -314,8 +314,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             if (_currentUser.Email != Email.Trim())
             {
                 // Vérifier avec la nouvelle méthode qui exclut l'utilisateur actuel
-                var emailExists = await _utilisateurService.EmailExistsForOtherUserAsync?.Invoke(Email.Trim(), _currentUser.UtilisateurId) 
-                    ?? await _utilisateurService.EmailExistsAsync(Email.Trim());
+                var emailExists = await _utilisateurService.EmailExistsForOtherUserAsync(Email.Trim(), _currentUser.UtilisateurId).ConfigureAwait(false);
                 
                 if (emailExists)
                 {
