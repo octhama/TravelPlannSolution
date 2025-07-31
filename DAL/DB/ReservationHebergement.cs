@@ -9,7 +9,7 @@ public partial class ReservationHebergement
 
     public int HebergementId { get; set; }
 
-    public string StatutReservation { get; set; } = null!;
+    public bool StatutReservation { get; set; }
 
     public string NumConfirmation { get; set; } = null!;
 

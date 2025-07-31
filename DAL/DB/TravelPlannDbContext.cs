@@ -207,7 +207,11 @@ public partial class TravelPlannDbContext : DbContext
             entity.Property(e => e.ReservationId).HasColumnName("ReservationID");
             entity.Property(e => e.HebergementId).HasColumnName("HebergementID");
             entity.Property(e => e.NumConfirmation).HasMaxLength(50);
-            entity.Property(e => e.StatutReservation).HasMaxLength(50);
+            
+           
+            entity.Property(e => e.StatutReservation)
+                .HasColumnType("bit")
+                .HasDefaultValue(false);
 
             entity.HasOne(d => d.Hebergement).WithMany(p => p.ReservationHebergements)
                 .HasForeignKey(d => d.HebergementId)
