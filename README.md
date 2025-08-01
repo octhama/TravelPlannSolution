@@ -1,38 +1,104 @@
-# Configuration SQL Server Express 2022 pour TravelPlann sur Windows
+# Guide complet d'installation TravelPlanner - Windows
 
-## 1. Configuration SQL Server Express 2022
+## SQL Server Express 2022 + Visual Studio
 
-### A. Vérifier votre instance SQL Server Express
+## 🎯 Vue d'ensemble
+
+Ce guide vous permettra d'installer et configurer complètement l'application TravelPlanner avec SQL Server Express 2022 sur Windows.
+
+---
+
+## 1. Prérequis
+
+### A. Logiciels nécessaires
+
+* **Windows 10/11**
+* **Visual Studio 2022** (Community, Professional ou Enterprise)
+* **SQL Server Express 2022** installé
+* **SQL Server Management Studio (SSMS)** - [Télécharger ici](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
+* **.NET 8 SDK** ou supérieur
+
+### B. Vérifier SQL Server Express
+
+1. Ouvrez **Services Windows** (services.msc)
+2. Vérifiez que `SQL Server (SQLEXPRESS)` est **démarré**
+3. Si arrêté, clic droit → **Démarrer**
+
+---
+
+## 2. Configuration SQL Server Express 2022
+
+### A. Activer TCP/IP (obligatoire)
 
 1. Ouvrez **SQL Server Configuration Manager**
    * Tapez "SQL Server Configuration Manager" dans le menu Démarrer
-   * Ou naviguez vers `C:\Windows\SysWOW64\SQLServerManager16.msc` (pour SQL Server 2022)
-2. Dans  **SQL Server Services** , vérifiez que ces services sont **démarrés** :
-   * `SQL Server (SQLEXPRESS)` - votre instance principale
-   * `SQL Server Browser` (recommandé pour les connexions)
+   * Ou naviguez vers `C:\Windows\SysWOW64\SQLServerManager16.msc`
+2. Allez dans **SQL Server Network Configuration** → **Protocols for SQLEXPRESS**
+3. Clic droit sur **TCP/IP** → **Enable** (Activer)
+4. Double-cliquez sur **TCP/IP** → Onglet **IP Addresses**
+5. Scrollez jusqu'à **IPAll** et définissez :
+   * **TCP Dynamic Ports** : (laisser vide)
+   * **TCP Port** : `1433`
+6. **Redémarrez le service SQL Server (SQLEXPRESS)** dans Services Windows
 
-### B. Activer TCP/IP et configurer le port
-
-1. Dans **SQL Server Configuration Manager** :
-   * Allez dans **SQL Server Network Configuration** → **Protocols for SQLEXPRESS**
-   * Clic droit sur **TCP/IP** → **Enable** (Activer)
-   * Double-cliquez sur **TCP/IP** → Onglet **IP Addresses**
-   * Scrollez jusqu'à **IPAll** et définissez :
-     * **TCP Dynamic Ports** : (laisser vide)
-     * **TCP Port** : `1433`
-2. **Redémarrez le service SQL Server (SQLEXPRESS)**
-
-### C. Créer la base de données
+### B. Tester la connexion
 
 1. Ouvrez **SQL Server Management Studio (SSMS)**
-2. Connectez-vous avec ces paramètres :
+2. Paramètres de connexion :
    * **Server name** : `localhost\SQLEXPRESS` ou `.\SQLEXPRESS`
    * **Authentication** : Windows Authentication
-3. Exécutez le script SQL fourni dans vos documents pour créer toutes les tables
+3. Cliquez **Connect**
 
-## 2. Chaînes de connexion pour SQL Server Express 2022
+> ⚠️  **Si la connexion échoue** , essayez : `(local)\SQLEXPRESS` ou `127.0.0.1\SQLEXPRESS`
 
-### Option 1 - Authentification Windows (RECOMMANDÉE)
+---
+
+## 3. Création de la base de données
+
+### A. Créer la base TravelPlanner
+
+Dans SSMS, exécutez :
+
+```sql
+-- Créer la base de données
+USE master;
+GO
+
+CREATE DATABASE TravelPlanner;
+GO
+
+-- Vérifier la création
+SELECT name FROM sys.databases WHERE name = 'TravelPlanner';
+GO
+
+-- Utiliser la nouvelle base
+USE TravelPlanner;
+GO
+
+PRINT '✅ Base de données TravelPlanner créée avec succès !';
+```
+
+### B. Exécuter le script complet des tables
+
+1. Dans SSMS, assurez-vous d'être sur la base **TravelPlanner**
+2. Ouvrez le fichier **`TravelPlanner.sql`** disponible à la racine de la solution **TravelPlannSolution**
+3. Copiez et exécutez tout le contenu de ce script dans SSMS
+4. Ce script créera toutes les tables avec leurs données de test
+
+---
+
+## 4. Configuration Visual Studio
+
+### A. Ouvrir le projet TravelPlanner
+
+1. Ouvrez **Visual Studio 2022**
+2. **Fichier** → **Ouvrir** → **Projet/Solution**
+3. Sélectionnez le fichier `.sln` du projet TravelPlanner
+
+### B. Configurer la chaîne de connexion
+
+1. Ouvrez le fichier `appsettings.json` dans le projet
+2. Remplacez le contenu par :
 
 ```json
 {
@@ -42,7 +108,70 @@
 }
 ```
 
-### Option 2 - Avec port spécifique
+### C. Configurer appsettings.json
+
+1. Clic droit sur `appsettings.json` dans l'Explorateur de solutions
+2. **Propriétés**
+3. **Build Action** : `Embedded Resource`
+4. **Copy to Output Directory** : `Do not copy`
+
+### D. Vérifier les packages NuGet
+
+Dans la  **Console du Gestionnaire de package** , vérifiez :
+
+```powershell
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Install-Package Microsoft.Extensions.Configuration.Json
+Install-Package CommunityToolkit.Maui
+Install-Package Microsoft.Maui.Controls.Maps
+```
+
+---
+
+## 5. Test et validation
+
+### A. Lancer l'application
+
+1. Dans Visual Studio, sélectionnez **Windows Machine** comme plateforme cible
+2. Appuyez sur **F5** ou cliquez sur **Démarrer le débogage**
+
+### B. Vérifier les logs de connexion
+
+1. Dans Visual Studio : **Affichage** → **Sortie**
+2. Sélectionnez "Afficher la sortie à partir de :  **Debug** "
+3. Recherchez ces messages de succès :
+
+```
+✅ DbContextFactory obtenu
+✅ Connexion DB: True
+✅ Table Utilisateur: X enregistrements
+✅ Table Voyage: Y enregistrements
+=== CONFIGURATION TERMINÉE ===
+```
+
+### C. Test rapide de données
+
+Dans SSMS, exécutez pour vérifier :
+
+```sql
+USE TravelPlanner;
+
+-- Compter les enregistrements
+SELECT 'Utilisateur' as Table_Name, COUNT(*) as Count FROM Utilisateur
+UNION ALL
+SELECT 'Voyage', COUNT(*) FROM Voyage
+UNION ALL
+SELECT 'Activite', COUNT(*) FROM Activite
+UNION ALL
+SELECT 'Hebergement', COUNT(*) FROM Hebergement;
+```
+
+---
+
+## 6. Chaînes de connexion alternatives
+
+### Si l'authentification Windows ne fonctionne pas :
 
 ```json
 {
@@ -52,86 +181,28 @@
 }
 ```
 
-### Option 3 - Si vous voulez utiliser un utilisateur SQL
+### Si vous voulez utiliser un utilisateur SQL :
 
 ```json
 {
   "ConnectionStrings": {
-    "TravelPlannConnectionString": "Server=localhost\\SQLEXPRESS;Database=TravelPlanner;User Id=sa;Password=VotreMotDePasse123!;TrustServerCertificate=True;"
+    "TravelPlannConnectionString": "Server=localhost\\SQLEXPRESS;Database=TravelPlanner;User Id=sa;Password=VotreMotDePasse;TrustServerCertificate=True;"
   }
 }
 ```
 
-## 3. Configuration dans Visual Studio
+---
 
-### A. Modifier appsettings.json
+## 7. Résolution des problèmes courants
 
-1. Dans votre projet TravelPlannMauiApp, ouvrez `appsettings.json`
-2. Remplacez la chaîne de connexion par une des options ci-dessus
-3. **IMPORTANT** : Clic droit sur `appsettings.json` → **Propriétés** → **Build Action** : `Embedded Resource`
+| Problème                           | Solution                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **"Server not found"**        | Vérifiez que SQL Server (SQLEXPRESS) est démarré`<br>`Essayez `.\SQLEXPRESS`ou `(local)\SQLEXPRESS` |
+| **"Login failed"**            | Utilisez Windows Authentication`<br>`Vérifiez les droits de votre utilisateur Windows                     |
+| **"Database does not exist"** | Re-exécutez le script de création de base                                                                  |
+| **"TCP/IP not enabled"**      | Activez TCP/IP dans SQL Server Configuration Manager                                                         |
+| **Port 1433 bloqué**         | Vérifiez le pare-feu Windows                                                                                |
 
-### B. Tester la connexion
+---
 
-1. Compilez et lancez l'application (F5)
-2. Vérifiez dans la **Fenêtre de sortie** de Visual Studio :
-
-   * Sélectionnez "Afficher la sortie à partir de :  **Debug** "
-   * Recherchez ces messages de succès :
-
-   ```
-   ✓ DbContextFactory obtenu
-   ✓ Connexion DB: True
-   ✓ Table Utilisateur: X enregistrements
-   ```
-
-## 4. Résolution des problèmes courants
-
-### "Server not found or not accessible"
-
-* Vérifiez que le service `SQL Server (SQLEXPRESS)` est démarré
-* Utilisez `localhost\SQLEXPRESS` au lieu de `localhost`
-* Activez `SQL Server Browser` dans les services
-
-### "Login failed"
-
-* Si vous utilisez l'authentification Windows, assurez-vous que votre utilisateur Windows a les droits
-* Sinon, créez un utilisateur SQL avec les droits appropriés
-
-### "Database does not exist"
-
-* Exécutez le script de création de base de données fourni dans SSMS
-
-## 5. Script rapide de test de connexion
-
-Testez votre connexion avec ce code dans une Console App :
-
-```csharp
-using Microsoft.Data.SqlClient;
-
-string connectionString = "Server=localhost\\SQLEXPRESS;Database=TravelPlanner;Integrated Security=True;TrustServerCertificate=True;";
-
-try
-{
-    using var connection = new SqlConnection(connectionString);
-    connection.Open();
-    Console.WriteLine("Connexion réussie à SQL Server Express !");
-  
-    var command = new SqlCommand("SELECT COUNT(*) FROM Utilisateur", connection);
-    var count = command.ExecuteScalar();
-    Console.WriteLine($"Nombre d'utilisateurs : {count}");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Erreur : {ex.Message}");
-}
-```
-
-## 6. Points clés pour SQL Server Express 2022
-
-* **Nom d'instance par défaut** : `SQLEXPRESS`
-* **Chaîne type** : `localhost\SQLEXPRESS` ou `.\SQLEXPRESS`
-* **Port par défaut** : 1433 (après activation TCP/IP)
-* **Authentification recommandée** : Windows Authentication
-* **TrustServerCertificate=True** : Obligatoire pour éviter les erreurs de certificat
-
-Une fois configuré correctement, votre application TravelPlann devrait se connecter sans problème à votre base de données SQL Server Express 2022 !
+**🚀 Votre application TravelPlanner est maintenant opérationnelle !**
