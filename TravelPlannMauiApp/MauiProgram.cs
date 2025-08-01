@@ -128,14 +128,14 @@ public static class MauiProgram
                 
                 if (!canConnect)
                 {
-                    Debug.WriteLine("ATTENTION: Connexion à la base de données impossible");
+                    Debug.WriteLine("Connexion à la base de données impossible");
                 }
                 
                 Debug.WriteLine("Services configurés correctement");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"ERREUR de configuration des services: {ex.Message}");
+                Debug.WriteLine($"Erreur de configuration des services: {ex.Message}");
                 Debug.WriteLine($"Type: {ex.GetType().Name}");
                 Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 

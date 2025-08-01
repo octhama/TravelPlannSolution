@@ -2,7 +2,7 @@
 
 ## SQL Server Express 2022 + Visual Studio
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
 Ce guide vous permettra d'installer et configurer complètement l'application TravelPlanner avec SQL Server Express 2022 sur Windows.
 
@@ -75,7 +75,7 @@ GO
 USE TravelPlanner;
 GO
 
-PRINT '✅ Base de données TravelPlanner créée avec succès !';
+PRINT 'Base de données TravelPlanner créée avec succès !';
 ```
 
 ### B. Exécuter le script complet des tables
@@ -143,10 +143,10 @@ Install-Package Microsoft.Maui.Controls.Maps
 3. Recherchez ces messages de succès :
 
 ```
-✅ DbContextFactory obtenu
-✅ Connexion DB: True
-✅ Table Utilisateur: X enregistrements
-✅ Table Voyage: Y enregistrements
+DbContextFactory obtenu
+Connexion DB: True
+Table Utilisateur: X enregistrements
+Table Voyage: Y enregistrements
 === CONFIGURATION TERMINÉE ===
 ```
 
@@ -202,7 +202,3 @@ SELECT 'Hebergement', COUNT(*) FROM Hebergement;
 | **"Database does not exist"** | Re-exécutez le script de création de base                                                                  |
 | **"TCP/IP not enabled"**      | Activez TCP/IP dans SQL Server Configuration Manager                                                         |
 | **Port 1433 bloqué**         | Vérifiez le pare-feu Windows                                                                                |
-
----
-
-**🚀 Votre application TravelPlanner est maintenant opérationnelle !**
