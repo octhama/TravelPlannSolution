@@ -21,7 +21,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiMaps() // Ajoutez cette ligne
+            .UseMauiMaps()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => 
             {
@@ -30,7 +30,7 @@ public static class MauiProgram
             });
 
         // Configuration pour lire le fichier appsettings.json depuis les ressources embarquées
-        var assembly = Assembly.GetExecutingAssembly(); // Récupère l'assembly courant
+        var assembly = Assembly.GetExecutingAssembly(); 
         using var stream = assembly.GetManifestResourceStream("TravelPlannMauiApp.appsettings.json");
         
         if (stream == null)
