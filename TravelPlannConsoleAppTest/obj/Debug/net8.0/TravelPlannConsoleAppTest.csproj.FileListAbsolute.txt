@@ -1,9 +1,3 @@
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.csproj.AssemblyReference.cache
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.GeneratedMSBuildEditorConfig.editorconfig
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.AssemblyInfoInputs.cache
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.AssemblyInfo.cs
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.csproj.CoreCompileInputs.cache
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.sourcelink.json
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/TravelPlannConsoleAppTest
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/appsettings.json
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/TravelPlannConsoleAppTest.deps.json
@@ -182,6 +176,12 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/BU.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/Common.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/DAL.pdb
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.csproj.AssemblyReference.cache
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.GeneratedMSBuildEditorConfig.editorconfig
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.AssemblyInfoInputs.cache
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.AssemblyInfo.cs
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.csproj.CoreCompileInputs.cache
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.sourcelink.json
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPl.75191EEB.Up2Date
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/refint/TravelPlannConsoleAppTest.dll
