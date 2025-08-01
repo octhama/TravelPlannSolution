@@ -130,7 +130,7 @@ namespace TravelPlannMauiApp.ViewModels
             await InternalLoadVoyagesAsync();
         }
 
-        // NOUVEAU : Méthode pour forcer le rechargement depuis la base de données
+        // Méthode pour forcer le rechargement depuis la base de données
         public async Task ForceReloadFromDatabase()
         {
             Debug.WriteLine("=== FORCE RELOAD FROM DATABASE ===");
@@ -140,7 +140,7 @@ namespace TravelPlannMauiApp.ViewModels
             OnPropertyChanged(nameof(Voyages));
         }
 
-        // NOUVEAU : Méthode interne consolidée pour le chargement
+        // Méthode interne consolidée pour le chargement
         private async Task InternalLoadVoyagesAsync(bool forceReload = false)
         {
             if (IsLoading && !forceReload) 
@@ -443,7 +443,14 @@ namespace TravelPlannMauiApp.ViewModels
         }
     }
 
-    // DTOs sans cycles de référence pour la sérialisation
+    // DTOs sans cycles de référence pour la sérialisation. Cela permet de simplifier la sérialisation JSON
+    // et d'éviter les problèmes de référence circulaire.
+    // Ils sont utilisés pour transférer les données entre la ViewModel et la View.
+    // Ils ne contiennent que les propriétés nécessaires pour l'affichage et la modification des voyages.
+    // Ils sont sérialisés en JSON pour la navigation entre les pages.
+    // Ils sont utilisés pour éviter les problèmes de cycles de référence lors de la sérialisation
+    // et pour simplifier la structure des données passées entre les pages.
+    // Ils sont également utilisés pour transférer les données entre la ViewModel et la View.
     public class VoyageDetailsDTO
     {
         public int VoyageID { get; set; }

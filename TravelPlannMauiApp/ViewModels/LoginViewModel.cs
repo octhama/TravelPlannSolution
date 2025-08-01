@@ -24,14 +24,14 @@ public class LoginViewModel : BaseViewModel
         
         try
         {
-            // Utiliser les méthodes CreateCommand du BaseViewModel
+            // Utilisation les méthodes CreateCommand du BaseViewModel
             LoginCommand = CreateCommand(LoginAsync, CanLogin);
             RegisterCommand = CreateCommand(NavigateToRegisterAsync);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Erreur lors de la création des commandes: {ex}");
-            // Créer des commandes vides pour éviter les erreurs
+            // Création des commandes vides pour éviter les erreurs
             LoginCommand = new Command(() => { });
             RegisterCommand = new Command(() => { });
         }
@@ -125,15 +125,15 @@ public class LoginViewModel : BaseViewModel
                 
                 System.Diagnostics.Debug.WriteLine("Navigation vers MainPage...");
                 
-                // Naviguer vers la page principale
+                // Naviguation vers la page principale
                 await Shell.Current.GoToAsync("//MainPage");
             }
             else
             {
                 System.Diagnostics.Debug.WriteLine("=== ÉCHEC DE LA CONNEXION ===");
                 System.Diagnostics.Debug.WriteLine("AuthenticateAsync a retourné null");
-                
-                // Test de diagnostic : essayer de récupérer tous les utilisateurs pour voir si la DB fonctionne
+
+                // Recuperation de tous les utilisateurs pour voir si la DB fonctionne
                 try
                 {
                     System.Diagnostics.Debug.WriteLine("Test de diagnostic de la base de données...");
@@ -176,7 +176,7 @@ public class LoginViewModel : BaseViewModel
 
     private async Task SaveUserSessionManually(Utilisateur utilisateur)
     {
-        // Sauvegarder l'utilisateur connecté avec gestion d'erreur SecureStorage
+        // Sauvegarde de l'utilisateur connecté avec gestion d'erreur SecureStorage (SecureStorage est une API sécurisée pour stocker des données sensibles)
         try
         {
             await SecureStorage.SetAsync("current_user_id", utilisateur.UtilisateurId.ToString());
@@ -187,7 +187,7 @@ public class LoginViewModel : BaseViewModel
         {
             System.Diagnostics.Debug.WriteLine($"Erreur SecureStorage: {secureStorageEx.Message}");
             
-            // Alternative: utiliser Preferences comme fallback
+            // Usage de Preferences comme fallback c'est à dire si SecureStorage échoue
             try
             {
                 Preferences.Set("current_user_id", utilisateur.UtilisateurId.ToString());

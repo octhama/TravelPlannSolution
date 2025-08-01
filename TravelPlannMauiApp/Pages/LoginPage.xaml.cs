@@ -10,7 +10,7 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
     }
 
-    // Garder le constructeur avec paramètre pour compatibilité
+    // Garde le constructeur avec paramètre pour compatibilité
     public LoginPage(LoginViewModel viewModel)
     {
         InitializeComponent();

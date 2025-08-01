@@ -42,7 +42,7 @@ public partial class TravelPlannDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
        
-        // Configuration des relations many-to-many avec cascade delete
+    // Configuration des relations many-to-many avec cascade delete
     modelBuilder.Entity<Voyage>()
         .HasMany(v => v.Activites)
         .WithMany(a => a.Voyages)

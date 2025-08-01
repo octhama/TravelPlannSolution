@@ -73,11 +73,11 @@ namespace TravelPlannMauiApp.ViewModels
         {
             _voyageService = voyageService;
             _sessionService = sessionService;
-            
-            // Initialiser avec des valeurs par défaut
+
+            // Initialisation avec des valeurs par défaut
             InitializeDefaultValues();
-            
-            // Charger les données asynchrones
+
+            // Chargement des données asynchrones (peut être appelé depuis la page et asynchrone parce qu'il peut prendre du temps pour charger les données)
             _ = LoadDataAsync();
         }
 
@@ -143,7 +143,7 @@ namespace TravelPlannMauiApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erreur stats voyages: {ex}");
-                // Garder les valeurs par défaut en cas d'erreur
+                // Garde les valeurs par défaut en cas d'erreur
             }
         }
 
@@ -203,7 +203,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
     }
 
-    // Interface pour l'API météo
+    // Interface pour l'API météo fictive
     [Headers("Content-Type: application/json")]
     public interface IOpenWeatherApi
     {

@@ -2,7 +2,7 @@ using System.Windows.Input;
 
 
 namespace TravelPlannMauiApp.ViewModels;
-// ViewModel de secours pour éviter les crashs
+// ViewModel de secours pour éviter les crashs (en cas d'absence de service)
 public class EmptyLoginViewModel : BaseViewModel
 {
     private string _email = "";

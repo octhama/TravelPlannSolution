@@ -5,7 +5,6 @@
              x:Class="TravelPlannMauiApp.App">
     <Application.Resources>
         <ResourceDictionary>
-            <!-- Merged Dictionaries -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />

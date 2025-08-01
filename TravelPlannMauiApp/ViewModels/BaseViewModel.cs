@@ -42,12 +42,12 @@ namespace TravelPlannMauiApp.ViewModels
             OnPropertyChanged(propertyName);
             return true;
         }
-
+        // Méthode pour notifier les changements de propriété dans le ViewModel
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             return SetProperty(ref field, value, propertyName);
         }
-        
+        // Méthode pour gérer les erreurs de manière centralisée dans le ViewModel
         protected async Task HandleError(Exception ex, string message = "Une erreur est survenue")
         {
             Debug.WriteLine($"ERREUR: {message}");

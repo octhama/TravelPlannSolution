@@ -10,7 +10,7 @@ public partial class App : Application
     {
         InitializeComponent();
         AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
-            // Log the error
+            
             if (args.ExceptionObject is Exception ex)
             {
                 Console.WriteLine($"CRASH: {ex}");

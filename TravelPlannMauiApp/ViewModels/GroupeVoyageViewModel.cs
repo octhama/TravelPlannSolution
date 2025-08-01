@@ -84,8 +84,8 @@ public class GroupeVoyageViewModel : BaseViewModel
         try
         {
             var groupe = await _groupeService.CreateAsync(NouveauGroupeNom);
-            
-            // Ajouter le créateur comme administrateur
+
+            // Ajout du créateur comme administrateur
             var userIdString = await SecureStorage.GetAsync("current_user_id");
             if (int.TryParse(userIdString, out int userId))
             {
@@ -138,8 +138,8 @@ public class GroupeVoyageViewModel : BaseViewModel
                 {
                     var membre = await _groupeService.AddMembreAsync(
                         SelectedGroupe.GroupeId, utilisateur.UtilisateurId, "Membre");
-                    
-                    // Recharger la liste des membres
+
+                    // Rechargement de la liste des membres
                     await SelectGroupeAsync(SelectedGroupe);
                     
                     await Shell.Current.DisplayAlert("Succès", "Membre ajouté avec succès!", "OK");

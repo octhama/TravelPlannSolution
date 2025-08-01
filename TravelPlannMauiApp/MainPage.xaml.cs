@@ -14,12 +14,12 @@ namespace TravelPlannMauiApp
         public MainPage()
         {
             InitializeComponent();
-            
-            // Obtenir le service provider de manière plus sûre
-            _serviceProvider = Handler?.MauiContext?.Services ?? 
+
+            // Pour obtenir le service provider de manière plus sûre
+            _serviceProvider = Handler?.MauiContext?.Services ??
                               (Application.Current as App)?.Handler?.MauiContext?.Services;
-            
-            // Créer et assigner le ViewModel
+
+            // Pour créer et assigner le ViewModel
             if (_serviceProvider != null)
             {
                 var viewModel = _serviceProvider.GetService<MainPageViewModel>();
@@ -43,20 +43,20 @@ namespace TravelPlannMauiApp
             
             UpdateTabSelection();
             UpdateIndicatorPosition();
-            
-            // S'abonner à l'événement de navigation
+
+            // Pour s'abonner à l'événement de navigation
             NavigationPage.SetHasNavigationBar(this, false);
             this.Appearing += OnPageAppearing;
         }
 
         private void OnPageAppearing(object sender, EventArgs e)
         {
-            // Réinitialiser à l'onglet Accueil quand la page réapparaît
+            // Réinitialisation de l'onglet actif à l'onglet Accueil quand la page réapparaît
             _currentTab = 1;
             UpdateTabSelection();
             UpdateIndicatorPosition();
             
-            // Recharger les informations utilisateur
+            // Rechargement des  informations utilisateur
             if (BindingContext is MainPageViewModel viewModel)
             {
                 _ = viewModel.LoadUserInfoAsync();
@@ -176,8 +176,8 @@ namespace TravelPlannMauiApp
             {
                 System.Diagnostics.Debug.WriteLine($"Erreur lors du tap sur onglet: {ex}");
                 await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
-                
-                // Remettre l'onglet précédent en cas d'erreur
+
+                // Pour remettre l'onglet précédent en cas d'erreur
                 _currentTab = 1;
                 UpdateTabSelection();
                 UpdateIndicatorPosition();
@@ -186,12 +186,12 @@ namespace TravelPlannMauiApp
 
         private void UpdateTabSelection()
         {
-            // Réinitialiser toutes les couleurs
+            // Réinitialisation de toutes les couleurs
             MapLabel.TextColor = Color.FromArgb("#666666");
             HomeLabel.TextColor = Color.FromArgb("#666666");
             TripsLabel.TextColor = Color.FromArgb("#666666");
 
-            // Mettre en surbrillance l'onglet actif
+            // Pour mettre en surbrillance l'onglet actif
             switch (_currentTab)
             {
                 case 0:

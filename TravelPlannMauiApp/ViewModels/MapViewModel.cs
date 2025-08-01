@@ -369,19 +369,19 @@ public ObservableCollection<Activite> ActivitiesList
         
         if (_mapControl != null)
         {
-            // Configurer les propriétés de base
+            // Configuration des propriétés de base
             _mapControl.IsZoomEnabled = true;
             _mapControl.IsScrollEnabled = true;
             _mapControl.InputTransparent = false;
             
-            // NOUVEAU: Centrer immédiatement sur Namur
+            // Centrer immédiatement sur Namur
             _mapControl.MoveToRegion(DefaultRegion);
             _currentRegion = DefaultRegion;
-            
-            // Configurer les événements
+
+            // Configuration des événements
             SetupMapEvents();
             
-            // Mettre à jour les pins avec les données déjà chargées
+            // MàJ des pins avec les données déjà chargées
             _ = Task.Run(UpdateMapPins);
             
             System.Diagnostics.Debug.WriteLine("Contrôle de carte configuré avec succès - Centré sur Namur");
@@ -430,7 +430,7 @@ public ObservableCollection<Activite> ActivitiesList
 
     #endregion
 
-    #region Implementation de la logique métier (Commandes - Business Logic)
+    #region Implementation de la logique métier (Commandes - Logique Business)
 
     private async Task ExecuteSearchCommand()
 {
@@ -563,7 +563,7 @@ public ObservableCollection<Activite> ActivitiesList
     {
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
-            // Cette fonctionnalité dépendrait du thème de l'application
+            
             if (MapStyleIcon == "🌙")
             {
                 MapStyleIcon = "☀️";
@@ -593,7 +593,7 @@ public ObservableCollection<Activite> ActivitiesList
 
         try
         {
-            // Au lieu de la géolocalisation, centrer sur Namur
+            
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 _mapControl?.MoveToRegion(DefaultRegion);
@@ -629,25 +629,25 @@ public ObservableCollection<Activite> ActivitiesList
     private void ExecuteShowAccommodationsCommand()
     {
         ShowTemporaryMessage("Recherche d'hébergements...");
-        // TODO: Implémenter la recherche d'hébergements autour du lieu sélectionné
+        // TODO: Implémentation de la recherche d'hébergements autour du lieu sélectionné
     }
 
     private void ExecuteShowActivitiesCommand()
     {
         ShowTemporaryMessage("Recherche d'activités...");
-        // TODO: Implémenter la recherche d'activités autour du lieu sélectionné
+        // TODO: Implémentation de la recherche d'activités autour du lieu sélectionné
     }
 
     private void ExecuteShowRestaurantsCommand()
     {
         ShowTemporaryMessage("Recherche de restaurants...");
-        // TODO: Implémenter la recherche de restaurants autour du lieu sélectionné
+        // TODO: Implémentation de la recherche de restaurants autour du lieu sélectionné
     }
 
     private void ExecuteShowDirectionsCommand()
     {
         ShowTemporaryMessage("Calcul de l'itinéraire...");
-        // TODO: Implémenter le calcul d'itinéraire
+        // TODO: Implémentation de la recherche d'itinéraire
     }
 
     private void ExecuteZoomInCommand()
@@ -658,7 +658,7 @@ public ObservableCollection<Activite> ActivitiesList
         {
             MainThread.InvokeOnMainThreadAsync(() =>
             {
-                // Réduire le rayon de moitié pour zoomer
+                // Réduction du rayon de moitié pour zoomer
                 var newRadius = _currentRegion.Radius.Meters * 0.5;
                 var newMapSpan = MapSpan.FromCenterAndRadius(_currentRegion.Center, Distance.FromMeters(Math.Max(newRadius, 100)));
                 _mapControl.MoveToRegion(newMapSpan);
@@ -744,16 +744,16 @@ public ObservableCollection<Activite> ActivitiesList
             var currentUserId = await _sessionService.GetCurrentUserIdAsync();
             if (currentUserId.HasValue)
             {
-                // Charger les voyages de l'utilisateur
+                // Chargement des voyages de l'utilisateur
                 var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(currentUserId.Value);
                 _userVoyages = voyages?.ToList() ?? new List<Voyage>();
 
                 System.Diagnostics.Debug.WriteLine($"Chargé {_userVoyages.Count} voyages pour l'utilisateur");
 
-                // DIAGNOSTIC
+                // Diagnostique des données de voyage
                 DiagnoseVoyageData();
 
-                // Charger les points d'intérêt si des voyages existent
+                // Chargement des points d'intérêt si des voyages existent
                 if (_userVoyages.Any())
                 {
                     await LoadPointsOfInterestAsync();
@@ -781,7 +781,7 @@ public ObservableCollection<Activite> ActivitiesList
             _restaurantPins.Clear();
             _transportPins.Clear();
 
-            // Charger TOUS les hébergements
+            // Chargement de tous les hébergements
             try
             {
                 var hebergements = await _hebergementService.GetAllHebergementsAsync();
@@ -806,8 +806,8 @@ public ObservableCollection<Activite> ActivitiesList
                                 _accommodationPins.Add(pin);
                                 System.Diagnostics.Debug.WriteLine($"Pin hébergement ajouté: {hebergement.Nom}");
                             }
-                            
-                            await Task.Delay(200); // Éviter de surcharger l'API de géocodage
+
+                            await Task.Delay(200); // Pour éviter de surcharger l'API de géocodage
                         }
                     }
                 }
@@ -817,7 +817,7 @@ public ObservableCollection<Activite> ActivitiesList
                 System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des hébergements: {ex.Message}");
             }
 
-            // Charger TOUTES les activités
+            // Chargement de toutes les activités
             try
             {
                 var activites = await _activiteService.GetAllActivitesAsync();
@@ -861,7 +861,7 @@ public ObservableCollection<Activite> ActivitiesList
         }
         finally
         {
-            // Mettre à jour les pins sur la carte
+            // MàJ des pins sur la carte
             await UpdateMapPins();
             System.Diagnostics.Debug.WriteLine("Chargement des points d'intérêt terminé");
         }
@@ -1025,16 +1025,17 @@ public ObservableCollection<Activite> ActivitiesList
         ShowPOIManagement = !ShowPOIManagement;
         if (ShowPOIManagement)
         {
-            // Fermer les autres panels
+            // Fermeture des autres panels
             ShowFilters = false;
             ShowLocationInfo = false;
-            
-            // Charger les données
+
+            // Chargement des données
             _ = Task.Run(LoadPOIDataAsync);
             ShowTemporaryMessage("Gestion des lieux");
         }
     }
 
+    // Commande pour fermer le panel de gestion des points d'intérêt
     private void ExecuteClosePOIManagementCommand()
     {
         ShowPOIManagement = false;
@@ -1072,15 +1073,15 @@ public ObservableCollection<Activite> ActivitiesList
                 POIManagementMessage = "Suppression en cours...";
                 
                 await _hebergementService.DeleteHebergementAsync(hebergement.HebergementId);
-                
-                // Mettre à jour les listes
+
+                // Màj des listes
                 AccommodationsList.Remove(hebergement);
                 OnPropertyChanged(nameof(AccommodationsCount));
                 
                 // Supprimer le pin correspondant
                 RemoveAccommodationPin(hebergement);
-                
-                // Recharger les pins de la carte
+
+                // Rechargement des pins de la carte
                 await UpdateMapPins();
                 
                 await ShowTemporaryMessageAsync($"Hébergement '{hebergement.Nom}' supprimé");
@@ -1111,15 +1112,15 @@ public ObservableCollection<Activite> ActivitiesList
                 POIManagementMessage = "Suppression en cours...";
                 
                 await _activiteService.DeleteActiviteAsync(activite.ActiviteId);
-                
-                // Mettre à jour les listes
+
+                // MàJ des listes
                 ActivitiesList.Remove(activite);
                 OnPropertyChanged(nameof(ActivitiesCount));
                 
                 // Supprimer le pin correspondant
                 RemoveActivityPin(activite);
-                
-                // Recharger les pins de la carte
+
+                // Rechargement des pins de la carte
                 await UpdateMapPins();
                 
                 await ShowTemporaryMessageAsync($"Activité '{activite.Nom}' supprimée");
@@ -1134,21 +1135,22 @@ public ObservableCollection<Activite> ActivitiesList
         }
     }
 
+    // Chargement des données des points d'intérêts (hébergements et activités)
     private async Task LoadPOIDataAsync()
     {
         try
         {
             POIManagementMessage = "Chargement en cours...";
-            
-            // Charger tous les hébergements
+
+            // Chargement de tous les hébergements
             var hebergements = await _hebergementService.GetAllHebergementsAsync();
             var activites = await _activiteService.GetAllActivitesAsync();
-            
+
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 AccommodationsList.Clear();
                 ActivitiesList.Clear();
-                
+
                 if (hebergements != null)
                 {
                     foreach (var h in hebergements)
@@ -1156,7 +1158,7 @@ public ObservableCollection<Activite> ActivitiesList
                         AccommodationsList.Add(h);
                     }
                 }
-                
+
                 if (activites != null)
                 {
                     foreach (var a in activites)
@@ -1164,12 +1166,12 @@ public ObservableCollection<Activite> ActivitiesList
                         ActivitiesList.Add(a);
                     }
                 }
-                
+
                 OnPropertyChanged(nameof(AccommodationsCount));
                 OnPropertyChanged(nameof(ActivitiesCount));
                 POIManagementMessage = "";
             });
-            
+
             System.Diagnostics.Debug.WriteLine($"Données POI chargées: {AccommodationsCount} hébergements, {ActivitiesCount} activités");
         }
         catch (Exception ex)
@@ -1245,7 +1247,7 @@ public ObservableCollection<Activite> ActivitiesList
 
             System.Diagnostics.Debug.WriteLine($"Tentative de géocodage: '{address}'");
 
-            // Nettoyer l'adresse
+            // Nettoyage de l'adresse
             var cleanAddress = address.Trim();
 
             var locations = await Geocoding.Default.GetLocationsAsync(cleanAddress);
@@ -1260,7 +1262,7 @@ public ObservableCollection<Activite> ActivitiesList
             {
                 System.Diagnostics.Debug.WriteLine($"Aucun résultat de géocodage pour '{cleanAddress}'");
 
-                // Essayer une version simplifiée de l'adresse
+                // Tentative avec une adresse simplifiée
                 var simplifiedAddress = ExtractMainLocation(cleanAddress);
                 if (!string.IsNullOrEmpty(simplifiedAddress) && simplifiedAddress != cleanAddress)
                 {
@@ -1284,45 +1286,50 @@ public ObservableCollection<Activite> ActivitiesList
             return null;
         }
     }
+
+    // Methode pour extraire la localisation principale d'une adresse complète
     private string ExtractMainLocation(string fullAddress)
-{
-    try
     {
-        if (string.IsNullOrEmpty(fullAddress))
-            return null;
-
-        // Essayer d'extraire la ville et le pays
-        var parts = fullAddress.Split(',');
-        if (parts.Length >= 2)
+        try
         {
-            // Prendre les deux dernières parties (généralement ville, pays)
-            var city = parts[parts.Length - 2].Trim();
-            var country = parts[parts.Length - 1].Trim();
-            return $"{city}, {country}";
-        }
-        
-        return fullAddress;
-    }
-    catch
-    {
-        return fullAddress;
-    }
-}
+            if (string.IsNullOrEmpty(fullAddress))
+                return null;
 
+            // Séparation de l'adresse en parties
+            var parts = fullAddress.Split(',');
+            if (parts.Length >= 2)
+            {
+                // Prendre les deux dernières parties (généralement ville, pays)
+                var city = parts[parts.Length - 2].Trim();
+                var country = parts[parts.Length - 1].Trim();
+                return $"{city}, {country}";
+            }
+
+            return fullAddress;
+        }
+        catch
+        {
+            return fullAddress;
+        }
+    }
+
+    /// <summary>
+    /// Effectue un géocodage inverse pour obtenir l'adresse à partir d'une location
+    /// </summary>
     public async Task<string> GetAddressFromLocationAsync(Location location)
     {
         try
         {
             var placemarks = await Geocoding.Default.GetPlacemarksAsync(location);
             var placemark = placemarks?.FirstOrDefault();
-            
+
             if (placemark != null)
             {
                 var address = $"{placemark.Thoroughfare} {placemark.SubThoroughfare}, {placemark.Locality}, {placemark.CountryName}".Trim(' ', ',');
                 System.Diagnostics.Debug.WriteLine($"Géocodage inverse réussi: {address}");
                 return address;
             }
-            
+
             return $"{location.Latitude:F4}, {location.Longitude:F4}";
         }
         catch (Exception ex)
@@ -1332,26 +1339,27 @@ public ObservableCollection<Activite> ActivitiesList
         }
     }
 
+    /// Affiche les détails d'une localisation sélectionnée
     public void ShowLocationDetails(Pin pin)
     {
         try
         {
             SelectedLocationName = pin.Label ?? "Lieu inconnu";
             SelectedLocationAddress = pin.Address ?? "";
-            
+
             // Calculer la distance si position utilisateur disponible
             if (_userLocation != null && pin.Location != null)
             {
                 var distance = Location.CalculateDistance(_userLocation, pin.Location, DistanceUnits.Kilometers);
-                SelectedLocationDistance = distance < 1 
-                    ? $"{distance * 1000:F0}m de vous" 
+                SelectedLocationDistance = distance < 1
+                    ? $"{distance * 1000:F0}m de vous"
                     : $"{distance:F1}km de vous";
             }
             else
             {
                 SelectedLocationDistance = "";
             }
-            
+
             ShowLocationInfo = true;
             System.Diagnostics.Debug.WriteLine($"Détails affichés pour: {SelectedLocationName}");
         }
@@ -1365,12 +1373,18 @@ public ObservableCollection<Activite> ActivitiesList
 
     #region UI Helpers
 
-    // Continuation de ShowTemporaryMessage
-       private async Task ShowTemporaryMessageAsync(string message, int durationMs = 3000)
+    /// <summary>
+    /// Affiche un message temporaire à l'utilisateur pour une durée spécifiée
+    /// Utilise un CancellationToken pour annuler les messages précédents
+    /// Cela sert à éviter les conflits d'affichage de messages pour la fonctionnalité de recherche
+    /// ou d'autres actions utilisateur, tout en maintenant le dernier message affiché
+    /// jusqu'à ce qu'il soit annulé par un nouveau message
+    /// </summary>
+    private async Task ShowTemporaryMessageAsync(string message, int durationMs = 3000)
+    {
+        try
         {
-            try
-            {
-                // Annuler le message précédent s'il existe
+                // Annulation du token du message précédent s'il existe
                 _messagesCancellationTokenSource?.Cancel();
                 _messagesCancellationTokenSource = new CancellationTokenSource();
                 
@@ -1406,7 +1420,6 @@ public ObservableCollection<Activite> ActivitiesList
                 System.Diagnostics.Debug.WriteLine($"Erreur lors de l'affichage du message: {ex.Message}");
             }
         }
-
 
     #endregion
 
@@ -1591,8 +1604,8 @@ public ObservableCollection<Activite> ActivitiesList
             if (voyage == null) return;
 
             var relevantPins = new List<Pin>();
-            
-            // CORRECTION: Utiliser les noms pour faire correspondre les pins (pas VoyageId pour Activite)
+
+            // Utilisation des noms pour faire correspondre les pins (pas VoyageId pour Activite)
             if (voyage.Hebergements != null && voyage.Hebergements.Any())
             {
                 relevantPins.AddRange(_accommodationPins.Where(p => 
@@ -1642,7 +1655,7 @@ public ObservableCollection<Activite> ActivitiesList
                 var centerLon = (minLon + maxLon) / 2;
                 var center = new Location(centerLat, centerLon);
 
-                // Calculer le rayon nécessaire
+                // Calcule du rayon nécessaire
                 var maxDistance = pins.Max(p => CalculateDistance(center, p.Location));
                 var radius = Math.Max(maxDistance + paddingKm, 1); // Minimum 1km
 
@@ -1737,11 +1750,16 @@ public ObservableCollection<Activite> ActivitiesList
 
     #region Implementation de INotifyPropertyChanged
 
+    // Cette méthode protected est appelée pour notifier les changements de propriété dans le cas où une propriété est modifiée
+    // c'est à dire que la vue doit être informée pour mettre à jour l'affichage de la propriété.
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    // Cette méthode protected est utilisée pour définir une propriété et notifier le changement si la valeur a été modifiée.
+    // Elle prend un backing field, une nouvelle valeur et le nom de la propriété (par défaut, le nom de la méthode appelante).
+    // Elle retourne true si la valeur a été modifiée, sinon false.
     protected bool SetProperty<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(backingField, value))

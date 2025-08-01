@@ -6,7 +6,7 @@ using System;
 namespace Common.Converters
 {
     /// <summary>
-    /// Convertit une chaîne en booléen (true si non vide)
+    /// Pour convertir une chaîne en booléen (true si non vide)
     /// </summary>
     public class StringToBoolConverter : IValueConverter
     {

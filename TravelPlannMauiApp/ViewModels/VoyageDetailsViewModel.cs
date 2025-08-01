@@ -323,7 +323,7 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        // NOUVEAU: Méthode simple et efficace pour notifier le rafraîchissement
+        // Méthode simple pour notifier le rafraîchissement
         private void SetForceReloadFlag()
         {
             try
@@ -502,7 +502,7 @@ namespace TravelPlannMauiApp.ViewModels
             }
         }
 
-        // NOUVEAU: Méthode pour marquer qu'il y a eu des changements (pour ajouts/suppressions)
+        //Méthode pour marquer qu'il y a eu des changements (pour ajouts/suppressions)
         private void MarkAsModified()
         {
             SetForceReloadFlag();

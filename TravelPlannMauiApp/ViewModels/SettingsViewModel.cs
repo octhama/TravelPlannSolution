@@ -22,7 +22,8 @@ public class SettingsViewModel : INotifyPropertyChanged
     private string _confirmPassword = string.Empty;
     private bool _isBusy;
 
-    // Event for navigation requests
+    // Cet événement est déclenché pour notifier les changements de propriété. C'est utilisé pour mettre à jour l'interface utilisateur lorsque les propriétés changent.
+    // Il est nécessaire pour implémenter l'interface INotifyPropertyChanged.
     public event EventHandler<string> NavigationRequested;
 
     public SettingsViewModel(ISettingsService settingsService, ISessionService sessionService, IUtilisateurService utilisateurService)
@@ -310,10 +311,10 @@ public class SettingsViewModel : INotifyPropertyChanged
             System.Diagnostics.Debug.WriteLine($"Prénom actuel: {_currentUser.Prenom} -> Nouveau: {Prenom}");
             System.Diagnostics.Debug.WriteLine($"Email actuel: {_currentUser.Email} -> Nouveau: {Email}");
 
-            // Vérifier si l'email a changé et s'il n'est pas déjà utilisé
+            // Vérification que l'email a changé et s'il n'est pas déjà utilisé
             if (_currentUser.Email != Email.Trim())
             {
-                // Vérifier avec la nouvelle méthode qui exclut l'utilisateur actuel
+                // Vérification avec la nouvelle méthode qui exclut l'utilisateur actuel
                 var emailExists = await _utilisateurService.EmailExistsForOtherUserAsync(Email.Trim(), _currentUser.UtilisateurId).ConfigureAwait(false);
                 
                 if (emailExists)
@@ -323,7 +324,7 @@ public class SettingsViewModel : INotifyPropertyChanged
                 }
             }
 
-            // Créer une copie de l'utilisateur avec les nouvelles informations
+            // Création d'une copie de l'utilisateur avec les nouvelles informations
             var updatedUser = new Utilisateur
             {
                 UtilisateurId = _currentUser.UtilisateurId,
@@ -337,12 +338,12 @@ public class SettingsViewModel : INotifyPropertyChanged
             System.Diagnostics.Debug.WriteLine("Appel UpdateAsync...");
             await _utilisateurService.UpdateAsync(updatedUser);
 
-            // Mettre à jour l'objet local
+            // MàJ de l'objet local
             _currentUser.Nom = updatedUser.Nom;
             _currentUser.Prenom = updatedUser.Prenom;
             _currentUser.Email = updatedUser.Email;
 
-            // Mettre à jour la session avec le nouveau nom
+            // MàJ de la session avec le nouveau nom
             await _sessionService.SetCurrentUserAsync(_currentUser.UtilisateurId, $"{Prenom} {Nom}");
 
             OnPropertyChanged(nameof(UserDisplayName));
@@ -381,7 +382,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             System.Diagnostics.Debug.WriteLine($"User ID: {_currentUser.UtilisateurId}");
             System.Diagnostics.Debug.WriteLine($"Email: {_currentUser.Email}");
 
-            // Vérifier le mot de passe actuel
+            // Vérification du mot de passe actuel
             System.Diagnostics.Debug.WriteLine("Vérification du mot de passe actuel...");
             var authenticatedUser = await _utilisateurService.AuthenticateAsync(_currentUser.Email, CurrentPassword);
             if (authenticatedUser == null)
@@ -393,7 +394,7 @@ public class SettingsViewModel : INotifyPropertyChanged
 
             System.Diagnostics.Debug.WriteLine("Mot de passe actuel vérifié, mise à jour...");
 
-            // Créer une copie de l'utilisateur avec le nouveau mot de passe
+            // Création d'une copie de l'utilisateur avec le nouveau mot de passe
             var updatedUser = new Utilisateur
             {
                 UtilisateurId = _currentUser.UtilisateurId,
@@ -406,10 +407,10 @@ public class SettingsViewModel : INotifyPropertyChanged
 
             await _utilisateurService.UpdateAsync(updatedUser);
 
-            // Mettre à jour l'objet local
+            // MàJ de l'objet local
             _currentUser.MotDePasse = updatedUser.MotDePasse;
 
-            // Réinitialiser les champs
+            // Réinitialisation des champs
             CurrentPassword = string.Empty;
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
