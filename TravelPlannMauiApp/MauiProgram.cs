@@ -66,7 +66,7 @@ public static class MauiProgram
 #endif
         });
 
-        // Services 
+        // Services (injection de dépendances pour les services métiers)
         builder.Services.AddScoped<IActiviteService, ActiviteService>();
         builder.Services.AddScoped<IHebergementService, HebergementService>();
         builder.Services.AddScoped<IVoyageService, VoyageService>();
@@ -74,7 +74,7 @@ public static class MauiProgram
         builder.Services.AddScoped<ISettingsService, SettingsService>();
         builder.Services.AddSingleton<ISessionService, SessionService>();
 
-        // Enregistrement des ViewModels
+        // Enregistrement des ViewModels (injection de dépendances pour les ViewModels)
         builder.Services.AddTransient<VoyageViewModel>();
         builder.Services.AddTransient<MapViewModel>();
         builder.Services.AddTransient<VoyageDetailsViewModel>();
@@ -91,7 +91,7 @@ public static class MauiProgram
             client.DefaultRequestHeaders.Add("User-Agent", "TravelPlannApp/1.0");
         });
         
-        // Enregistrement des Pages
+        // Enregistrement des Pages (injection de dépendances pour les pages)
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<VoyageListPage>();
         builder.Services.AddTransient<MapPage>();
