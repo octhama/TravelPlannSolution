@@ -10,7 +10,7 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.AssemblyInfo.cs
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.csproj.CoreCompileInputs.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.sourcelink.json
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.csproj.Up2Date
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.csproj.CopyComplete
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/refint/DAL.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/DAL/obj/Debug/net8.0/DAL.pdb

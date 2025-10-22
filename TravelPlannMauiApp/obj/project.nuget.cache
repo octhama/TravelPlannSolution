@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "96TnIft7c7Y=",
+  "dgSpecHash": "iWsy5dZ1BsE=",
   "success": true,
   "projectFilePath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannMauiApp/TravelPlannMauiApp.csproj",
   "expectedPackageFiles": [
@@ -60,7 +60,7 @@
     "/Users/kuassitehou/.nuget/packages/microsoft.maui.graphics/8.0.100/microsoft.maui.graphics.8.0.100.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/microsoft.maui.maps/8.0.100/microsoft.maui.maps.8.0.100.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/microsoft.maui.resizetizer/8.0.100/microsoft.maui.resizetizer.8.0.100.nupkg.sha512",
-    "/Users/kuassitehou/.nuget/packages/microsoft.net.illink.tasks/8.0.11/microsoft.net.illink.tasks.8.0.11.nupkg.sha512",
+    "/Users/kuassitehou/.nuget/packages/microsoft.net.illink.tasks/8.0.21/microsoft.net.illink.tasks.8.0.21.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "/Users/kuassitehou/.nuget/packages/microsoft.sqlserver.server/1.0.0/microsoft.sqlserver.server.1.0.0.nupkg.sha512",

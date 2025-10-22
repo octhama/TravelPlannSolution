@@ -11,7 +11,7 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.AssemblyInfo.cs
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.csproj.CoreCompileInputs.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.sourcelink.json
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.csproj.Up2Date
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.csproj.CopyComplete
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/refint/BU.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0/BU.pdb

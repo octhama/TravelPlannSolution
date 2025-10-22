@@ -62,7 +62,6 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Configuration.ConfigurationManager.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Diagnostics.EventLog.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Drawing.Common.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Formats.Asn1.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.IO.Pipelines.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/bin/Debug/net8.0/System.Memory.Data.dll
@@ -182,7 +181,7 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.AssemblyInfo.cs
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.csproj.CoreCompileInputs.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.sourcelink.json
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPl.75191EEB.Up2Date
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.csproj.CopyComplete
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/refint/TravelPlannConsoleAppTest.dll
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/TravelPlannConsoleAppTest/obj/Debug/net8.0/TravelPlannConsoleAppTest.pdb
