@@ -105,7 +105,7 @@
     <Import Project="$(NuGetPackageRoot)microsoft.maui.controls.build.tasks/8.0.100/buildTransitive/net6.0-ios10.0/Microsoft.Maui.Controls.Build.Tasks.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.maui.controls.build.tasks/8.0.100/buildTransitive/net6.0-ios10.0/Microsoft.Maui.Controls.Build.Tasks.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.extensions.configuration.binder/8.0.0/buildTransitive/netstandard2.0/Microsoft.Extensions.Configuration.Binder.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.configuration.binder/8.0.0/buildTransitive/netstandard2.0/Microsoft.Extensions.Configuration.Binder.targets')" />
   </ImportGroup>
-  <ImportGroup Condition=" '$(TargetFramework)' == 'net8.0-maccatalyst17.5' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net8.0-maccatalyst18.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
     <Import Project="$(NuGetPackageRoot)system.text.json/8.0.0/buildTransitive/net6.0/System.Text.Json.targets" Condition="Exists('$(NuGetPackageRoot)system.text.json/8.0.0/buildTransitive/net6.0/System.Text.Json.targets')" />
     <Import Project="$(NuGetPackageRoot)refit/8.0.0/buildTransitive/netstandard2.0/refit.targets" Condition="Exists('$(NuGetPackageRoot)refit/8.0.0/buildTransitive/netstandard2.0/refit.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.maui.resizetizer/8.0.100/buildTransitive/Microsoft.Maui.Resizetizer.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.maui.resizetizer/8.0.100/buildTransitive/Microsoft.Maui.Resizetizer.targets')" />

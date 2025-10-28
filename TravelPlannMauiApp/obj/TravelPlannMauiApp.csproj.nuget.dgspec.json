@@ -112,11 +112,6 @@
             "Microsoft.Maui.Controls": {
               "target": "Package",
               "version": "[8.0.14, )"
-            },
-            "Microsoft.Maui.Controls.Compatibility": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.100, )"
             }
           },
           "imports": [
@@ -255,7 +250,7 @@
         "originalTargetFrameworks": [
           "net8.0-android",
           "net8.0-ios",
-          "net8.0-maccatalyst17.5"
+          "net8.0-maccatalyst18.0"
         ],
         "sources": {
           "/usr/local/share/dotnet/library-packs": {},
@@ -290,8 +285,8 @@
               }
             }
           },
-          "net8.0-maccatalyst17.5": {
-            "targetAlias": "net8.0-maccatalyst17.5",
+          "net8.0-maccatalyst18.0": {
+            "targetAlias": "net8.0-maccatalyst18.0",
             "projectReferences": {
               "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj": {
                 "projectPath": "/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/BU.csproj"
@@ -430,8 +425,8 @@
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.121/PortableRuntimeIdentifierGraph.json"
         },
-        "net8.0-maccatalyst17.5": {
-          "targetAlias": "net8.0-maccatalyst17.5",
+        "net8.0-maccatalyst18.0": {
+          "targetAlias": "net8.0-maccatalyst18.0",
           "dependencies": {
             "CommunityToolkit.Maui": {
               "target": "Package",
