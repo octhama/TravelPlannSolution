@@ -16,22 +16,22 @@ namespace TravelPlannMauiApp.ViewModels
         private readonly IHebergementService _hebergementService;
 
         // Propriétés de base pour le voyage
-        private string _nomVoyage;
-        private string _description;
+        private string _nomVoyage = string.Empty;
+        private string _description = string.Empty;
         private DateTime _dateDebut = DateTime.Today;
         private DateTime _dateFin = DateTime.Today.AddDays(1);
 
         // Propriétés pour les formulaires d'activités
         private bool _showActiviteForm;
-        private string _nouvelleActiviteNom;
-        private string _nouvelleActiviteDescription;
-        private string _nouvelleActiviteLocalisation;
+        private string _nouvelleActiviteNom = string.Empty;
+        private string _nouvelleActiviteDescription = string.Empty;
+        private string _nouvelleActiviteLocalisation = string.Empty;
 
         // Propriétés pour les formulaires d'hébergements
         private bool _showHebergementForm;
-        private string _nouvelHebergementNom;
-        private string _nouvelHebergementType;
-        private string _nouvelHebergementAdresse;
+        private string _nouvelHebergementNom = string.Empty;
+        private string _nouvelHebergementType = string.Empty;
+        private string _nouvelHebergementAdresse = string.Empty;
         private decimal _nouvelHebergementCout;
 
         // Collections pour les éléments ajoutés
@@ -190,9 +190,9 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 var nouvelleActivite = new Activite
                 {
-                    Nom = NouvelleActiviteNom?.Trim(),
-                    Description = NouvelleActiviteDescription?.Trim(),
-                    Localisation = NouvelleActiviteLocalisation?.Trim()
+                    Nom = NouvelleActiviteNom.Trim(),
+                    Description = NouvelleActiviteDescription.Trim(),
+                    Localisation = NouvelleActiviteLocalisation.Trim()
                 };
 
                 // Créer l'activité d'abord
@@ -202,7 +202,7 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     NouvellesActivites.Add(activiteCree);
                     ResetActiviteForm();
-                    
+
                     Debug.WriteLine($"Activité ajoutée: {activiteCree.Nom} (ID: {activiteCree.ActiviteId}) - Localisation: {activiteCree.Localisation}");
                 }
             }
@@ -226,9 +226,9 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 var nouvelHebergement = new Hebergement
                 {
-                    Nom = NouvelHebergementNom?.Trim(),
-                    TypeHebergement = NouvelHebergementType?.Trim(),
-                    Adresse = NouvelHebergementAdresse?.Trim(),
+                    Nom = NouvelHebergementNom.Trim(),
+                    TypeHebergement = NouvelHebergementType.Trim(),
+                    Adresse = NouvelHebergementAdresse.Trim(),
                     Cout = NouvelHebergementCout
                 };
 
@@ -239,7 +239,7 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     NouveauxHebergements.Add(hebergementCree);
                     ResetHebergementForm();
-                    
+
                     Debug.WriteLine($"Hébergement ajouté: {hebergementCree.Nom} (ID: {hebergementCree.HebergementId}) - Adresse: {hebergementCree.Adresse}");
                 }
             }
@@ -285,7 +285,7 @@ namespace TravelPlannMauiApp.ViewModels
                 return;
             }
 
-             try
+            try
             {
                 IsBusy = true;
                 Debug.WriteLine("=== DÉBUT AddVoyageAsync ===");
@@ -302,8 +302,8 @@ namespace TravelPlannMauiApp.ViewModels
                 // Créer le voyage de base
                 var voyage = new Voyage
                 {
-                    NomVoyage = NomVoyage?.Trim(),
-                    Description = Description?.Trim(),
+                    NomVoyage = NomVoyage.Trim(),
+                    Description = Description.Trim(),
                     DateDebut = DateOnly.FromDateTime(DateDebut),
                     DateFin = DateOnly.FromDateTime(DateFin),
                     EstComplete = false,
@@ -318,7 +318,7 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     // Créer une liste des activités avec uniquement les IDs pour éviter les conflits EF
                     voyage.Activites = NouvellesActivites.Select(a => new Activite { ActiviteId = a.ActiviteId }).ToList();
-                    
+
                     Debug.WriteLine("Activités à associer:");
                     foreach (var activite in NouvellesActivites)
                     {
@@ -330,33 +330,33 @@ namespace TravelPlannMauiApp.ViewModels
                 {
                     // Créer une liste des hébergements avec uniquement les IDs pour éviter les conflits EF
                     voyage.Hebergements = NouveauxHebergements.Select(h => new Hebergement { HebergementId = h.HebergementId }).ToList();
-                    
+
                     Debug.WriteLine("Hébergements à associer:");
                     foreach (var hebergement in NouveauxHebergements)
                     {
                         Debug.WriteLine($"  - {hebergement.Nom} (ID: {hebergement.HebergementId}) - Adresse: {hebergement.Adresse}");
                     }
                 }
-                
+
                 Debug.WriteLine($"Voyage prêt à être ajouté: {voyage.NomVoyage}, Dates: {voyage.DateDebut} - {voyage.DateFin}, UtilisateurId: {voyage.UtilisateurId}");
-                
+
                 await _voyageService.AddVoyageAsync(voyage);
                 Debug.WriteLine($"Voyage ajouté avec succès: {voyage.NomVoyage}");
-                
+
                 // 1. Définir le flag de rechargement
                 Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
-                
+
                 // 2. Envoyer un message pour déclencher le rafraîchissement
                 MessagingCenter.Send<object>(this, "RefreshVoyageList");
-                
+
                 Debug.WriteLine("Flag et message de rafraîchissement envoyés");
 
                 // Réinitialiser les champs
                 ResetForm();
-                
+
                 // Afficher un message de succès
                 await Shell.Current.DisplayAlert("Succès", "Voyage ajouté avec succès!", "OK");
-                
+
                 // 3. Retour à la liste des voyages avec navigation forcée
                 await Shell.Current.GoToAsync($"..?forceRefresh=true");
             }
@@ -366,13 +366,13 @@ namespace TravelPlannMauiApp.ViewModels
                 Debug.WriteLine($"Message: {ex.Message}");
                 Debug.WriteLine($"Type: {ex.GetType().Name}");
                 Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                
+
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     Debug.WriteLine($"Inner exception type: {ex.InnerException.GetType().Name}");
                 }
-                
+
                 await HandleError(ex, "Erreur lors de l'ajout du voyage");
             }
             finally
@@ -469,7 +469,7 @@ namespace TravelPlannMauiApp.ViewModels
             Debug.WriteLine("ERREUR: Impossible de récupérer l'ID utilisateur - aucune session trouvée");
             return 0; // Retourner 0 pour indiquer qu'aucun utilisateur n'est connecté
         }
-        
+
         protected override void OnDisappearing()
         {
             base.OnDisappearing();

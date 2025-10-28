@@ -128,7 +128,7 @@ public class SessionService : ISessionService
         return null;
     }
 
-    public async Task ClearSessionAsync()
+    public Task ClearSessionAsync()
     {
         System.Diagnostics.Debug.WriteLine("=== NETTOYAGE SESSION ===");
 
@@ -153,6 +153,8 @@ public class SessionService : ISessionService
                 System.Diagnostics.Debug.WriteLine($"Erreur nettoyage Preferences: {prefEx.Message}");
             }
         }
+
+        return Task.CompletedTask;
     }
 
     public bool IsLoggedIn()

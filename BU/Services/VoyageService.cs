@@ -11,7 +11,7 @@ namespace BU.Services
     public class VoyageService : IVoyageService
     {
         private readonly TravelPlannDbContext _context;
-        private List<Voyage> _cachedVoyages;
+        private List<Voyage>? _cachedVoyages;
         private DateTime _lastCacheTime;
 
         public VoyageService(TravelPlannDbContext context)
@@ -21,10 +21,11 @@ namespace BU.Services
 
         public async Task<Voyage> GetVoyageByIdAsync(int voyageId)
         {
-            return await _context.Voyages
+            var voyage = await _context.Voyages
                 .Include(v => v.Activites)
                 .Include(v => v.Hebergements)
                 .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
+            return voyage ?? throw new KeyNotFoundException($"Voyage with id {voyageId} not found");
         }
 
         public async Task<List<Voyage>> GetVoyagesAsync()
@@ -155,6 +156,9 @@ namespace BU.Services
                                 .Include(v => v.Activites)
                                 .FirstAsync(v => v.VoyageId == newVoyage.VoyageId);
 
+                            if (voyageWithActivites.Activites == null)
+                                voyageWithActivites.Activites = new List<Activite>();
+
                             // Associer les activités existantes au voyage
                             foreach (var activite in existingActivites)
                             {
@@ -190,6 +194,9 @@ namespace BU.Services
                             var voyageWithHebergements = await _context.Voyages
                                 .Include(v => v.Hebergements)
                                 .FirstAsync(v => v.VoyageId == newVoyage.VoyageId);
+
+                            if (voyageWithHebergements.Hebergements == null)
+                                voyageWithHebergements.Hebergements = new List<Hebergement>();
 
                             // Associer les hébergements existants au voyage
                             foreach (var hebergement in existingHebergements)
@@ -271,6 +278,12 @@ namespace BU.Services
                         existingVoyage.EstComplete = voyage.EstComplete;
                         existingVoyage.EstArchive = voyage.EstArchive;
 
+                        // Initialiser les collections si nulles
+                        if (existingVoyage.Activites == null)
+                            existingVoyage.Activites = new List<Activite>();
+                        if (existingVoyage.Hebergements == null)
+                            existingVoyage.Hebergements = new List<Hebergement>();
+
                         // Vider les collections existantes
                         existingVoyage.Activites.Clear();
                         existingVoyage.Hebergements.Clear();
@@ -341,7 +354,7 @@ namespace BU.Services
                     .Include(v => v.Hebergements)
                     .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
-                if (voyage == null) return null;
+                if (voyage == null) throw new KeyNotFoundException($"Voyage with id {voyageId} not found");
 
                 return new VoyageDetails
                 {
@@ -390,8 +403,10 @@ namespace BU.Services
                             .Include(v => v.Activites)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
-                        if (voyage != null && !voyage.Activites.Any(a => a.ActiviteId == existingActivite.ActiviteId))
+                        if (voyage != null && !(voyage.Activites?.Any(a => a.ActiviteId == existingActivite.ActiviteId) ?? false))
                         {
+                            if (voyage.Activites == null)
+                                voyage.Activites = new List<Activite>();
                             voyage.Activites.Add(existingActivite);
                             await _context.SaveChangesAsync();
                         }
@@ -448,8 +463,10 @@ namespace BU.Services
                             .Include(v => v.Hebergements)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
-                        if (voyage != null && !voyage.Hebergements.Any(h => h.HebergementId == existingHebergement.HebergementId))
+                        if (voyage != null && !(voyage.Hebergements?.Any(h => h.HebergementId == existingHebergement.HebergementId) ?? false))
                         {
+                            if (voyage.Hebergements == null)
+                                voyage.Hebergements = new List<Hebergement>();
                             voyage.Hebergements.Add(existingHebergement);
                             await _context.SaveChangesAsync();
                         }
@@ -487,7 +504,7 @@ namespace BU.Services
                             .Include(v => v.Activites)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
-                        if (voyage != null)
+                        if (voyage != null && voyage.Activites != null)
                         {
                             var activite = voyage.Activites.FirstOrDefault(a => a.ActiviteId == activiteId);
                             if (activite != null)
@@ -529,7 +546,7 @@ namespace BU.Services
                             .Include(v => v.Hebergements)
                             .FirstOrDefaultAsync(v => v.VoyageId == voyageId);
 
-                        if (voyage != null)
+                        if (voyage != null && voyage.Hebergements != null)
                         {
                             var hebergement = voyage.Hebergements.FirstOrDefault(h => h.HebergementId == hebergementId);
                             if (hebergement != null)

@@ -10,8 +10,8 @@ namespace TravelPlannMauiApp.ViewModels
         private bool _isBusy; // Indique si le ViewModel est occupé (par exemple, lors du chargement de données)
         private string _title = string.Empty; // Titre du ViewModel, utilisé pour l'affichage dans l'interface utilisateur
 
-        public event PropertyChangedEventHandler PropertyChanged; // Événement déclenché lorsque des propriétés changent dans le ViewModel
-        
+        public event PropertyChangedEventHandler? PropertyChanged; // Événement déclenché lorsque des propriétés changent dans le ViewModel
+
         public bool IsBusy
         {
             get => _isBusy;
@@ -24,15 +24,15 @@ namespace TravelPlannMauiApp.ViewModels
             get => _title;
             set => SetProperty(ref _title, value);
         }
-        
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        
+
         protected bool SetProperty<T>(ref T backingStore, T value,
-                                    [CallerMemberName] string propertyName = "",
-                                    Action onChanged = null)
+                                    [CallerMemberName] string? propertyName = "",
+                                    Action? onChanged = null)
         {
             if (EqualityComparer<T>.Default.Equals(backingStore, value))
                 return false;
@@ -43,7 +43,7 @@ namespace TravelPlannMauiApp.ViewModels
             return true;
         }
         // Méthode pour notifier les changements de propriété dans le ViewModel
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
         {
             return SetProperty(ref field, value, propertyName);
         }
@@ -75,7 +75,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
 
         // Version pour les commandes asynchrones
-        protected ICommand CreateCommand(Func<Task> execute, Func<bool> canExecute = null)
+        protected ICommand CreateCommand(Func<Task> execute, Func<bool>? canExecute = null)
         {
             if (execute == null)
                 throw new ArgumentNullException(nameof(execute));
@@ -101,7 +101,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
 
         // Version pour les commandes synchrones
-        protected ICommand CreateCommand(Action execute, Func<bool> canExecute = null)
+        protected ICommand CreateCommand(Action execute, Func<bool>? canExecute = null)
         {
             if (execute == null)
                 throw new ArgumentNullException(nameof(execute));
@@ -128,7 +128,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
 
         // Version générique pour les commandes asynchrones avec paramètre
-        protected ICommand CreateCommand<T>(Func<T, Task> execute, Func<T, bool> canExecute = null)
+        protected ICommand CreateCommand<T>(Func<T, Task> execute, Func<T, bool>? canExecute = null)
         {
             if (execute == null)
                 throw new ArgumentNullException(nameof(execute));
@@ -154,7 +154,7 @@ namespace TravelPlannMauiApp.ViewModels
         }
 
         // Version générique pour les commandes synchrones avec paramètre
-        protected ICommand CreateCommand<T>(Action<T> execute, Func<T, bool> canExecute = null)
+        protected ICommand CreateCommand<T>(Action<T> execute, Func<T, bool>? canExecute = null)
         {
             if (execute == null)
                 throw new ArgumentNullException(nameof(execute));

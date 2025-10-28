@@ -1,0 +1,8 @@
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/actool/_PartialAppManifest.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/actool/_BundleResourceWithLogicalName.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/actool/_ProcessedImageAssetsPath.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/coremlc/_PartialAppManifest.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/coremlc/_BundleResourceWithLogicalName.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/coremlc/_ProcessedCoreMLModelsPath.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/_ProcessedBundleResourcesPath.items
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/Common/obj/Debug/net8.0-maccatalyst17.5/_ProcessedContentPath.items

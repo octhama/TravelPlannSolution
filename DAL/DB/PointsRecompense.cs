@@ -11,6 +11,8 @@ public partial class PointsRecompense
 
     public DateOnly DateObtention { get; set; }
 
+    public string? Description { get; set; }
+
     public int UtilisateurId { get; set; }
 
     public int? NiveauRecompenseId { get; set; }

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TravelPlannMauiApp.Pages.GroupManagementPage"
+             Title="Gestion des Groupes"
+             xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
+             xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             x:DataType="viewmodels:GroupManagementViewModel">
+
+    <ContentPage.BindingContext>
+        <viewmodels:GroupManagementViewModel/>
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              BackgroundColor="{StaticResource PrimaryColor}"
+              Padding="16">
+            <Label Text="👥 Mes Groupes"
+                   TextColor="White"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Spacing="16"
+                         Padding="16">
+
+                <!-- Créer un nouveau groupe -->
+                <Frame BackgroundColor="{StaticResource SecondaryColor}"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Créer un Nouveau Groupe"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <Entry Placeholder="Nom du groupe"
+                               Text="{Binding NewGroupName}"
+                               BackgroundColor="White"
+                               TextColor="Black"/>
+
+                        <Button Text="Créer le Groupe"
+                                Command="{Binding CreateGroupCommand}"
+                                BackgroundColor="{StaticResource PrimaryColor}"
+                                TextColor="White"
+                                CornerRadius="8"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Liste des groupes -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Mes Groupes"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding Groupes}"
+                                        SelectionMode="Single"
+                                        SelectedItem="{Binding SelectedGroupe}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dal:GroupeVoyage">
+                                    <Frame BackgroundColor="{Binding ., Converter={StaticResource SelectedItemBackgroundConverter}, ConverterParameter={x:Reference SelectedGroupe}}"
+                                           CornerRadius="6"
+                                           Padding="12"
+                                           Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                                <Label Text="{Binding NomGroupe}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding DateCreation, StringFormat='Créé le {0:d}'}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                                <Label Text="{Binding MembreGroupes.Count, StringFormat='{0} membre(s)'}"
+                                                       FontSize="12"/>
+                                            </StackLayout>
+                                            <Button Grid.Column="1"
+                                                    Text="Supprimer"
+                                                    Command="{Binding ., Converter={StaticResource BindingContextConverter}}"
+                                                    CommandParameter="{Binding ., Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteGroupCommand}"
+                                                    BackgroundColor="{StaticResource ErrorColor}"
+                                                    TextColor="White"
+                                                    CornerRadius="6"
+                                                    VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Membres du groupe sélectionné -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="8"
+                       Padding="16"
+                       IsVisible="{Binding SelectedGroupe, Converter={StaticResource IsNotNullConverter}}">
+                    <StackLayout Spacing="12">
+                        <Label Text="{Binding SelectedGroupe.NomGroupe, StringFormat='Membres de {0}'}"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding Membres}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dal:MembreGroupe">
+                                    <Frame BackgroundColor="{StaticResource LightBackgroundColor}"
+                                           CornerRadius="6"
+                                           Padding="12"
+                                           Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                                <Label Text="{Binding Utilisateur.Nom}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding Utilisateur.Email}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                                <Label Text="{Binding Role}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource PrimaryColor}"/>
+                                                <Label Text="{Binding DateAdhesion, StringFormat='Membre depuis le {0:d}'}"
+                                                       FontSize="10"/>
+                                            </StackLayout>
+                                            <Button Grid.Column="1"
+                                                    Text="Retirer"
+                                                    BackgroundColor="{StaticResource ErrorColor}"
+                                                    TextColor="White"
+                                                    CornerRadius="6"
+                                                    VerticalOptions="Center"
+                                                    IsVisible="{Binding Role, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=admin}"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Actions sur les membres -->
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="8">
+                            <Button Text="Ajouter un Membre"
+                                    Command="{Binding AddMemberCommand}"
+                                    BackgroundColor="{StaticResource AccentColor}"
+                                    TextColor="White"
+                                    CornerRadius="6"
+                                    HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

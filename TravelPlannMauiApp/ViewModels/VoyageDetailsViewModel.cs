@@ -19,35 +19,35 @@ namespace TravelPlannMauiApp.ViewModels
         private bool _isViewMode = true;
         private bool _isEditMode;
         private bool _isLoading = false;
-        
+
         // Propriétés du voyage
-        private string _nomVoyage;
-        private string _description;
+        private string _nomVoyage = string.Empty;
+        private string _description = string.Empty;
         private DateOnly _dateDebut = DateOnly.FromDateTime(DateTime.Today);
         private DateOnly _dateFin = DateOnly.FromDateTime(DateTime.Today);
         private bool _estComplete;
         private bool _estArchive;
         private int _utilisateurId;
-        
+
         // Propriétés originales pour annulation
-        private string _originalNomVoyage;
-        private string _originalDescription;
-        private DateOnly _originalDateDebut;
-        private DateOnly _originalDateFin;
-        private List<Activite> _originalActivites;
-        private List<Hebergement> _originalHebergements;
-        
+        private string _originalNomVoyage = string.Empty;
+        private string _originalDescription = string.Empty;
+        private DateOnly _originalDateDebut = DateOnly.FromDateTime(DateTime.Today);
+        private DateOnly _originalDateFin = DateOnly.FromDateTime(DateTime.Today);
+        private List<Activite> _originalActivites = new();
+        private List<Hebergement> _originalHebergements = new();
+
         // Propriétés pour les formulaires d'activités
         private bool _showActiviteForm;
-        private string _nouvelleActiviteNom;
-        private string _nouvelleActiviteDescription;
-        private string _nouvelleActiviteLocalisation;
+        private string _nouvelleActiviteNom = string.Empty;
+        private string _nouvelleActiviteDescription = string.Empty;
+        private string _nouvelleActiviteLocalisation = string.Empty;
 
         // Propriétés pour les formulaires d'hébergements
         private bool _showHebergementForm;
-        private string _nouvelHebergementNom;
-        private string _nouvelHebergementType;
-        private string _nouvelHebergementAdresse;
+        private string _nouvelHebergementNom = string.Empty;
+        private string _nouvelHebergementType = string.Empty;
+        private string _nouvelHebergementAdresse = string.Empty;
         private decimal _nouvelHebergementCout;
 
         // Collections
@@ -216,7 +216,7 @@ namespace TravelPlannMauiApp.ViewModels
         public async Task LoadVoyageDetails()
         {
             if (_isLoading) return;
-            
+
             try
             {
                 _isLoading = true;
@@ -237,7 +237,7 @@ namespace TravelPlannMauiApp.ViewModels
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     var voyage = voyageDetails.Voyage;
-                    
+
                     NomVoyage = voyage.NomVoyage;
                     Description = voyage.Description;
                     DateDebut = voyage.DateDebut;
@@ -303,7 +303,7 @@ namespace TravelPlannMauiApp.ViewModels
             Description = _originalDescription;
             DateDebut = _originalDateDebut;
             DateFin = _originalDateFin;
-            
+
             Activites.Clear();
             if (_originalActivites != null)
             {
@@ -312,7 +312,7 @@ namespace TravelPlannMauiApp.ViewModels
                     Activites.Add(activite);
                 }
             }
-            
+
             Hebergements.Clear();
             if (_originalHebergements != null)
             {
@@ -330,10 +330,10 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 Debug.WriteLine("=== DÉFINITION DU FLAG DE RECHARGEMENT FORCÉ ===");
                 Preferences.Set("FORCE_VOYAGE_LIST_RELOAD", true);
-                
+
                 // NOUVEAU : Envoyer un message pour déclencher le rafraîchissement immédiatement
                 MessagingCenter.Send<object>(this, "RefreshVoyageList");
-                
+
                 Debug.WriteLine("Flag FORCE_VOYAGE_LIST_RELOAD défini et message envoyé");
             }
             catch (Exception ex)
@@ -368,19 +368,19 @@ namespace TravelPlannMauiApp.ViewModels
         {
             Debug.WriteLine("Annulation des modifications");
             RestoreOriginalValues();
-            
+
             IsViewMode = true;
             IsEditMode = false;
             ShowActiviteForm = false;
             ShowHebergementForm = false;
-            
+
             RefreshCommandStates();
         }
 
         private async Task SaveVoyageAsync()
         {
             if (_isLoading) return;
-            
+
             // Validation
             if (string.IsNullOrWhiteSpace(NomVoyage))
             {
@@ -412,15 +412,15 @@ namespace TravelPlannMauiApp.ViewModels
                     EstArchive = EstArchive,
                     UtilisateurId = UtilisateurId,
                     // Créer de nouveaux objets pour éviter les problèmes de tracking
-                    Activites = Activites.Select(a => new Activite 
-                    { 
+                    Activites = Activites.Select(a => new Activite
+                    {
                         ActiviteId = a.ActiviteId,
                         Nom = a.Nom,
                         Description = a.Description,
                         Localisation = a.Localisation
                     }).ToList(),
-                    Hebergements = Hebergements.Select(h => new Hebergement 
-                    { 
+                    Hebergements = Hebergements.Select(h => new Hebergement
+                    {
                         HebergementId = h.HebergementId,
                         Nom = h.Nom,
                         TypeHebergement = h.TypeHebergement,
@@ -432,12 +432,12 @@ namespace TravelPlannMauiApp.ViewModels
                 };
 
                 await _voyageService.UpdateVoyageAsync(voyage);
-        
+
                 Debug.WriteLine("Voyage sauvegardé avec succès");
-                
+
                 // 1. Définir le flag de rechargement
                 SetForceReloadFlag();
-                
+
                 // 2. Retourner à la liste des voyages avec une navigation "refresh"
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
@@ -445,9 +445,9 @@ namespace TravelPlannMauiApp.ViewModels
                     IsEditMode = false;
                     ShowActiviteForm = false;
                     ShowHebergementForm = false;
-                    
+
                     SaveOriginalValues();
-                    
+
                     // Modification: Utiliser le chemin de route enregistré plutôt que le nom de classe
                     await Shell.Current.GoToAsync("..?forceRefresh=true");
                 });
@@ -482,10 +482,10 @@ namespace TravelPlannMauiApp.ViewModels
                     IsBusy = true;
 
                     await _voyageService.DeleteVoyageAsync(VoyageId);
-                    
+
                     // NOUVEAU: Flag simple pour forcer le rechargement
                     SetForceReloadFlag();
-                    
+
                     Debug.WriteLine("Voyage supprimé - retour à la liste");
                     await Shell.Current.GoToAsync("..");
                 }
@@ -528,7 +528,7 @@ namespace TravelPlannMauiApp.ViewModels
         private async Task AjouterNouvelleActivite()
         {
             if (_isLoading) return;
-            
+
             if (string.IsNullOrWhiteSpace(NouvelleActiviteNom))
             {
                 await Shell.Current.DisplayAlert("Erreur", "Le nom de l'activité est requis", "OK");
@@ -579,7 +579,7 @@ namespace TravelPlannMauiApp.ViewModels
         private async Task AjouterNouvelHebergement()
         {
             if (_isLoading) return;
-            
+
             if (string.IsNullOrWhiteSpace(NouvelHebergementNom))
             {
                 await Shell.Current.DisplayAlert("Erreur", "Le nom de l'hébergement est requis", "OK");
@@ -631,7 +631,7 @@ namespace TravelPlannMauiApp.ViewModels
         private async Task SupprimerActivite(Activite activite)
         {
             if (_isLoading) return;
-            
+
             bool confirm = await Shell.Current.DisplayAlert(
                 "Confirmer la suppression",
                 $"Supprimer l'activité '{activite.Nom}'?",
@@ -645,7 +645,7 @@ namespace TravelPlannMauiApp.ViewModels
                     IsBusy = true;
 
                     await _voyageService.RemoveActiviteFromVoyageAsync(VoyageId, activite.ActiviteId);
-                    
+
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         Activites.Remove(activite);
@@ -673,7 +673,7 @@ namespace TravelPlannMauiApp.ViewModels
         private async Task SupprimerHebergement(Hebergement hebergement)
         {
             if (_isLoading) return;
-            
+
             bool confirm = await Shell.Current.DisplayAlert(
                 "Confirmer la suppression",
                 $"Supprimer l'hébergement '{hebergement.Nom}'?",
@@ -687,7 +687,7 @@ namespace TravelPlannMauiApp.ViewModels
                     IsBusy = true;
 
                     await _voyageService.RemoveHebergementFromVoyageAsync(VoyageId, hebergement.HebergementId);
-                    
+
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         Hebergements.Remove(hebergement);

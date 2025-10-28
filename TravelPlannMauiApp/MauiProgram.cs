@@ -23,16 +23,16 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseMauiMaps()
             .UseMauiCommunityToolkit()
-            .ConfigureFonts(fonts => 
+            .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
         // Configuration pour lire le fichier appsettings.json depuis les ressources embarquées
-        var assembly = Assembly.GetExecutingAssembly(); 
+        var assembly = Assembly.GetExecutingAssembly();
         using var stream = assembly.GetManifestResourceStream("TravelPlannMauiApp.appsettings.json");
-        
+
         if (stream == null)
         {
             throw new FileNotFoundException("Le fichier appsettings.json n'a pas été trouvé dans les ressources embarquées.");
@@ -43,7 +43,7 @@ public static class MauiProgram
             .Build();
 
         // Configuration DB avec la chaîne depuis appsettings.json
-        var connectionString = config.GetConnectionString("TravelPlannConnectionString") ?? 
+        var connectionString = config.GetConnectionString("TravelPlannConnectionString") ??
                               "Server=localhost,1433;Database=TravelPlanner;User Id=sa;Password=1235OHdf%e;TrustServerCertificate=True;";
 
         Debug.WriteLine($"Chaîne de connexion: {connectionString}");
@@ -58,7 +58,7 @@ public static class MauiProgram
                     errorNumbersToAdd: null);
                 sqlOptions.CommandTimeout(30);
             });
-            
+
 #if DEBUG
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
@@ -73,6 +73,11 @@ public static class MauiProgram
         builder.Services.AddScoped<IUtilisateurService, UtilisateurService>();
         builder.Services.AddScoped<ISettingsService, SettingsService>();
         builder.Services.AddSingleton<ISessionService, SessionService>();
+        builder.Services.AddScoped<IReservationHebergementService, ReservationHebergementService>();
+        builder.Services.AddScoped<INiveauRecompenseService, NiveauRecompenseService>();
+        builder.Services.AddScoped<IPointsRecompenseService, PointsRecompenseService>();
+        builder.Services.AddScoped<IClassementVoyageurService, ClassementVoyageurService>();
+        builder.Services.AddScoped<IGroupeVoyageService, GroupeVoyageService>();
 
         // Enregistrement des ViewModels (injection de dépendances pour les ViewModels)
         builder.Services.AddTransient<VoyageViewModel>();
@@ -83,6 +88,11 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();
+        builder.Services.AddTransient<ReservationViewModel>();
+        builder.Services.AddTransient<RewardsViewModel>();
+        builder.Services.AddTransient<LeaderboardViewModel>();
+        builder.Services.AddTransient<GroupManagementViewModel>();
+        builder.Services.AddTransient<ProfileViewModel>();
 
         // Configuration HttpClient pour les appels API futurs
         builder.Services.AddHttpClient("WeatherApi", client =>
@@ -90,7 +100,7 @@ public static class MauiProgram
             client.BaseAddress = new Uri("https://api.openweathermap.org");
             client.DefaultRequestHeaders.Add("User-Agent", "TravelPlannApp/1.0");
         });
-        
+
         // Enregistrement des Pages (injection de dépendances pour les pages)
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<VoyageListPage>();
@@ -100,6 +110,10 @@ public static class MauiProgram
         builder.Services.AddTransient<AddVoyagePage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<ReservationPage>();
+        builder.Services.AddTransient<RewardsPage>();
+        builder.Services.AddTransient<LeaderboardPage>();
+        builder.Services.AddTransient<GroupManagementPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
@@ -107,30 +121,30 @@ public static class MauiProgram
 #endif
 
         var app = builder.Build();
-        
+
         // Test de la configuration au démarrage avec gestion d'erreur améliorée
         using (var scope = app.Services.CreateScope())
         {
             try
             {
                 Debug.WriteLine("Test de configuration des services...");
-                
+
                 var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TravelPlannDbContext>>();
                 Debug.WriteLine("DbContextFactory obtenu");
-                
+
                 var utilisateurService = scope.ServiceProvider.GetRequiredService<IUtilisateurService>();
                 Debug.WriteLine("UtilisateurService obtenu");
-                
+
                 // Test de connexion DB
                 using var context = dbFactory.CreateDbContext();
                 var canConnect = context.Database.CanConnect();
                 Debug.WriteLine($"Test de connexion DB: {canConnect}");
-                
+
                 if (!canConnect)
                 {
                     Debug.WriteLine("Connexion à la base de données impossible");
                 }
-                
+
                 Debug.WriteLine("Services configurés correctement");
             }
             catch (Exception ex)
@@ -138,7 +152,7 @@ public static class MauiProgram
                 Debug.WriteLine($"Erreur de configuration des services: {ex.Message}");
                 Debug.WriteLine($"Type: {ex.GetType().Name}");
                 Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                
+
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
@@ -147,5 +161,5 @@ public static class MauiProgram
         }
 
         return app;
-    }     
+    }
 }

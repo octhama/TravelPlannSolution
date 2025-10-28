@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TravelPlannMauiApp.Pages.ReservationPage"
+             Title="Réservations d'hébergement"
+             xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
+             xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             x:DataType="viewmodels:ReservationViewModel">
+
+    <ContentPage.BindingContext>
+        <viewmodels:ReservationViewModel/>
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              BackgroundColor="{StaticResource PrimaryColor}"
+              Padding="16">
+            <Label Text="Mes Réservations"
+                   TextColor="White"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Spacing="16"
+                         Padding="16">
+
+                <!-- Nouvelle réservation -->
+                <Frame BackgroundColor="{StaticResource SecondaryColor}"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Nouvelle Réservation"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <!-- Sélection voyage -->
+                        <Label Text="Voyage"
+                               FontSize="14"/>
+                        <Picker ItemsSource="{Binding Voyages}"
+                                ItemDisplayBinding="{Binding NomVoyage}"
+                                SelectedItem="{Binding SelectedVoyage}"
+                                BackgroundColor="White"
+                                TextColor="Black"/>
+
+                        <!-- Sélection hébergement -->
+                        <Label Text="Hébergement"
+                               FontSize="14"/>
+                        <Picker ItemsSource="{Binding Hebergements}"
+                                ItemDisplayBinding="{Binding Nom}"
+                                SelectedItem="{Binding SelectedHebergement}"
+                                BackgroundColor="White"
+                                TextColor="Black"/>
+
+                        <!-- Dates -->
+                        <Grid ColumnDefinitions="*,*">
+                            <StackLayout Grid.Column="0"
+                                         Spacing="4">
+                                <Label Text="Date début"
+                                       FontSize="14"/>
+                                <DatePicker Date="{Binding DateDebut}"
+                                            BackgroundColor="White"
+                                            TextColor="Black"/>
+                            </StackLayout>
+                            <StackLayout Grid.Column="1"
+                                         Spacing="4">
+                                <Label Text="Date fin"
+                                       FontSize="14"/>
+                                <DatePicker Date="{Binding DateFin}"
+                                            BackgroundColor="White"
+                                            TextColor="Black"/>
+                            </StackLayout>
+                        </Grid>
+
+                        <!-- Nombre de personnes -->
+                        <StackLayout Spacing="4">
+                            <Label Text="Nombre de personnes"
+                                   FontSize="14"/>
+                            <Entry Text="{Binding NombrePersonnes}"
+                                   Keyboard="Numeric"
+                                   BackgroundColor="White"
+                                   TextColor="Black"/>
+                        </StackLayout>
+
+                        <!-- Prix total -->
+                        <StackLayout Spacing="4">
+                            <Label Text="Prix total"
+                                   FontSize="14"/>
+                            <Label Text="{Binding PrixTotal, StringFormat='{0:C}'}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource PrimaryColor}"/>
+                        </StackLayout>
+
+                        <!-- Bouton créer -->
+                        <Button Text="Créer Réservation"
+                                Command="{Binding CreateReservationCommand}"
+                                BackgroundColor="{StaticResource PrimaryColor}"
+                                TextColor="White"
+                                CornerRadius="8"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Liste des réservations existantes -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Mes Réservations"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding Reservations}"
+                                        SelectionMode="Single"
+                                        SelectedItem="{Binding SelectedReservation}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dal:ReservationHebergement">
+                                    <Frame BackgroundColor="{StaticResource LightBackgroundColor}"
+                                           CornerRadius="6"
+                                           Padding="12"
+                                           Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                                <Label Text="{Binding Hebergement.Nom}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding Voyage.NomVoyage}"
+                                                       FontSize="14"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                                <Label Text="{Binding DateDebut, StringFormat='Du {0:d}'}"
+                                                       FontSize="12"/>
+                                                <Label Text="{Binding DateFin, StringFormat='Au {0:d}'}"
+                                                       FontSize="12"/>
+                                                <Label Text="{Binding NombrePersonnes, StringFormat='{0} personne(s)'}"
+                                                       FontSize="12"/>
+                                            </StackLayout>
+                                            <StackLayout Grid.Column="1"
+                                                         Spacing="8"
+                                                         VerticalOptions="Center">
+                                                <Label Text="{Binding PrixTotal, StringFormat='{0:C}'}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{StaticResource PrimaryColor}"/>
+                                                <Label Text="{Binding StatutReservation, StringFormat='Statut: {0}'}"
+                                                       FontSize="12"
+                                                       TextColor="Green"/>
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Boutons d'action pour la réservation sélectionnée -->
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="8"
+                                     IsVisible="{Binding SelectedReservation, Converter={StaticResource IsNotNullConverter}}">
+                            <Button Text="Modifier"
+                                    Command="{Binding UpdateReservationCommand}"
+                                    BackgroundColor="{StaticResource AccentColor}"
+                                    TextColor="White"
+                                    CornerRadius="6"
+                                    HorizontalOptions="FillAndExpand"/>
+                            <Button Text="Supprimer"
+                                    Command="{Binding DeleteReservationCommand}"
+                                    BackgroundColor="{StaticResource ErrorColor}"
+                                    TextColor="White"
+                                    CornerRadius="6"
+                                    HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

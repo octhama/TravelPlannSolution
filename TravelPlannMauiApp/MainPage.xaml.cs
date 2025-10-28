@@ -34,13 +34,13 @@ namespace TravelPlannMauiApp
                 }
                 BindingContext = viewModel;
             }
-            
+
             // Fallback avec un ViewModel minimal si les services ne sont pas disponibles
             if (BindingContext == null)
             {
                 BindingContext = new MainPageViewModel(null, null);
             }
-            
+
             UpdateTabSelection();
             UpdateIndicatorPosition();
 
@@ -55,7 +55,7 @@ namespace TravelPlannMauiApp
             _currentTab = 1;
             UpdateTabSelection();
             UpdateIndicatorPosition();
-            
+
             // Rechargement des  informations utilisateur
             if (BindingContext is MainPageViewModel viewModel)
             {
@@ -110,6 +110,119 @@ namespace TravelPlannMauiApp
             }
         }
 
+        private async void OnReservationsTapped(object sender, EventArgs e)
+        {
+            try
+            {
+                var reservationPage = new ReservationPage();
+                await Navigation.PushAsync(reservationPage);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers réservations: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnGroupsTapped(object sender, EventArgs e)
+        {
+            try
+            {
+                var groupPage = new GroupManagementPage();
+                await Navigation.PushAsync(groupPage);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers groupes: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnLeaderboardTapped(object sender, EventArgs e)
+        {
+            try
+            {
+                var leaderboardPage = new LeaderboardPage();
+                await Navigation.PushAsync(leaderboardPage);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers classement: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnRewardsTapped(object sender, EventArgs e)
+        {
+            try
+            {
+                var rewardsPage = new RewardsPage();
+                await Navigation.PushAsync(rewardsPage);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers récompenses: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnProfileTapped(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_serviceProvider == null)
+                {
+                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
+                    return;
+                }
+
+                var profileViewModel = _serviceProvider.GetService<ProfileViewModel>();
+                if (profileViewModel != null)
+                {
+                    // Pour l'instant, on redirige vers les paramètres car il n'y a pas de page profil dédiée
+                    var settingsPage = new SettingsPage();
+                    await Navigation.PushAsync(settingsPage);
+                }
+                else
+                {
+                    await DisplayAlert("Erreur", "ViewModel Profil non disponible", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers profil: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnNewTripTapped(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_serviceProvider == null)
+                {
+                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
+                    return;
+                }
+
+                var addVoyageViewModel = _serviceProvider.GetService<AddVoyageViewModel>();
+                if (addVoyageViewModel != null)
+                {
+                    var addVoyagePage = new AddVoyagePage(addVoyageViewModel);
+                    await Navigation.PushAsync(addVoyagePage);
+                }
+                else
+                {
+                    await DisplayAlert("Erreur", "ViewModel Nouveau Voyage non disponible", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers nouveau voyage: {ex}");
+                await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
+            }
+        }
+
         private void UpdateIndicatorPosition()
         {
             if (Width <= 0 || Height <= 0) return;
@@ -152,7 +265,7 @@ namespace TravelPlannMauiApp
                             await DisplayAlert("Erreur", "ViewModel Carte non disponible", "OK");
                         }
                         break;
-                        
+
                     case 2: // Trips
                         var voyageViewModel = _serviceProvider.GetService<VoyageViewModel>();
                         if (voyageViewModel != null)
@@ -165,7 +278,7 @@ namespace TravelPlannMauiApp
                             await DisplayAlert("Erreur", "ViewModel Voyage non disponible", "OK");
                         }
                         break;
-                        
+
                     case 1: // Home
                     default:
                         // Ne rien faire pour l'onglet Accueil

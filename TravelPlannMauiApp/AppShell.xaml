@@ -12,12 +12,12 @@
     <ShellContent
         Title="Connexion"
         ContentTemplate="{DataTemplate pages:LoginPage}"
-        Route="LoginPage" />
+        Route="LoginPage"/>
 
     <!-- Page principale (accessible après connexion) -->
     <ShellContent
         Title="TravelPlann"
         ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Route="MainPage"/>
 
 </Shell>

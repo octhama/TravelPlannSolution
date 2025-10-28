@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TravelPlannMauiApp.Pages.LeaderboardPage"
+             Title="Classement des Voyageurs"
+             xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
+             xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             x:DataType="viewmodels:LeaderboardViewModel">
+
+    <ContentPage.BindingContext>
+        <viewmodels:LeaderboardViewModel/>
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              BackgroundColor="{StaticResource PrimaryColor}"
+              Padding="16">
+            <Label Text="🏆 Classement des Voyageurs"
+                   TextColor="White"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Spacing="16"
+                         Padding="16">
+
+                <!-- Classement de l'utilisateur actuel -->
+                <Frame BackgroundColor="{StaticResource AccentColor}"
+                       CornerRadius="8"
+                       Padding="16"
+                       IsVisible="{Binding CurrentUserRanking, Converter={StaticResource IsNotNullConverter}}">
+                    <StackLayout Spacing="8">
+                        <Label Text="Votre Position"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="{Binding CurrentUserRanking.Rang, StringFormat='Rang #{0}'}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
+                        <Label Text="{Binding CurrentUserRanking.NombreVoyages, StringFormat='{0} voyages'}"
+                               FontSize="14"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Top 10 -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Top 10 Voyageurs"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding Classement}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dal:ClassementVoyageur">
+                                    <Frame BackgroundColor="{StaticResource LightBackgroundColor}"
+                                           CornerRadius="6"
+                                           Padding="12"
+                                           Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <!-- Rang -->
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Rang, StringFormat='#{0}'}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource PrimaryColor}"
+                                                   WidthRequest="50"
+                                                   VerticalOptions="Center"/>
+
+                                            <!-- Infos utilisateur -->
+                                            <StackLayout Grid.Column="1"
+                                                         Spacing="2">
+                                                <Label Text="{Binding Utilisateur.Nom}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding Utilisateur.Email}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                            </StackLayout>
+
+                                            <!-- Stats -->
+                                            <StackLayout Grid.Column="2"
+                                                         Spacing="2"
+                                                         HorizontalOptions="End">
+                                                <Label Text="{Binding NombreVoyages, StringFormat='{0} voyages'}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding DistanceTotale, StringFormat='{0:F0} km'}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Bouton mise à jour -->
+                        <Button Text="Actualiser le Classement"
+                                Command="{Binding UpdateClassementCommand}"
+                                BackgroundColor="{StaticResource PrimaryColor}"
+                                TextColor="White"
+                                CornerRadius="8"/>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

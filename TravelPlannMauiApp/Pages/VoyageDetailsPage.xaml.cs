@@ -18,15 +18,15 @@ namespace TravelPlannMauiApp.Pages
         {
             InitializeComponent();
             Resources.Add("CountToHeightConverter", new CountToHeightConverter());
-            
+
             _viewModel = viewModel;
             BindingContext = _viewModel;
         }
-        
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            
+
             // Vérifier si le ViewModel a déjà été chargé
             if (_viewModel.VoyageId > 0 && string.IsNullOrEmpty(_viewModel.NomVoyage))
             {
@@ -53,20 +53,20 @@ namespace TravelPlannMauiApp.Pages
                             Dispatcher.Dispatch(() =>
                             {
                                 _viewModel.VoyageId = dto.VoyageID;
-                                
+
                                 // Pré-charger les données depuis le DTO
-                                _viewModel.NomVoyage = dto.NomVoyage;
-                                _viewModel.Description = dto.Description;
+                                _viewModel.NomVoyage = dto.NomVoyage ?? string.Empty;
+                                _viewModel.Description = dto.Description ?? string.Empty;
                                 _viewModel.DateDebut = DateOnly.FromDateTime(dto.DateDebut);
                                 _viewModel.DateFin = DateOnly.FromDateTime(dto.DateFin);
                                 _viewModel.EstComplete = dto.EstComplete;
                                 _viewModel.EstArchive = dto.EstArchive;
                                 _viewModel.UtilisateurId = dto.UtilisateurId;
-                                
+
                                 // Nettoyer les collections existantes
                                 _viewModel.Activites.Clear();
                                 _viewModel.Hebergements.Clear();
-                                
+
                                 // Convertir les DTOs en entités pour l'affichage
                                 if (dto.Activites != null)
                                 {
@@ -75,14 +75,14 @@ namespace TravelPlannMauiApp.Pages
                                         var activite = new Activite
                                         {
                                             ActiviteId = activiteDto.ActiviteId,
-                                            Nom = activiteDto.Nom,
-                                            Description = activiteDto.Description,
-                                            Localisation = activiteDto.Localisation
+                                            Nom = activiteDto.Nom ?? string.Empty,
+                                            Description = activiteDto.Description ?? string.Empty,
+                                            Localisation = activiteDto.Localisation ?? string.Empty
                                         };
                                         _viewModel.Activites.Add(activite);
                                     }
                                 }
-                                
+
                                 if (dto.Hebergements != null)
                                 {
                                     foreach (var hebergementDto in dto.Hebergements)
@@ -90,17 +90,17 @@ namespace TravelPlannMauiApp.Pages
                                         var hebergement = new Hebergement
                                         {
                                             HebergementId = hebergementDto.HebergementId,
-                                            Nom = hebergementDto.Nom,
-                                            TypeHebergement = hebergementDto.TypeHebergement,
+                                            Nom = hebergementDto.Nom ?? string.Empty,
+                                            TypeHebergement = hebergementDto.TypeHebergement ?? string.Empty,
                                             Cout = hebergementDto.Cout,
                                             DateDebut = hebergementDto.DateDebut,
                                             DateFin = hebergementDto.DateFin,
-                                            Adresse = hebergementDto.Adresse
+                                            Adresse = hebergementDto.Adresse ?? string.Empty
                                         };
                                         _viewModel.Hebergements.Add(hebergement);
                                     }
                                 }
-                                
+
                                 Debug.WriteLine($"VoyageId défini: {_viewModel.VoyageId}");
                                 Debug.WriteLine($"Activités chargées: {_viewModel.Activites.Count}");
                                 Debug.WriteLine($"Hébergements chargés: {_viewModel.Hebergements.Count}");
@@ -111,7 +111,7 @@ namespace TravelPlannMauiApp.Pages
                     {
                         Debug.WriteLine($"ERREUR de désérialisation: {ex}");
                         Debug.WriteLine($"Données reçues: {value}");
-                        
+
                         // Utiliser Dispatcher pour les opérations UI
                         Dispatcher.Dispatch(async () =>
                         {
@@ -134,8 +134,8 @@ namespace TravelPlannMauiApp.Pages
     public class VoyageDetailsDTO
     {
         public int VoyageID { get; set; }
-        public string NomVoyage { get; set; }
-        public string Description { get; set; }
+        public string? NomVoyage { get; set; }
+        public string? Description { get; set; }
         public DateTime DateDebut { get; set; }
         public DateTime DateFin { get; set; }
         public bool EstComplete { get; set; }
@@ -144,23 +144,23 @@ namespace TravelPlannMauiApp.Pages
         public List<ActiviteDTO> Activites { get; set; } = new();
         public List<HebergementDTO> Hebergements { get; set; } = new();
     }
-    
+
     public class ActiviteDTO
     {
         public int ActiviteId { get; set; }
-        public string Nom { get; set; }
-        public string Description { get; set; }
-        public string Localisation { get; set; }
+        public string? Nom { get; set; }
+        public string? Description { get; set; }
+        public string? Localisation { get; set; }
     }
-    
+
     public class HebergementDTO
     {
         public int HebergementId { get; set; }
-        public string Nom { get; set; }
-        public string TypeHebergement { get; set; }
+        public string? Nom { get; set; }
+        public string? TypeHebergement { get; set; }
         public decimal? Cout { get; set; }
         public DateOnly? DateDebut { get; set; }
         public DateOnly? DateFin { get; set; }
-        public string Adresse { get; set; }
+        public string? Adresse { get; set; }
     }
 }

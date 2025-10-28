@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TravelPlannMauiApp.Pages.RewardsPage"
+             Title="Mes Récompenses"
+             xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
+             xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             x:DataType="viewmodels:RewardsViewModel">
+
+    <ContentPage.BindingContext>
+        <viewmodels:RewardsViewModel/>
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              BackgroundColor="{StaticResource PrimaryColor}"
+              Padding="16">
+            <Label Text="Mes Récompenses"
+                   TextColor="White"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Spacing="16"
+                         Padding="16">
+
+                <!-- Niveau actuel -->
+                <Frame BackgroundColor="{StaticResource SecondaryColor}"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Niveau Actuel"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+
+                        <Label Text="{Binding CurrentNiveau.NomNiveau}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryColor}"
+                               HorizontalOptions="Center"/>
+
+                        <Label Text="{Binding TotalPoints, StringFormat='{0} points'}"
+                               FontSize="16"
+                               HorizontalOptions="Center"/>
+
+                        <!-- Barre de progression -->
+                        <StackLayout Spacing="4">
+                            <Label Text="Progression vers le niveau suivant"
+                                   FontSize="14"/>
+                            <ProgressBar Progress="{Binding ProgressToNextLevel}"
+                                         HeightRequest="8"
+                                         BackgroundColor="{StaticResource LightBackgroundColor}"
+                                         ProgressColor="{StaticResource PrimaryColor}"/>
+                            <Label Text="{Binding PointsToNextLevel, StringFormat='Encore {0} points'}"
+                                   FontSize="12"
+                                   HorizontalOptions="Center"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Tous les niveaux -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Tous les Niveaux"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding Niveaux}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dal:NiveauRecompense">
+                                    <Frame BackgroundColor="{StaticResource LightBackgroundColor}"
+                                           CornerRadius="6"
+                                           Padding="12"
+                                           Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                                <Label Text="{Binding NomNiveau}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding PointsRequis, StringFormat='{0} points minimum'}"
+                                                       FontSize="14"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                            </StackLayout>
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Avantages}"
+                                                   FontSize="12"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="End"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Historique des points -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="8"
+                       Padding="16">
+                    <StackLayout Spacing="12">
+                        <Label Text="Historique des Points"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding PointsHistory}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dal:PointsRecompense">
+                                    <Frame BackgroundColor="{StaticResource LightBackgroundColor}"
+                                           CornerRadius="6"
+                                           Padding="12"
+                                           Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                                <Label Text="{Binding Description}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="{Binding DateObtention, StringFormat='{0:d} à {0:t}'}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                                            </StackLayout>
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding PointsGagnes, StringFormat='+{0} pts'}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="Green"
+                                                   VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
