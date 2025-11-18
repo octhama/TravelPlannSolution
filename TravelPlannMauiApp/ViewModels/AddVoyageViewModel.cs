@@ -130,9 +130,9 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _nouvelHebergementCout, value);
         }
 
-        public AddVoyageViewModel(IVoyageService voyageService,
-                                IActiviteService activiteService,
-                                IHebergementService hebergementService)
+        public AddVoyageViewModel(IVoyageService voyageService = null,
+                                IActiviteService activiteService = null,
+                                IHebergementService hebergementService = null)
         {
             _voyageService = voyageService;
             _activiteService = activiteService;
@@ -186,6 +186,12 @@ namespace TravelPlannMauiApp.ViewModels
                 return;
             }
 
+            if (_activiteService == null)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Service de données non disponible.", "OK");
+                return;
+            }
+
             try
             {
                 var nouvelleActivite = new Activite
@@ -219,6 +225,12 @@ namespace TravelPlannMauiApp.ViewModels
             if (string.IsNullOrWhiteSpace(NouvelHebergementNom))
             {
                 await Shell.Current.DisplayAlert("Erreur", "Le nom de l'hébergement est requis", "OK");
+                return;
+            }
+
+            if (_hebergementService == null)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Service de données non disponible.", "OK");
                 return;
             }
 
@@ -282,6 +294,12 @@ namespace TravelPlannMauiApp.ViewModels
             if (DateFin < DateDebut)
             {
                 await Shell.Current.DisplayAlert("Erreur", "La date de fin doit être après la date de début", "OK");
+                return;
+            }
+
+            if (_voyageService == null)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Service de données non disponible.", "OK");
                 return;
             }
 

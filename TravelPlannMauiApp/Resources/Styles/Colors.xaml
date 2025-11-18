@@ -31,6 +31,11 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
+    <Color x:Key="LightBackgroundColor">#F5F5F5</Color>
+    <Color x:Key="SecondaryTextColor">#6E6E6E</Color>
+    <Color x:Key="AccentColor">#03DAC6</Color>
+    <Color x:Key="ErrorColor">#B00020</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>

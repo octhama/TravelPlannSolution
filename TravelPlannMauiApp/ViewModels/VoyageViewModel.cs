@@ -30,7 +30,7 @@ namespace TravelPlannMauiApp.ViewModels
             set => SetProperty(ref _isLoading, value);
         }
         
-        public VoyageViewModel(IVoyageService voyageService, 
+        public VoyageViewModel(IVoyageService voyageService = null, 
                       ISessionService sessionService = null,
                       IServiceProvider serviceProvider = null)
         {
@@ -154,37 +154,44 @@ namespace TravelPlannMauiApp.ViewModels
             {
                 string typeChargement = forceReload ? "RECHARGEMENT FORCÉ" : "RECHARGEMENT NORMAL";
                 Debug.WriteLine($"=== DÉBUT {typeChargement} VOYAGES ===");
-                
-                _currentUserId = await GetCurrentUserIdAsync();
-                if (_currentUserId == 0) 
+
+                if (_voyageService == null)
                 {
-                    Debug.WriteLine("Utilisateur non connecté - arrêt du chargement");
+                    Debug.WriteLine("Service voyage non disponible - chargement impossible");
+                    await MainThread.InvokeOnMainThreadAsync(async () =>
+                    {
+                        await Shell.Current.DisplayAlert("Erreur", 
+                            "Service de données non disponible. Vérifiez la connexion à la base de données.", "OK");
+                    });
                     return;
                 }
 
-                Debug.WriteLine($"Rechargement des voyages pour l'utilisateur ID: {_currentUserId}");
-                
-                // NOUVEAU: Utiliser un nouveau scope pour chaque opération
-                using (var scope = _serviceProvider.CreateScope())
+                if (_serviceProvider == null)
                 {
-                    var voyageService = scope.ServiceProvider.GetRequiredService<IVoyageService>();
+                    Debug.WriteLine("Service provider non disponible - utilisation du service direct");
                     
-                    // Récupérer les données fraîches de la DB
-                    var voyages = await voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
+                    _currentUserId = await GetCurrentUserIdAsync();
+                    if (_currentUserId == 0) 
+                    {
+                        Debug.WriteLine("Utilisateur non connecté - arrêt du chargement");
+                        return;
+                    }
+
+                    Debug.WriteLine($"Rechargement des voyages pour l'utilisateur ID: {_currentUserId}");
+                    
+                    // Utiliser le service direct sans scope
+                    var voyages = await _voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
                     
                     Debug.WriteLine($"Nombre de voyages récupérés de la DB: {voyages?.Count ?? 0}");
                     
-                    // Mise à jour FORCÉE sur le thread principal
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
-                        Debug.WriteLine("Mise à jour FORCÉE de la collection...");
+                        Debug.WriteLine("Mise à jour de la collection...");
                         
-                        // TOUJOURS vider la collection existante
                         Voyages.Clear();
                         
                         if (voyages != null && voyages.Any())
                         {
-                            // Trier les voyages par date de début
                             var voyagesOrdonnes = voyages.OrderBy(x => x.DateDebut).ToList();
                             
                             Debug.WriteLine("Ajout des voyages triés à la collection...");
@@ -198,10 +205,61 @@ namespace TravelPlannMauiApp.ViewModels
                         
                         Debug.WriteLine($"Collection mise à jour - {Voyages.Count} voyages dans la liste");
                         
-                        // Forcer PLUSIEURS notifications de changement
                         OnPropertyChanged(nameof(Voyages));
-                        OnPropertyChanged(); // Notification générale
+                        OnPropertyChanged();
                     });
+                }
+                else
+                {
+                    // Version avec service provider et scope
+                    _currentUserId = await GetCurrentUserIdAsync();
+                    if (_currentUserId == 0) 
+                    {
+                        Debug.WriteLine("Utilisateur non connecté - arrêt du chargement");
+                        return;
+                    }
+
+                    Debug.WriteLine($"Rechargement des voyages pour l'utilisateur ID: {_currentUserId}");
+                    
+                    // Utiliser un nouveau scope pour chaque opération
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var voyageService = scope.ServiceProvider.GetRequiredService<IVoyageService>();
+                        
+                        // Récupérer les données fraîches de la DB
+                        var voyages = await voyageService.GetVoyagesByUtilisateurAsync(_currentUserId);
+                        
+                        Debug.WriteLine($"Nombre de voyages récupérés de la DB: {voyages?.Count ?? 0}");
+                        
+                        // Mise à jour FORCÉE sur le thread principal
+                        await MainThread.InvokeOnMainThreadAsync(() =>
+                        {
+                            Debug.WriteLine("Mise à jour FORCÉE de la collection...");
+                            
+                            // TOUJOURS vider la collection existante
+                            Voyages.Clear();
+                            
+                            if (voyages != null && voyages.Any())
+                            {
+                                // Trier les voyages par date de début
+                                var voyagesOrdonnes = voyages.OrderBy(x => x.DateDebut).ToList();
+                                
+                                Debug.WriteLine("Ajout des voyages triés à la collection...");
+                                foreach (var v in voyagesOrdonnes)
+                                {
+                                    Debug.WriteLine($"Ajout: {v.NomVoyage} (ID: {v.VoyageId}) - Complete: {v.EstComplete}, Archive: {v.EstArchive}");
+                                    var voyageItemViewModel = new VoyageItemViewModel(v);
+                                    Voyages.Add(voyageItemViewModel);
+                                }
+                            }
+                            
+                            Debug.WriteLine($"Collection mise à jour - {Voyages.Count} voyages dans la liste");
+                            
+                            // Forcer PLUSIEURS notifications de changement
+                            OnPropertyChanged(nameof(Voyages));
+                            OnPropertyChanged(); // Notification générale
+                        });
+                    }
                 }
                 
                 Debug.WriteLine($"=== {typeChargement} TERMINÉ - {Voyages.Count} voyages affichés ===");
@@ -246,6 +304,12 @@ namespace TravelPlannMauiApp.ViewModels
         private async Task ToggleCompleteVoyage(VoyageItemViewModel voyageViewModel)
         {
             if (voyageViewModel == null) return;
+
+            if (_voyageService == null)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Service de données non disponible.", "OK");
+                return;
+            }
 
             try
             {
@@ -304,6 +368,12 @@ namespace TravelPlannMauiApp.ViewModels
         private async Task ToggleArchiveVoyage(VoyageItemViewModel voyageViewModel)
         {
             if (voyageViewModel == null) return;
+
+            if (_voyageService == null)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Service de données non disponible.", "OK");
+                return;
+            }
 
             try
             {
@@ -366,6 +436,12 @@ namespace TravelPlannMauiApp.ViewModels
         public async Task ViewVoyageDetails(VoyageItemViewModel voyageViewModel)
         {
             if (voyageViewModel == null) return;
+
+            if (_voyageService == null)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Service de données non disponible.", "OK");
+                return;
+            }
 
             try
             {

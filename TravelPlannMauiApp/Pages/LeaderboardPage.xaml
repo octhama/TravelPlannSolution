@@ -5,11 +5,16 @@
              Title="Classement des Voyageurs"
              xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
              xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             xmlns:converters="clr-namespace:Common.Converters;assembly=Common"
              x:DataType="viewmodels:LeaderboardViewModel">
 
     <ContentPage.BindingContext>
         <viewmodels:LeaderboardViewModel/>
     </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->

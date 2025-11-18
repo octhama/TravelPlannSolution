@@ -5,11 +5,18 @@
              Title="Gestion des Groupes"
              xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
              xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             xmlns:converters="clr-namespace:Common.Converters;assembly=Common"
              x:DataType="viewmodels:GroupManagementViewModel">
 
     <ContentPage.BindingContext>
         <viewmodels:GroupManagementViewModel/>
     </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
+        <converters:SelectedItemBackgroundConverter x:Key="SelectedItemBackgroundConverter"/>
+        <converters:BindingContextConverter x:Key="BindingContextConverter"/>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->
@@ -29,7 +36,7 @@
                          Padding="16">
 
                 <!-- Créer un nouveau groupe -->
-                <Frame BackgroundColor="{StaticResource SecondaryColor}"
+                <Frame BackgroundColor="{StaticResource Secondary}"
                        CornerRadius="8"
                        Padding="16">
                     <StackLayout Spacing="12">

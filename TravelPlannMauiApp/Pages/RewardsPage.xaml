@@ -29,7 +29,7 @@
                          Padding="16">
 
                 <!-- Niveau actuel -->
-                <Frame BackgroundColor="{StaticResource SecondaryColor}"
+                <Frame BackgroundColor="{StaticResource Secondary}"
                        CornerRadius="8"
                        Padding="16">
                     <StackLayout Spacing="12">

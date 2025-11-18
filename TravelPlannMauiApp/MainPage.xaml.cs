@@ -9,15 +9,14 @@ namespace TravelPlannMauiApp
     public partial class MainPage : ContentPage
     {
         private int _currentTab = 1; // 0: Map, 1: Home, 2: Trips
-        private readonly IServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider;
 
         public MainPage()
         {
             InitializeComponent();
 
             // Pour obtenir le service provider de manière plus sûre
-            _serviceProvider = Handler?.MauiContext?.Services ??
-                              (Application.Current as App)?.Handler?.MauiContext?.Services;
+            _serviceProvider = GetServiceProvider();
 
             // Pour créer et assigner le ViewModel
             if (_serviceProvider != null)
@@ -49,6 +48,13 @@ namespace TravelPlannMauiApp
             this.Appearing += OnPageAppearing;
         }
 
+        private IServiceProvider GetServiceProvider()
+        {
+            return Handler?.MauiContext?.Services ??
+                   (Application.Current as App)?.Handler?.MauiContext?.Services ??
+                   (Application.Current as App)?.Windows?.FirstOrDefault()?.Handler?.MauiContext?.Services;
+        }
+
         private void OnPageAppearing(object sender, EventArgs e)
         {
             // Réinitialisation de l'onglet actif à l'onglet Accueil quand la page réapparaît
@@ -67,25 +73,30 @@ namespace TravelPlannMauiApp
         {
             try
             {
+                // Essayer de récupérer le service provider s'il n'est pas disponible
                 if (_serviceProvider == null)
                 {
-                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
-                    return;
+                    _serviceProvider = GetServiceProvider();
                 }
 
-                var voyageViewModel = _serviceProvider.GetService<VoyageViewModel>();
-                if (voyageViewModel == null)
+                if (_serviceProvider == null)
                 {
-                    await DisplayAlert("Erreur", "ViewModel Voyage non disponible", "OK");
+                    await DisplayAlert("Erreur", "Services non disponibles - impossible d'ajouter un voyage.", "OK");
                     return;
                 }
 
-                var voyageListPage = new VoyageListPage(voyageViewModel);
-                await Navigation.PushAsync(voyageListPage);
+                // Créer le ViewModel avec les services requis
+                var voyageService = _serviceProvider.GetService<IVoyageService>();
+                var activiteService = _serviceProvider.GetService<IActiviteService>();
+                var hebergementService = _serviceProvider.GetService<IHebergementService>();
+
+                var addVoyageViewModel = new AddVoyageViewModel(voyageService, activiteService, hebergementService);
+                var addVoyagePage = new AddVoyagePage(addVoyageViewModel);
+                await Navigation.PushAsync(addVoyagePage);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers voyages: {ex}");
+                System.Diagnostics.Debug.WriteLine($"Erreur navigation vers nouveau voyage: {ex}");
                 await DisplayAlert("Erreur", $"Erreur de navigation: {ex.Message}", "OK");
             }
         }
@@ -199,22 +210,26 @@ namespace TravelPlannMauiApp
         {
             try
             {
+                // Essayer de récupérer le service provider s'il n'est pas disponible
                 if (_serviceProvider == null)
                 {
-                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
+                    _serviceProvider = GetServiceProvider();
+                }
+
+                if (_serviceProvider == null)
+                {
+                    await DisplayAlert("Erreur", "Services non disponibles - impossible d'ajouter un voyage.", "OK");
                     return;
                 }
 
-                var addVoyageViewModel = _serviceProvider.GetService<AddVoyageViewModel>();
-                if (addVoyageViewModel != null)
-                {
-                    var addVoyagePage = new AddVoyagePage(addVoyageViewModel);
-                    await Navigation.PushAsync(addVoyagePage);
-                }
-                else
-                {
-                    await DisplayAlert("Erreur", "ViewModel Nouveau Voyage non disponible", "OK");
-                }
+                // Créer le ViewModel avec les services requis
+                var voyageService = _serviceProvider.GetService<IVoyageService>();
+                var activiteService = _serviceProvider.GetService<IActiviteService>();
+                var hebergementService = _serviceProvider.GetService<IHebergementService>();
+
+                var addVoyageViewModel = new AddVoyageViewModel(voyageService, activiteService, hebergementService);
+                var addVoyagePage = new AddVoyagePage(addVoyageViewModel);
+                await Navigation.PushAsync(addVoyagePage);
             }
             catch (Exception ex)
             {
@@ -247,8 +262,12 @@ namespace TravelPlannMauiApp
 
                 if (_serviceProvider == null)
                 {
-                    await DisplayAlert("Erreur", "Services non disponibles", "OK");
-                    return;
+                    _serviceProvider = GetServiceProvider();
+                    if (_serviceProvider == null)
+                    {
+                        await DisplayAlert("Erreur", "Services non disponibles", "OK");
+                        return;
+                    }
                 }
 
                 switch (tabIndex)
@@ -267,16 +286,13 @@ namespace TravelPlannMauiApp
                         break;
 
                     case 2: // Trips
-                        var voyageViewModel = _serviceProvider.GetService<VoyageViewModel>();
-                        if (voyageViewModel != null)
-                        {
-                            var voyageListPage = new VoyageListPage(voyageViewModel);
-                            await Navigation.PushAsync(voyageListPage);
-                        }
-                        else
-                        {
-                            await DisplayAlert("Erreur", "ViewModel Voyage non disponible", "OK");
-                        }
+                        // Créer le VoyageViewModel avec tous les services requis
+                        var voyageService = _serviceProvider.GetService<IVoyageService>();
+                        var sessionService = _serviceProvider.GetService<ISessionService>();
+                        
+                        var voyageViewModel = new VoyageViewModel(voyageService, sessionService, _serviceProvider);
+                        var voyageListPage = new VoyageListPage(voyageViewModel);
+                        await Navigation.PushAsync(voyageListPage);
                         break;
 
                     case 1: // Home

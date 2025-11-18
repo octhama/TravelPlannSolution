@@ -5,11 +5,16 @@
              Title="Réservations d'hébergement"
              xmlns:viewmodels="clr-namespace:TravelPlannMauiApp.ViewModels"
              xmlns:dal="clr-namespace:DAL.DB;assembly=DAL"
+             xmlns:converters="clr-namespace:Common.Converters;assembly=Common"
              x:DataType="viewmodels:ReservationViewModel">
 
     <ContentPage.BindingContext>
         <viewmodels:ReservationViewModel/>
     </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->
@@ -29,7 +34,7 @@
                          Padding="16">
 
                 <!-- Nouvelle réservation -->
-                <Frame BackgroundColor="{StaticResource SecondaryColor}"
+                <Frame BackgroundColor="{StaticResource Secondary}"
                        CornerRadius="8"
                        Padding="16">
                     <StackLayout Spacing="12">
