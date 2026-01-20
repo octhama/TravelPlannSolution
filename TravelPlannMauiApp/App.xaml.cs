@@ -8,30 +8,45 @@ public partial class App : Application
 {
     public App()
     {
-        InitializeComponent();
-        AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
-            
-            if (args.ExceptionObject is Exception ex)
-            {
-                Console.WriteLine($"CRASH: {ex}");
-            }
-        };
-        MainPage = new AppShell();
-    }
-    protected override async void OnStart()
-    {
-        try 
+        try
         {
-            var dbFactory = Handler.MauiContext.Services
-                .GetRequiredService<IDbContextFactory<TravelPlannDbContext>>();
+            Debug.WriteLine("App: Début InitializeComponent");
+            InitializeComponent();
+            Debug.WriteLine("App: InitializeComponent terminé");
             
-            // Pré-charge les données au démarrage
-            await using var context = await dbFactory.CreateDbContextAsync();
-            await context.Voyages.AsNoTracking().CountAsync(); // Pré-chauffe la connexion
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
+                if (args.ExceptionObject is Exception ex)
+                {
+                    Debug.WriteLine($"CRASH non géré: {ex}");
+                    Console.WriteLine($"CRASH: {ex}");
+                }
+            };
+            
+            Debug.WriteLine("App: Création AppShell");
+            MainPage = new AppShell();
+            Debug.WriteLine("App: AppShell créé avec succès");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"DB connection failed: {ex}");
+            Debug.WriteLine($"ERREUR App(): {ex}");
+            Console.WriteLine($"ERREUR App(): {ex}");
+            // Créer une page d'erreur basique si AppShell échoue
+            MainPage = new ContentPage
+            {
+                Content = new Label
+                {
+                    Text = $"Erreur au démarrage: {ex.Message}",
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center
+                }
+            };
         }
+    }
+    
+    protected override void OnStart()
+    {
+        Debug.WriteLine("App: OnStart appelé");
+        // Ne pas accéder à Handler ici - il peut être null
+        // La connexion DB sera initialisée à la demande via DI
     }
 }

@@ -1,31 +1,29 @@
 ﻿<Properties StartupConfiguration="{8A16AA0B-5C5E-4874-A210-92152B19FE56}|Default">
+  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.Workbench ActiveDocument="TravelPlannMauiApp/ViewModels/MapViewModel.cs">
+  <MonoDevelop.Ide.ItemProperties.TravelPlannMauiApp PreferredExecutionTarget="MyAppleMacCatalystID" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="TravelPlannMauiApp/MauiProgram.cs">
     <Files>
-      <File FileName="TravelPlannMauiApp/MauiProgram.cs" />
-      <File FileName="../../../../../../usr/local/share/dotnet/packs/Microsoft.Android.Sdk.Darwin/34.0.154/tools/Xamarin.Android.Tooling.targets" />
-      <File FileName="TravelPlannMauiApp/ViewModels/MapViewModel.cs" Line="13" Column="27" />
+      <File FileName="TravelPlannMauiApp/MauiProgram.cs" Line="11" Column="29" />
+      <File FileName="TravelPlannMauiApp/ViewModels/MapViewModel.cs" />
+      <File FileName="TravelPlannMauiApp/App.xaml" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="TravelPlannSolution" expanded="True">
-            <Node name="TravelPlannMauiApp" expanded="True">
-              <Node name="ViewModels" expanded="True">
-                <Node name="MapViewModel.cs" selected="True" />
-              </Node>
+            <Node name="TravelPlannMauiApp">
+              <Node name="MauiProgram.cs" selected="True" />
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.TravelPlannConsoleAppTest PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.TravelPlannMauiApp Xamarin.HotReload.GenericExceptionInfoBar.TravelPlannMauiApp.HideInfoBar="True" PreferredExecutionTarget="MyAppleMacCatalystID" />
-  <MonoDevelop.Ide.ItemProperties.TravelPlannConsoleAppTest PreferredExecutionTarget="MonoDevelop.Default" />
   <Xamarin.Addins.Core.Project ActiveDebugTarget="MyAppleMacCatalystID" />
 </Properties>

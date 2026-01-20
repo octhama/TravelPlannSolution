@@ -1,3 +1,9 @@
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/BU.dll
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/BU.pdb
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/Common.dll
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/DAL.dll
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/Common.pdb
+/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/DAL.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/actool/_PartialAppManifest.items
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/actool/_BundleResourceWithLogicalName.items
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/actool/_ProcessedImageAssetsPath.items
@@ -6,12 +12,6 @@
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/coremlc/_ProcessedCoreMLModelsPath.items
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/_ProcessedBundleResourcesPath.items
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/_ProcessedContentPath.items
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/BU.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/BU.pdb
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/Common.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/DAL.dll
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/Common.pdb
-/Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/bin/Debug/net8.0-maccatalyst/DAL.pdb
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/BU.csproj.AssemblyReference.cache
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/BU.GeneratedMSBuildEditorConfig.editorconfig
 /Users/kuassitehou/Documents/Documents - OHMPXV/GitHub/TravelPlannSolution/BU/obj/Debug/net8.0-maccatalyst/BU.AssemblyInfoInputs.cache
